@@ -4,13 +4,11 @@
 
   $(document).ready(function() {
     var controls = ImageTracer.checkoptions();
-    controls.colorsampling = 25;
+    controls.colorsampling = 0;
     controls.strokewidth = 5;
     controls.viewbox = true;
 
     var change = function() {
-      $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
-
       // Duplicate the img programatically so we can get its original dimensions.
       var original_image = document.getElementById('original-image');
       var img = document.createElement('img');
@@ -32,15 +30,20 @@
 
     var gui = new dat.GUI();
     for (var controlName in controls) {
+      var callback = function() {
+        $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
+        // Wait 100ms so the loader can appear.
+        setTimeout(change, 100);
+      };
       if (isNaN(controls[controlName])) {
         gui.add(controls, controlName)
-          .onFinishChange(function(){ change(); });
+          .onFinishChange(callback);
       }
       else {
         var max = controls[controlName] * 2;
         max = (max > 0) ? max : 100;
         gui.add(controls, controlName, 0, max)
-          .onFinishChange(function(){ change(); });
+          .onFinishChange(callback);
       }
     }
 
