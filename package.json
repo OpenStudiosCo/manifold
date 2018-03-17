@@ -1,0 +1,40 @@
+{
+  "name": "Manifold",
+  "version": "0.0.1",
+  "description": "A browser based tool",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulbrzeski/manifold"
+  },
+  "scripts": {
+    "build": "pug src/pages -P -o . -b . && stylus src/styles -o dist && npm run rollup",
+    "css": "stylus src/styles -o dist -w",
+    "pug": "pug src/pages -P -o . -b . -w",
+    "rollup": "rollup -c",
+    "dev-osx": "sudo http-server -p 80 -c-1 .",
+    "dev": "http-server -p 80 -c-1 .",
+    "watch": "npm run pug & rollup -c -w",
+    "gs": "for i in ../*; do (cd $i && (echo $i; git status)); done",
+    "gsw": "for /D %i in (../*) do cd ../%i && (git status && git remote get-url origin)",
+    "preinstall": "npm i -g http-server rollup"
+  },
+  "author": "Paul Brzeski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paulbrzeski/manifold/issues"
+  },
+  "dependencies": {
+    "axis": "^1.0.0",
+    "npm": "^5.7.1",
+    "prompt": "^1.0.0",
+    "pug": "^2.0.0-beta6",
+    "stylus": "^0.54.5",
+    "vue": "^2.4.2"
+  },
+  "devDependencies": {
+    "jstransformer-markdown": "^1.1.1",
+    "pug-cli": "^1.0.0-alpha6",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-uglify": "^3.0.0"
+  }
+}

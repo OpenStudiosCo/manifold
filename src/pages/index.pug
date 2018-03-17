@@ -1,0 +1,12 @@
+extends /src/templates/layout.pug
+
+block append scripts
+  script(src='./dist/app.js')
+
+block append title
+  | Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
+
+block append page
+  img(src='./manifold.svg')
+  img(src='./demo.jpg')
+  #svgcontainer
