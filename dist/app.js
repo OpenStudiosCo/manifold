@@ -50,22 +50,34 @@
     change();
 
     $('button.fluid.ui.button').click(function() {
+      // Setup the model scene.
       var $container = $('#model-preview');
       var scene = new THREE.Scene();
+      scene.background = new THREE.Color( 0xb0b0b0 );
       var width = $container.parent().innerWidth();
       var height = 400;
       window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 1000 );
-      camera.position.set( 20, 20, 20 );
+      camera.position.set( 0, 0, 200 );
       camera.lookAt( 0, 0, 0 );
-      var renderer = new THREE.WebGLRenderer({ alpha: true });
-
+      var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setSize( width, height );
       $container.html( renderer.domElement );
 
+      var controls = new THREE.OrbitControls( camera, renderer.domElement );
+      function animate() {
+        requestAnimationFrame( animate );
+        render();
+      }
+      function render() {
+        renderer.render( scene, camera );
+      }
+
+      // Load the SVG from the svg-preview.
       var loader = new THREE.SVGLoader();
       var paths = loader.parse($('#svg-preview').html());
       var group = new THREE.Group();
-      group.scale.multiplyScalar( 10.1 );
+      group.scale.multiplyScalar( 0.1 );
       group.scale.y *= -1;
       for ( var i = 0; i < paths.length; i ++ ) {
         var path = paths[ i ];
@@ -83,20 +95,10 @@
         }
       }
       scene.add( group );
-      var box = new THREE.BoxHelper( group, 0xffff00 );
-      scene.add( box );
 
-      var axesHelper = new THREE.AxesHelper( 5 );
-      scene.add( axesHelper );
-
-      var controls = new THREE.OrbitControls( camera, renderer.domElement );
-      function animate() {
-        requestAnimationFrame( animate );
-        render();
-      }
-      function render() {
-        renderer.render( scene, camera );
-      }
+      var helper = new THREE.GridHelper( 160, 10 );
+      helper.rotation.x = Math.PI / 2;
+      scene.add( helper );
       animate();
     });
   });
