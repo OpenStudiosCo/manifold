@@ -20,7 +20,15 @@
         </div>
         <div class="column">
           <h3>Result</h3>
-          <div class="ui fluid image" id="svgcontainer"></div>
+          <div class="ui fluid image" id="svg-preview"></div>
+        </div>
+      </div>
+      <div class="ui stackable one column grid">
+        <div class="row">
+          <button class="fluid ui button"><i class="icon clone outline"></i>Make it 3D!</button>
+        </div>
+        <div class="row">
+          <div id="model-preview"></div>
         </div>
       </div>
     </div>
@@ -29,6 +37,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/91/three.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.1/dat.gui.min.js"></script>
+  <script src="./vendor/OrbitControls.js"></script>
+  <script src="./vendor/SVGLoader.js"></script>
   <script src="./vendor/imagetracer_v1.2.3.js"></script>
   <script src="./dist/app.js"></script>
   <script>

@@ -2,3 +2,6 @@
 .dg.ac {
   margin-top: 7.6em;
 }
+body {
+  overflow: hidden;
+}
