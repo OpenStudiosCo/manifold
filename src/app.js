@@ -2,20 +2,30 @@
 
   $(document).ready(function() {
     var controls = ImageTracer.checkoptions();
-    controls.colorsampling = 0;
+    controls.colorsampling = 25;
     controls.strokewidth = 5;
     controls.viewbox = true;
 
     var change = function() {
-      $('#svg-preview').html('<div class="ui active centered inline loader">Loading</div>');
-      ImageTracer.imageToSVG(
-        '/demo.jpg',
-        function(svgstr) {
-          $('#svg-preview').html('');
-          ImageTracer.appendSVGString( svgstr, 'svg-preview' );
-        },
-        controls
-      );
+      $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
+
+      // Duplicate the img programatically so we can get its original dimensions.
+      var original_image = document.getElementById('original-image');
+      var img = document.createElement('img');
+      img.src = original_image.src;
+      
+      // Get the image data from a virtual canvas.
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var context = canvas.getContext('2d');
+      context.drawImage(img,0,0);
+      var imgData = context.getImageData(0, 0, img.width, img.height);
+
+      // Create an SVG from data and settings, draw to screen.
+      var svgStr = ImageTracer.imagedataToSVG(imgData, controls);
+      $('#svg-preview').html('');
+      ImageTracer.appendSVGString( svgStr, 'svg-preview' );
     };
 
     var gui = new dat.GUI();
@@ -26,6 +36,7 @@
       }
       else {
         var max = controls[controlName] * 2;
+        max = (max > 0) ? max : 100;
         gui.add(controls, controlName, 0, max)
           .onFinishChange(function(){ change(); });
       }
