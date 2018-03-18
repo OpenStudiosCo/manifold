@@ -1244,7 +1244,7 @@ var Potrace = (function() {
     info.isReady = false;
   }
   
-  function getSVG(size = 1, opt_type) {
+  function getSVG(size = 1) {
   
     function path(curve) {
     
@@ -1290,7 +1290,7 @@ var Potrace = (function() {
       c = pathlist[i].curve;
       svg += path(c);
     }
-    if (opt_type === "curve") {
+    if (info.optcurve) {
       strokec = "black";
       fillc = "none";
       fillrule = '';

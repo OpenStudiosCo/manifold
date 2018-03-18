@@ -76,7 +76,7 @@
     var potraceControls = gui.addFolder('Potrace Controls');
     var potraceConfig = {
       alphamax: 1,
-      optcurve: true,
+      optcurve: false,
       opttolerance: 0.2,
       turdsize: 2,
       turnpolicy: "minority"
