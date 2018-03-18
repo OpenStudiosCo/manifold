@@ -123,6 +123,44 @@
      * Need feature request - https://github.com/mrdoob/three.js/issues/13478
     **/
     var threeControls = gui.addFolder('THREE.JS Controls');
+    var addGeoObject = function( group, svgObject ) {
+      var paths = svgObject.paths;
+      var amounts = svgObject.amounts;
+      var colors = svgObject.colors;
+      var center = svgObject.center;
+
+      for ( var i = 0; i < paths.length; i ++ ) {
+
+        var path = $d3g.transformSVGPath( paths[ i ] );
+        var color = new THREE.Color( colors[ i ] );
+        var material = new THREE.MeshLambertMaterial( {
+          color: color,
+          emissive: color
+        } );
+        var amount = amounts[ i ];
+        var simpleShapes = path.toShapes( true );
+
+        for ( var j = 0; j < simpleShapes.length; j ++ ) {
+
+          var simpleShape = simpleShapes[ j ];
+          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
+            amount: amount,
+            bevelEnabled: false
+          } );
+
+          var mesh = new THREE.Mesh( shape3d, material );
+          mesh.rotation.x = Math.PI;
+          mesh.translateZ( - amount - 1 );
+          mesh.translateX( - center.x );
+          mesh.translateY( - center.y );
+
+          group.add( mesh );
+
+        }
+
+      }
+
+    };
     $('button.fluid.ui.button').click(function() {
       var $container = $('#model-preview');
       $container.html( '<div class="ui active centered inline loader"></div>' );
@@ -150,27 +188,15 @@
         }
 
         // Load the SVG from the svg-preview.
-        var loader = new THREE.SVGLoader();
-        var paths = loader.parse($('#potrace-preview').html());
         var group = new THREE.Group();
-        group.scale.multiplyScalar( 0.1 );
-        group.scale.y *= -1;
-        for ( var i = 0; i < paths.length; i ++ ) {
-          var path = paths[ i ];
-          var material = new THREE.MeshBasicMaterial( {
-            color: Math.random() * 0xffffff,
-            polygonOffset: true,
-            polygonOffsetUnits: - i
-          } );
-          var shapes = path.toShapes( true );
-          for ( var j = 0; j < shapes.length; j ++ ) {
-            var shape = shapes[ j ];
-            var geometry = new THREE.ShapeBufferGeometry( shape );
-            var mesh = new THREE.Mesh( geometry, material );
-            group.add( mesh );
-          }
-        }
         scene.add( group );
+        addGeoObject(group, {
+          paths: [$('#potrace-preview path').attr('d') + " Z"],
+          amounts: [ 19, 20, 21 ],
+          colors:  [ 0xC07000, 0xC08000, 0xC0A000 ],
+          center: { x: 365, y: 125 }
+        });
+        group.scale.multiplyScalar(0.25);
 
         var helper = new THREE.GridHelper( 160, 10 );
         helper.rotation.x = Math.PI / 2;
