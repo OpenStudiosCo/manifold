@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
     </title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css" rel="stylesheet">
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
@@ -19,18 +26,26 @@
           <div class="ui fluid image"><img id="original-image" src="./demo.jpg"></div>
         </div>
         <div class="column">
-          <h3>SVG Result</h3>
+          <h3>imagetracejs Result</h3>
           <div class="ui fluid image" id="svg-preview">
             <div class="ui active centered inline loader"></div>
           </div>
         </div>
       </div>
-      <div class="ui stackable one column grid">
-        <div class="row">
-          <button class="fluid ui button"><i class="icon clone outline"></i>Make it 3D!</button>
+      <div class="ui stackable two column grid">
+        <div class="column">
+          <h3>Potrace Result</h3>
+          <div id="potrace-preview">
+            <div class="ui active centered inline loader"></div>
+          </div>
         </div>
-        <div class="row">
-          <div id="model-preview"></div>
+        <div class="column">
+          <div class="row">
+            <button class="fluid ui button"><i class="icon clone outline"></i>Make it 3D!</button>
+          </div>
+          <div class="row">
+            <div id="model-preview"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -42,6 +57,7 @@
   <script src="./vendor/OrbitControls.js"></script>
   <script src="./vendor/SVGLoader.js"></script>
   <script src="./vendor/SVGRenderer.js"></script>
+  <script src="./vendor/potrace.js"></script>
   <script src="./vendor/imagetracer_v1.2.3.js"></script>
   <script src="./dist/app.js"></script>
   <script>

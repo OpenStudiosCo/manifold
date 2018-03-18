@@ -2,6 +2,7 @@
 .dg.ac {
   padding-top: 7.6em;
 }
-body {
-  overflow: hidden;
+.dg.ac select,
+.dg.ac option {
+  color: #000;
 }

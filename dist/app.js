@@ -1,11 +1,20 @@
 'use strict';
 
+/**
+ * Manifold Browser Application
+**/
 ( function( $, THREE, window, document ) {
 
   $(document).ready(function() {
+    var gui = new dat.GUI();
+    /**
+     * imagetracerjs method
+     * 
+     * Credit - https://github.com/jankovicsandras/imagetracerjs
+    **/
     var controls = ImageTracer.checkoptions();
-    controls.colorsampling = 0;
-    controls.strokewidth = 5;
+    controls.numberofcolors = 2;
+    controls.strokewidth = 1;
     controls.viewbox = true;
 
     var change = function() {
@@ -28,7 +37,7 @@
       ImageTracer.appendSVGString( svgStr, 'svg-preview' );
     };
 
-    var gui = new dat.GUI();
+    var imagetracerControls = gui.addFolder('imagetracerjs Controls');
     for (var controlName in controls) {
       var callback = function() {
         $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
@@ -36,19 +45,73 @@
         setTimeout(change, 100);
       };
       if (isNaN(controls[controlName])) {
-        gui.add(controls, controlName)
+        imagetracerControls.add(controls, controlName)
           .onFinishChange(callback);
       }
       else {
         var max = controls[controlName] * 2;
         max = (max > 0) ? max : 100;
-        gui.add(controls, controlName, 0, max)
+        imagetracerControls.add(controls, controlName, 0, max)
           .onFinishChange(callback);
       }
     }
 
     change();
 
+    /**
+     * imagetracerjs method
+     * 
+     * Credit - https://github.com/kilobtye/potrace
+    **/
+    var potraceControls = gui.addFolder('Potrace Controls');
+    var potraceConfig = {
+      alphamax: 1,
+      optcurve: true,
+      opttolerance: 0.2,
+      turdsize: 2,
+      turnpolicy: "minority"
+    };
+    var changePotrace = function() {
+      Potrace.setParameter(potraceConfig);
+      Potrace.loadImageFromId('original-image');
+      Potrace.process(function(){
+        var svgdiv = document.getElementById('potrace-preview');
+        svgdiv.innerHTML = Potrace.getSVG(1, 'curve');
+      });
+    };
+
+    for (var controlName in potraceConfig) {
+      var callback = function() {
+        $('#potrace-preview').html('<div class="ui active centered inline loader"></div>');
+        // Wait 100ms so the loader can appear.
+        setTimeout(changePotrace, 100);
+      };
+      // Choose from accepted values
+      if (controlName == 'turnpolicy') {
+        potraceControls.add(potraceConfig, 'turnpolicy', [ 'black', 'white', 'left', 'right', 'minority', 'majority' ] )
+          .onFinishChange(callback);  
+      }
+      else {
+        if (isNaN(potraceConfig[controlName])) {
+          potraceControls.add(potraceConfig, controlName)
+            .onFinishChange(callback);
+        }
+        else {
+          var max = potraceConfig[controlName] * 2;
+          max = (max > 0) ? max : 100;
+          potraceControls.add(potraceConfig, controlName, 0, max)
+            .onFinishChange(callback);
+        }
+      }
+    }
+    changePotrace();
+
+    /**
+     * Three.JS integration
+     *
+     * Need feature request - https://github.com/mrdoob/three.js/issues/13478
+    **/
+    var threeControls = gui.addFolder('THREE.JS Controls');
     $('button.fluid.ui.button').click(function() {
       // Setup the model scene.
       var $container = $('#model-preview');
@@ -75,7 +138,7 @@
 
       // Load the SVG from the svg-preview.
       var loader = new THREE.SVGLoader();
-      var paths = loader.parse($('#svg-preview').html());
+      var paths = loader.parse($('#potrace-preview').html());
       var group = new THREE.Group();
       group.scale.multiplyScalar( 0.1 );
       group.scale.y *= -1;

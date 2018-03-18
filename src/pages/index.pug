@@ -19,13 +19,18 @@ block append page
 				.ui.fluid.image
 					img#original-image(src='./demo.jpg')
 			.column
-				h3 SVG Result
+				h3 imagetracejs Result
 				#svg-preview.ui.fluid.image
 					.ui.active.centered.inline.loader
-		.ui.stackable.one.column.grid
-			.row
-				button.fluid.ui.button
-					i.icon.clone.outline
-					| Make it 3D!
-			.row
-				#model-preview
+		.ui.stackable.two.column.grid
+			.column
+				h3 Potrace Result
+				#potrace-preview
+					.ui.active.centered.inline.loader
+			.column
+				.row
+					button.fluid.ui.button
+						i.icon.clone.outline
+						| Make it 3D!
+				.row
+					#model-preview
