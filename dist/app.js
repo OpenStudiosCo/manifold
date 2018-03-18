@@ -124,56 +124,59 @@
     **/
     var threeControls = gui.addFolder('THREE.JS Controls');
     $('button.fluid.ui.button').click(function() {
-      // Setup the model scene.
       var $container = $('#model-preview');
-      var scene = new THREE.Scene();
-      scene.background = new THREE.Color( 0xb0b0b0 );
-      var width = $container.parent().innerWidth();
-      var height = 400;
-      window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 1000 );
-      camera.position.set( 0, 0, 200 );
-      camera.lookAt( 0, 0, 0 );
-      var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setPixelRatio( window.devicePixelRatio );
-      renderer.setSize( width, height );
-      $container.html( renderer.domElement );
+      $container.html( '<div class="ui active centered inline loader"></div>' );
+      setTimeout(function() {
+        // Setup the model scene.
+        var scene = new THREE.Scene();
+        scene.background = new THREE.Color( 0xb0b0b0 );
+        var width = $container.parent().innerWidth();
+        var height = 400;
+        window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 1000 );
+        camera.position.set( 0, 0, 200 );
+        camera.lookAt( 0, 0, 0 );
+        var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( width, height );
+        $container.html( renderer.domElement );
 
-      var controls = new THREE.OrbitControls( camera, renderer.domElement );
-      function animate() {
-        requestAnimationFrame( animate );
-        render();
-      }
-      function render() {
-        renderer.render( scene, camera );
-      }
-
-      // Load the SVG from the svg-preview.
-      var loader = new THREE.SVGLoader();
-      var paths = loader.parse($('#potrace-preview').html());
-      var group = new THREE.Group();
-      group.scale.multiplyScalar( 0.1 );
-      group.scale.y *= -1;
-      for ( var i = 0; i < paths.length; i ++ ) {
-        var path = paths[ i ];
-        var material = new THREE.MeshBasicMaterial( {
-          color: Math.random() * 0xffffff,
-          polygonOffset: true,
-          polygonOffsetUnits: - i
-        } );
-        var shapes = path.toShapes( true );
-        for ( var j = 0; j < shapes.length; j ++ ) {
-          var shape = shapes[ j ];
-          var geometry = new THREE.ShapeBufferGeometry( shape );
-          var mesh = new THREE.Mesh( geometry, material );
-          group.add( mesh );
+        var controls = new THREE.OrbitControls( camera, renderer.domElement );
+        function animate() {
+          requestAnimationFrame( animate );
+          render();
         }
-      }
-      scene.add( group );
+        function render() {
+          renderer.render( scene, camera );
+        }
 
-      var helper = new THREE.GridHelper( 160, 10 );
-      helper.rotation.x = Math.PI / 2;
-      scene.add( helper );
-      animate();
+        // Load the SVG from the svg-preview.
+        var loader = new THREE.SVGLoader();
+        var paths = loader.parse($('#potrace-preview').html());
+        var group = new THREE.Group();
+        group.scale.multiplyScalar( 0.1 );
+        group.scale.y *= -1;
+        for ( var i = 0; i < paths.length; i ++ ) {
+          var path = paths[ i ];
+          var material = new THREE.MeshBasicMaterial( {
+            color: Math.random() * 0xffffff,
+            polygonOffset: true,
+            polygonOffsetUnits: - i
+          } );
+          var shapes = path.toShapes( true );
+          for ( var j = 0; j < shapes.length; j ++ ) {
+            var shape = shapes[ j ];
+            var geometry = new THREE.ShapeBufferGeometry( shape );
+            var mesh = new THREE.Mesh( geometry, material );
+            group.add( mesh );
+          }
+        }
+        scene.add( group );
+
+        var helper = new THREE.GridHelper( 160, 10 );
+        helper.rotation.x = Math.PI / 2;
+        scene.add( helper );
+        animate();
+      }, 100);
     });
   });
 
