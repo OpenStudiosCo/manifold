@@ -126,22 +126,19 @@
     var addGeoObject = function( group, svgObject ) {
       var paths = svgObject.paths;
       var amounts = svgObject.amounts;
-      var colors = svgObject.colors;
       var center = svgObject.center;
 
       for ( var i = 0; i < paths.length; i ++ ) {
-
-        var path = $d3g.transformSVGPath( paths[ i ] );
-        var color = new THREE.Color( colors[ i ] );
-        var material = new THREE.MeshLambertMaterial( {
-          color: color,
-          emissive: color
-        } );
+        var path = $d3g.transformSVGPath( paths[ i ] );       
         var amount = amounts[ i ];
         var simpleShapes = path.toShapes( true );
 
         for ( var j = 0; j < simpleShapes.length; j ++ ) {
-
+          var color = new THREE.Color(Math.random() * 0xffffff);
+          var material = new THREE.MeshLambertMaterial( {
+            color: color,
+            emissive: color
+          } );
           var simpleShape = simpleShapes[ j ];
           var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
             amount: amount,
@@ -193,10 +190,10 @@
         addGeoObject(group, {
           paths: [$('#potrace-preview path').attr('d') + " Z"],
           amounts: [ 40 ],
-          colors:  [ 0xC07000  ],
-          center: { x: 365, y: 125 }
+          center: { x: width, y: height }
         });
         group.scale.multiplyScalar(0.25);
+        group.position.setY(-50);
 
         var helper = new THREE.GridHelper( 320, 40 );
         helper.rotation.x = Math.PI / 2;
