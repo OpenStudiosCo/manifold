@@ -8,8 +8,12 @@
 
     $('.js-change-image').click(function(){
       $('#original-image').attr('src', $(this).find('img').attr('src'));
-      change();
-      changePotrace();
+      $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
+      var callback = function(){
+        change();
+        changePotrace();
+      };
+      setTimeout(callback, 100);
     });
     /**
      * imagetracerjs method
