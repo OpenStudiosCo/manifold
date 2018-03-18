@@ -5,6 +5,12 @@
 
   $(document).ready(function() {
     var gui = new dat.GUI();
+
+    $('.js-change-image').click(function(){
+      $('#original-image').attr('src', $(this).find('img').attr('src'));
+      change();
+      changePotrace();
+    });
     /**
      * imagetracerjs method
      * 
@@ -70,6 +76,7 @@
       turnpolicy: "minority"
     };
     var changePotrace = function() {
+      Potrace.clear();
       Potrace.setParameter(potraceConfig);
       Potrace.loadImageFromId('original-image');
       Potrace.process(function(){

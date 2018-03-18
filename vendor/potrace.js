@@ -120,6 +120,11 @@ var Potrace = (function() {
     loadBm();
   };
 
+  function clear() {
+    imgElement = document.createElement("img");
+    imgCanvas = document.createElement("canvas");
+  }
+
   function loadImageFromId(elementId){
     imgElement.src = document.getElementById(elementId).src;
     //imgElement.onload();
@@ -1305,6 +1310,7 @@ var Potrace = (function() {
     setParameter: setParameter,
     process: process,
     getSVG: getSVG,
-    img: imgElement
+    img: imgElement,
+    clear: clear
   };
 })();

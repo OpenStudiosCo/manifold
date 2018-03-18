@@ -7,10 +7,10 @@
     "url": "https://github.com/paulbrzeski/manifold"
   },
   "scripts": {
-    "build": "pug src/pages -P -o . -b . && stylus src/styles -o dist && npm run rollup",
+    "build": "pug src/pages -P -o . -b . && stylus src/styles -o dist && rollup -c",
     "css": "stylus src/styles -o dist -w",
     "pug": "pug src/pages -P -o . -b . -w",
-    "rollup": "rollup -c",
+    "rollup": "rollup -c -w",
     "dev-osx": "sudo http-server -p 80 -c-1 .",
     "dev": "http-server -p 80 -c-1 .",
     "watch": "npm run pug & rollup -c -w",
