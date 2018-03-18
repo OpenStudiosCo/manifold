@@ -190,13 +190,13 @@
         scene.add( group );
         addGeoObject(group, {
           paths: [$('#potrace-preview path').attr('d') + " Z"],
-          amounts: [ 19, 20, 21 ],
-          colors:  [ 0xC07000, 0xC08000, 0xC0A000 ],
+          amounts: [ 40 ],
+          colors:  [ 0xC07000  ],
           center: { x: 365, y: 125 }
         });
         group.scale.multiplyScalar(0.25);
 
-        var helper = new THREE.GridHelper( 160, 10 );
+        var helper = new THREE.GridHelper( 320, 40 );
         helper.rotation.x = Math.PI / 2;
         scene.add( helper );
         animate();
