@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "short_name": "",
+    "short_name": "Manifold",
+    "name": "Manifold - The Swiss Army knife of graphics tools for indie game development.",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -15,5 +15,6 @@
     ],
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "start_url": "index.html"
 }
