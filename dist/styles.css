@@ -6,3 +6,12 @@
 .dg.ac option {
   color: #000;
 }
+.ui.white.button {
+  background-color: #fff;
+}
+.ui.white.button:hover {
+  box-shadow: 0 0 2px #fff;
+}
+.ui.white.button:active {
+  box-shadow: 0 0 5px #fff;
+}

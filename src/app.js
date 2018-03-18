@@ -162,7 +162,6 @@
       setTimeout(function() {
         // Setup the model scene.
         var scene = new THREE.Scene();
-        scene.background = new THREE.Color( 0xb0b0b0 );
         var width = $container.parent().innerWidth();
         var height = 400;
         window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 1000 );
@@ -188,11 +187,10 @@
         addGeoObject(group, {
           paths: [$('#potrace-preview path').attr('d') + " Z"],
           amounts: [ 40 ],
-          center: { x: width, y: height }
+          center: { x: width, y: height /2 }
         });
         group.scale.multiplyScalar(0.25);
-        group.position.setY(-50);
-
+        
         var helper = new THREE.GridHelper( 320, 40 );
         helper.rotation.x = Math.PI / 2;
         scene.add( helper );
