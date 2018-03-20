@@ -164,8 +164,8 @@
         var scene = new THREE.Scene();
         var width = $container.parent().innerWidth();
         var height = 400;
-        window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 1000 );
-        camera.position.set( 0, 0, 200 );
+        window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 100000 );
+        camera.position.set( 0, 0, 400 );
         camera.lookAt( 0, 0, 0 );
         var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -181,7 +181,7 @@
           renderer.render( scene, camera );
         }
 
-        // Load the SVG from the svg-preview.
+        // Load the potrace SVG using d3-threeD.
         var group = new THREE.Group();
         scene.add( group );
         addGeoObject(group, {
@@ -190,10 +190,51 @@
           center: { x: width, y: height /2 }
         });
         group.scale.multiplyScalar(0.25);
+        group.position.setX(150);
+
+         // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
+        var loader = new THREE.SVGLoader();
+        var paths = loader.parse($('#svg-preview').html());
+        var group2 = new THREE.Group();
+        group2.scale.multiplyScalar( 0.25 );
+        group2.scale.y *= -1;
+        for ( var i = 0; i < paths.length; i ++ ) {
+          var path = paths[ i ];
+          var material = new THREE.MeshBasicMaterial( {
+            color: Math.random() * 0xffffff,
+            polygonOffset: true,
+            polygonOffsetUnits: - i
+          } );
+          var shapes = path.toShapes( true );
+          for ( var j = 0; j < shapes.length; j ++ ) {
+            var shape = shapes[ j ];
+            var geometry = new THREE.ShapeBufferGeometry( shape );
+            var mesh = new THREE.Mesh( geometry, material );
+            group2.add( mesh );
+          }
+        }
+        group2.position.setX(-250);
+        group2.position.setY(50);
+        scene.add( group2 );
         
-        var helper = new THREE.GridHelper( 320, 40 );
-        helper.rotation.x = Math.PI / 2;
-        scene.add( helper );
+        var size = 2000;
+        var divisions = 100;
+        var gridColour = new THREE.Color(0xEFEFEF);
+
+        var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+        gridHelper.position.setX(-712.5);
+        gridHelper.position.setZ(-500);
+        gridHelper.rotateX(Math.PI / 2);
+        gridHelper.rotateZ(-Math.PI / 4);
+        scene.add( gridHelper );
+
+        var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+        gridHelper2.position.setX(712.5);
+        gridHelper2.position.setZ(-500);
+        gridHelper2.rotateX(Math.PI / 2);
+        gridHelper2.rotateZ(Math.PI / 4);
+        scene.add( gridHelper2 );
+
         animate();
       }, 100);
     });
