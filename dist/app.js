@@ -141,7 +141,7 @@
           } );
           var simpleShape = simpleShapes[ j ];
           var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            amount: amount,
+            amount: amount * (Math.random() * 10),
             bevelEnabled: false
           } );
 
