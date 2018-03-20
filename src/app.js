@@ -250,6 +250,11 @@
         gridHelper2.rotateZ(Math.PI / 4);
         scene.add( gridHelper2 );
 
+        var axesHelper = new THREE.AxesHelper( 500 );
+        axesHelper.rotateY(-Math.PI / 4);
+        axesHelper.position.set(0, -100, -350);
+        scene.add( axesHelper );
+
         animate();
       }, 100);
     });
