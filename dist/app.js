@@ -183,12 +183,13 @@
           renderer.render( scene, camera );
         }
 
+        var extrudeAmount = 40;
         // Load the potrace SVG using d3-threeD.
         var group = new THREE.Group();
         scene.add( group );
         addGeoObject(group, {
           paths: [$('#potrace-preview path').attr('d') + " Z"],
-          amounts: [ 40 ],
+          amounts: [ extrudeAmount ],
           center: { x: width, y: height /2 }
         });
         group.scale.multiplyScalar(0.25);
@@ -199,7 +200,6 @@
         var paths = loader.parse($('#svg-preview').html());
         var group2 = new THREE.Group();
         group2.scale.multiplyScalar( 0.25 );
-        group2.scale.y *= -1;
         for ( var i = 0; i < paths.length; i ++ ) {
           var path = paths[ i ];
           var material = new THREE.MeshBasicMaterial( {
@@ -209,14 +209,29 @@
           } );
           var shapes = path.toShapes( true );
           for ( var j = 0; j < shapes.length; j ++ ) {
-            var shape = shapes[ j ];
-            var geometry = new THREE.ShapeBufferGeometry( shape );
-            var mesh = new THREE.Mesh( geometry, material );
+            var color = new THREE.Color(Math.random() * 0xffffff);
+            var material = new THREE.MeshLambertMaterial( {
+              color: color,
+              emissive: color
+            } );
+            var simpleShape = shapes[ j ];
+            var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
+              amount: extrudeAmount * (Math.random() * 10),
+              bevelEnabled: false
+            } );
+
+            var center = { x: width, y: height /2 };
+
+            var mesh = new THREE.Mesh( shape3d, material );
+            mesh.rotation.x = Math.PI;
+            mesh.translateZ( - extrudeAmount - 1 );
+            mesh.translateX( - center.x );
+            mesh.translateY( - center.y );
+
             group2.add( mesh );
           }
         }
-        group2.position.setX(-250);
-        group2.position.setY(50);
+        group2.position.setX(-125);
         scene.add( group2 );
         
         var size = 2000;
