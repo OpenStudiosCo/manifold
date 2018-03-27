@@ -11,31 +11,31 @@ block append page
 		.item
 			.ui.fluid.image.small
 				a(href='/', title='Manifold')
-					img(src='./manifold.svg', style='filter: invert(100%);')
+					img(src='/assets/manifold.svg', style='filter: invert(100%);')
 		.item
 			h3 Select an image for processing:
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.tiny
-					img(src='./demo.jpg')
+					img(src='/assets/demo.jpg')
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.mini
-					img(src='./demo2.jpg')
+					img(src='/assets/demo2.jpg')
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.mini
-					img(src='./demo3.png')
+					img(src='/assets/demo3.png')
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.mini
-					img(src='./shapes.png')
+					img(src='/assets/shapes.png')
 	.ui.main.container
 		.ui.stackable.two.column.grid
 			.column
 				h3 Original Bitmap
 				.ui.fluid.image
-					img#original-image(src='./demo.jpg')
+					img#original-image(src='/assets/demo.jpg')
 			.column
 				h3 imagetracerjs Result
 				#svg-preview.ui.fluid.image
