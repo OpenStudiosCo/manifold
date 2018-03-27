@@ -1,7 +1,7 @@
 # manifold
 The Swiss Army knife of graphics tools for indie game development.
 
-![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/manifold.svg)
+![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold.svg)
 
 [Demo](http://manifold.paulbrzeski.com)
 - Currently allows you to convert a raster image into a vector using Image Tracer and Potrace and then extrude it in 3D
