@@ -25,11 +25,12 @@ block append page
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.mini
-					img(src='/assets/demo3.png')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
 					img(src='/assets/shapes.png')
+		.item
+			.ui.labeled.icon.blue.button#image_select
+				i.upload.icon
+				| Upload
+			input(type="file", id="image_input", accept="image/*")
 	.ui.main.container
 		.ui.stackable.two.column.grid
 			.column

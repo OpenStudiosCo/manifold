@@ -6,6 +6,9 @@
 .dg.ac option {
   color: #000;
 }
+#image_input {
+  display: none;
+}
 .ui.white.button {
   background-color: #fff;
 }
