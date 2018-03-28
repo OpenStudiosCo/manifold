@@ -122,9 +122,7 @@
    * old example from https://threejs.org/examples/#webgl_geometry_extrude_shapes2
   **/
   var threeControls;
-  var colours = {
-    Example: "#ffae23"
-  };
+  var colours = { Example: "#ffae23" };
 
   // Setup THREE.JS controls.
   function init_three(gui) {
@@ -267,12 +265,7 @@
 
   }
 
-  /**
-   * Manifold Browser Application
-   */
-
-  $(document).ready(function() {
-    var gui = new dat.GUI();
+  function init_ui() {  
 
     $('#image_select').click(function(e){
       $('#image_input').click();
@@ -295,6 +288,18 @@
       };
       setTimeout(callback, 100);
     });
+
+    return new dat.GUI();
+  }
+
+  /**
+   * Manifold Browser Application
+   */
+
+  $(document).ready(function() {
+
+    // Setup UI.
+    var gui = init_ui();
 
     // Setup imagetracer controls and run.
     init_imagetracer(gui);
