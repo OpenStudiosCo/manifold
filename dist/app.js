@@ -1,71 +1,32 @@
-'use strict';
+(function (ImageTracer,$,Potrace,THREE,$d3g,dat) {
+  'use strict';
 
-/**
- * Manifold Browser Application
-**/
-( function( $, THREE, window, document ) {
+  ImageTracer = ImageTracer && ImageTracer.hasOwnProperty('default') ? ImageTracer['default'] : ImageTracer;
+  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
+  THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
+  $d3g = $d3g && $d3g.hasOwnProperty('default') ? $d3g['default'] : $d3g;
+  dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
 
-  $(document).ready(function() {
-    var gui = new dat.GUI();
+  /**
+    * imagetracerjs method
+    * 
+    * Credit - https://github.com/jankovicsandras/imagetracerjs
+    */
+  var controls;
 
-    $('#image_select').click(function(e){
-      $('#image_input').click();
-      e.preventDefault();
-    });
-
-    window.URL = window.URL || window.webkitURL || window.mozURL;
-    $('#image_input').change(function(){
-      var url = URL.createObjectURL(this.files[0]);
-      console.log(url);
-      $('<div class="item"><div class="ui white compact button js-change-image"><div class="ui fluid image mini"><img src="' + url + '" /></div></div></div>')
-        .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
-    });
-
-    $('.ui.inverted.top.fixed.menu').on('click', '.js-change-image', function(){
-      $('#original-image').attr('src', $(this).find('img').attr('src'));
-      $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
-      var callback = function(){
-        change();
-        changePotrace();
-      };
-      setTimeout(callback, 100);
-    });
-    /**
-     * imagetracerjs method
-     * 
-     * Credit - https://github.com/jankovicsandras/imagetracerjs
-    **/
-    var controls = ImageTracer.checkoptions();
+  // Setup imagetracer controls.
+  function init_imagetracer(gui) {
+    controls = ImageTracer.checkoptions();
     controls.numberofcolors = 2;
     controls.strokewidth = 1;
     controls.viewbox = true;
-
-    var change = function() {
-      // Duplicate the img programatically so we can get its original dimensions.
-      var original_image = document.getElementById('original-image');
-      var img = document.createElement('img');
-      img.src = original_image.src;
-      
-      // Get the image data from a virtual canvas.
-      var canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      var context = canvas.getContext('2d');
-      context.drawImage(img,0,0);
-      var imgData = context.getImageData(0, 0, img.width, img.height);
-
-      // Create an SVG from data and settings, draw to screen.
-      var svgStr = ImageTracer.imagedataToSVG(imgData, controls);
-      $('#svg-preview').html('');
-      ImageTracer.appendSVGString( svgStr, 'svg-preview' );
-    };
-
     var imagetracerControls = gui.addFolder('imagetracerjs Controls');
     for (var controlName in controls) {
       var callback = function() {
         $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
         // Wait 100ms so the loader can appear.
-        setTimeout(change, 100);
+        setTimeout(imagetracer, 100);
       };
       if (isNaN(controls[controlName])) {
         imagetracerControls.add(controls, controlName)
@@ -78,37 +39,51 @@
           .onFinishChange(callback);
       }
     }
+  }
 
-    change();
+  function imagetracer() {
+    // Duplicate the img programatically so we can get its original dimensions.
+    var original_image = document.getElementById('original-image');
+    var img = document.createElement('img');
+    img.src = original_image.src;
+    
+    // Get the image data from a virtual canvas.
+    var canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    var context = canvas.getContext('2d');
+    context.drawImage(img,0,0);
+    var imgData = context.getImageData(0, 0, img.width, img.height);
 
-    /**
-     * imagetracerjs method
+    // Create an SVG from data and settings, draw to screen.
+    var svgStr = ImageTracer.imagedataToSVG(imgData, controls);
+    $('#svg-preview').html('');
+    ImageTracer.appendSVGString( svgStr, 'svg-preview' );
+  }
+
+  /**
+     * Potrace method
      * 
      * Credit - https://github.com/kilobtye/potrace
     **/
+
+  var potraceConfig;
+
+  // Setup Potrace controls.
+  function init_potrace(gui) {
     var potraceControls = gui.addFolder('Potrace Controls');
-    var potraceConfig = {
+    potraceConfig = {
       alphamax: 1,
       optcurve: false,
       opttolerance: 0.2,
       turdsize: 2,
       turnpolicy: "minority"
     };
-    var changePotrace = function() {
-      Potrace.clear();
-      Potrace.setParameter(potraceConfig);
-      Potrace.loadImageFromId('original-image');
-      Potrace.process(function(){
-        var svgdiv = document.getElementById('potrace-preview');
-        svgdiv.innerHTML = Potrace.getSVG(1, 'curve');
-      });
-    };
-
     for (var controlName in potraceConfig) {
       var callback = function() {
         $('#potrace-preview').html('<div class="ui active centered inline loader"></div>');
         // Wait 100ms so the loader can appear.
-        setTimeout(changePotrace, 100);
+        setTimeout(potrace, 100);
       };
       // Choose from accepted values
       if (controlName == 'turnpolicy') {
@@ -128,49 +103,33 @@
         }
       }
     }
-    changePotrace();
+  }
+  // Setup Potrace controls.
+  function potrace() {
+    Potrace.clear();
+    Potrace.setParameter(potraceConfig);
+    Potrace.loadImageFromId('original-image');
+    Potrace.process(function(){
+      var svgdiv = document.getElementById('potrace-preview');
+      svgdiv.innerHTML = Potrace.getSVG(1, 'curve');
+    });
+  }
 
-    /**
-     * Three.JS integration
-     *
-     * Need feature request - https://github.com/mrdoob/three.js/issues/13478
-    **/
-    var threeControls = gui.addFolder('THREE.JS Controls');
-    var addGeoObject = function( group, svgObject ) {
-      var paths = svgObject.paths;
-      var amounts = svgObject.amounts;
-      var center = svgObject.center;
+  /**
+   * Three.JS integration
+   *
+   * Using new SVGLoader https://github.com/mrdoob/three.js/issues/13478 and
+   * old example from https://threejs.org/examples/#webgl_geometry_extrude_shapes2
+  **/
+  var threeControls;
+  var colours = {
+    Example: "#ffae23"
+  };
 
-      for ( var i = 0; i < paths.length; i ++ ) {
-        var path = $d3g.transformSVGPath( paths[ i ] );       
-        var amount = amounts[ i ];
-        var simpleShapes = path.toShapes( true );
-
-        for ( var j = 0; j < simpleShapes.length; j ++ ) {
-          var color = new THREE.Color(Math.random() * 0xffffff);
-          var material = new THREE.MeshLambertMaterial( {
-            color: color,
-            emissive: color
-          } );
-          var simpleShape = simpleShapes[ j ];
-          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            amount: amount * (Math.random() * 10),
-            bevelEnabled: false
-          } );
-
-          var mesh = new THREE.Mesh( shape3d, material );
-          mesh.rotation.x = Math.PI;
-          mesh.translateZ( - amount - 1 );
-          mesh.translateX( - center.x );
-          mesh.translateY( - center.y );
-
-          group.add( mesh );
-
-        }
-
-      }
-
-    };
+  // Setup THREE.JS controls.
+  function init_three(gui) {
+    threeControls = gui.addFolder('THREE.JS Controls');
+    threeControls.addColor(colours, 'Example');
     $('button.fluid.ui.button').click(function() {
       var $container = $('#model-preview');
       $container.html( '<div class="ui active centered inline loader"></div>' );
@@ -179,7 +138,7 @@
         var scene = new THREE.Scene();
         var width = $container.parent().innerWidth();
         var height = 400;
-        window.camera = new THREE.PerspectiveCamera( 50, width / height, 1, 100000 );
+        var camera = new THREE.PerspectiveCamera( 50, width / height, 1, 100000 );
         camera.position.set( 0, 0, 400 );
         camera.lookAt( 0, 0, 0 );
         var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -193,6 +152,7 @@
           render();
         }
         function render() {
+          controls.update();
           renderer.render( scene, camera );
         }
 
@@ -215,11 +175,6 @@
         group2.scale.multiplyScalar( 0.25 );
         for ( var i = 0; i < paths.length; i ++ ) {
           var path = paths[ i ];
-          var material = new THREE.MeshBasicMaterial( {
-            color: Math.random() * 0xffffff,
-            polygonOffset: true,
-            polygonOffsetUnits: - i
-          } );
           var shapes = path.toShapes( true );
           for ( var j = 0; j < shapes.length; j ++ ) {
             var color = new THREE.Color(Math.random() * 0xffffff);
@@ -273,6 +228,86 @@
         animate();
       }, 100);
     });
+  }
+
+  // Adds an object from an SVG.
+  function addGeoObject( group, svgObject ) {
+    var paths = svgObject.paths;
+    var amounts = svgObject.amounts;
+    var center = svgObject.center;
+
+    for ( var i = 0; i < paths.length; i ++ ) {
+      var path = $d3g.transformSVGPath( paths[ i ] );       
+      var amount = amounts[ i ];
+      var simpleShapes = path.toShapes( true );
+
+      for ( var j = 0; j < simpleShapes.length; j ++ ) {
+        var color = new THREE.Color(Math.random() * 0xffffff);
+        var material = new THREE.MeshLambertMaterial( {
+          color: color,
+          emissive: color
+        } );
+        var simpleShape = simpleShapes[ j ];
+        var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
+          amount: amount * (Math.random() * 10),
+          bevelEnabled: false
+        } );
+
+        var mesh = new THREE.Mesh( shape3d, material );
+        mesh.rotation.x = Math.PI;
+        mesh.translateZ( - amount - 1 );
+        mesh.translateX( - center.x );
+        mesh.translateY( - center.y );
+
+        group.add( mesh );
+
+      }
+
+    }
+
+  }
+
+  /**
+   * Manifold Browser Application
+   */
+
+  $(document).ready(function() {
+    var gui = new dat.GUI();
+
+    $('#image_select').click(function(e){
+      $('#image_input').click();
+      e.preventDefault();
+    });
+
+    window.URL = window.URL || window.webkitURL || window.mozURL;
+    $('#image_input').change(function(){
+      var url = URL.createObjectURL(this.files[0]);
+      $('<div class="item"><div class="ui white compact button js-change-image"><div class="ui fluid image mini"><img src="' + url + '" /></div></div></div>')
+        .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
+    });
+
+    $('.ui.inverted.top.fixed.menu').on('click', '.js-change-image', function(){
+      $('#original-image').attr('src', $(this).find('img').attr('src'));
+      $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
+      var callback = function(){
+        imagetracer();
+        potrace();
+      };
+      setTimeout(callback, 100);
+    });
+
+    // Setup imagetracer controls and run.
+    init_imagetracer(gui);
+    imagetracer();
+
+    // Setup Potrace controls and run.
+    init_potrace(gui);
+    potrace();
+
+    // Setup Three.JS controls.
+    init_three(gui);
+
   });
 
-} )( jQuery, THREE, window, document );
+}(ImageTracer,jQuery,Potrace,THREE,$d3g,dat));
+//# sourceMappingURL=app.js.map
