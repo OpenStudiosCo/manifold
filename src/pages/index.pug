@@ -16,16 +16,16 @@ block append page
 			h3 Select an image for processing:
 		.item
 			.ui.white.compact.button.js-change-image
+				.ui.fluid.image.mini
+					img(src='/assets/shapes.png')
+		.item
+			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.tiny
 					img(src='/assets/demo.jpg')
 		.item
 			.ui.white.compact.button.js-change-image
 				.ui.fluid.image.mini
 					img(src='/assets/demo2.jpg')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
-					img(src='/assets/shapes.png')
 		.item
 			.ui.labeled.icon.blue.button#image_select
 				i.upload.icon
@@ -36,7 +36,7 @@ block append page
 			.column
 				h3 Original Bitmap
 				.ui.fluid.image
-					img#original-image(src='/assets/demo.jpg')
+					img#original-image(src='/assets/shapes.png')
 			.column
 				h3 imagetracerjs Result
 				#svg-preview.ui.fluid.image
