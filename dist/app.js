@@ -295,9 +295,7 @@
   /**
    * Manifold Browser Application
    */
-
-  $(document).ready(function() {
-
+  $(function() {
     // Setup UI.
     var gui = init_ui();
 
@@ -311,8 +309,6 @@
 
     // Setup Three.JS controls.
     init_three(gui);
-
   });
 
 }(ImageTracer,jQuery,Potrace,THREE,$d3g,dat));
-//# sourceMappingURL=app.js.map

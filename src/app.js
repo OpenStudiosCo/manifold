@@ -7,9 +7,7 @@ import { init_ui } from './ui.js';
 /**
  * Manifold Browser Application
  */
-
-$(document).ready(function() {
-
+$(function() {
   // Setup UI.
   var gui = init_ui();
 
@@ -23,5 +21,4 @@ $(document).ready(function() {
 
   // Setup Three.JS controls.
   init_three(gui);
-
 });

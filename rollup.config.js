@@ -7,7 +7,6 @@ export default {
   output: {
   	file: 'dist/app.js',
   	format: 'iife',
-    sourcemap: true,
     globals: {
       '$d3g': '$d3g',
       dat: 'dat',
