@@ -1,5 +1,7 @@
 import $ from 'jQuery';
 import BaseView from './base.js';
+import imageContainer from '../templates/image-container.pug';
+import loader from '../templates/loader.pug';
 
 /**
   * Application UI.
@@ -33,13 +35,13 @@ export default class AppUI extends BaseView {
   processFile(e) {
     window.URL = window.URL || window.webkitURL || window.mozURL;
     var url = URL.createObjectURL(e.currentTarget.files[0]);
-      $('<div class="item"><div class="ui white compact button js-change-image"><div class="ui fluid image mini"><img src="' + url + '" /></div></div></div>')
-        .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
+    $(imageContainer({ url: url }))
+      .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
   }
 
   changeImage(e) {
     $('#original-image').attr('src', $(e.currentTarget).find('img').attr('src'));
-    $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
+    $('#svg-preview, #potrace-preview').html(loader());
     var callback = function(){
       this.views.imagetracer.createSVG();
       this.views.potrace.createSVG();
@@ -48,7 +50,7 @@ export default class AppUI extends BaseView {
   }
 
   render3D() {
-    this.views.three.$el.html( '<div class="ui active centered inline loader"></div>' );
+    this.views.three.$el.html(loader());
     setTimeout(this.views.three.createScene.bind(this.views.three), 100);
   }
 }

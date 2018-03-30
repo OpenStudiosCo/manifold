@@ -2,7 +2,6 @@ import $ from 'jQuery';
 import THREE from 'THREE';
 import $d3g from '$d3g';
 import BaseView from './base.js';
-import ThreeControls from '../models/controls/three.js';
 
 /**
   * Potrace view.
@@ -11,15 +10,11 @@ import ThreeControls from '../models/controls/three.js';
   */
 
 export default class ThreeView extends BaseView {
-  constructor() {
+  constructor(options) {
     super({
       el: '#model-preview',
-      model: new ThreeControls()
+      model: options.model
     });
-    this.render();
-  }
-
-  render() {
     var guiFolder = this.gui.addFolder('THREE.JS Controls');
     guiFolder.addColor(this.model.attributes, 'Example 1');
     guiFolder.addColor(this.model.attributes, 'Example 2');

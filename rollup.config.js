@@ -1,4 +1,5 @@
 import buble from 'rollup-plugin-buble';
+import pug from 'rollup-plugin-pug';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
@@ -7,6 +8,7 @@ export default {
   output: {
   	file: 'dist/app.js',
   	format: 'iife',
+    sourcemap: true,
     globals: {
       '$d3g': '$d3g',
       Backbone: 'Backbone',
@@ -20,6 +22,7 @@ export default {
   },
   plugins: [
     // uglify(),
+    pug(),
     buble()
   ]
 };

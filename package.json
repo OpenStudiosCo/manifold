@@ -37,6 +37,7 @@
     "jstransformer-markdown": "^1.1.1",
     "pug-cli": "^1.0.0-alpha6",
     "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-pug": "^0.1.6",
     "rollup-plugin-uglify": "^3.0.0",
     "standard": "^11.0.1",
     "three": "^0.91.0"

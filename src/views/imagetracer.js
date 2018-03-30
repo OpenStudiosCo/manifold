@@ -1,6 +1,5 @@
 import ImageTracer from 'ImageTracer';
 import BaseView from './base.js';
-import ImageTracerControls from '../models/controls/imagetracer.js';
 
 /**
   * ImageTracer view.
@@ -9,33 +8,13 @@ import ImageTracerControls from '../models/controls/imagetracer.js';
   */
 
 export default class ImageTracerView extends BaseView {
-  constructor() {
+  constructor(options) {
     super({
       el: '#svg-preview',
-      model: new ImageTracerControls()
+      model: options.model
     });
-    this.render();
-  }
 
-  render() {
-    var guiFolder = this.gui.addFolder('ImageTracer Controls');
-    for (var controlName in this.model.attributes) {
-      var callback = function() {
-        this.$el.html('<div class="ui active centered inline loader"></div>');
-        // Wait 100ms so the loader can appear.
-        setTimeout(this.createSVG.bind(this), 100);
-      };
-      if (isNaN(this.model.attributes[controlName])) {
-        guiFolder.add(this.model.attributes, controlName)
-          .onFinishChange(callback.bind(this));
-      }
-      else {
-        var max = this.model.attributes[controlName] * 2;
-        max = (max > 0) ? max : 100;
-        guiFolder.add(this.model.attributes, controlName, 0, max)
-          .onFinishChange(callback.bind(this));
-      }
-    }
+    this.generateControls('ImageTracer Controls');
     this.createSVG();
   }
 
