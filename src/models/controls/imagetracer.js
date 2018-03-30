@@ -11,7 +11,8 @@ export default class ImageTracerControls extends BaseModel {
     controls.numberofcolors = 2;
     controls.strokewidth = 1;
     controls.viewbox = true;
-    
+
     return controls;
   }
+
 }

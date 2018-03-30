@@ -14,59 +14,61 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui inverted top fixed menu">
-      <div class="item">
-        <div class="ui fluid image small"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(100%);"></a></div>
-      </div>
-      <div class="item">
-        <h3>Select an image for processing:</h3>
-      </div>
-      <div class="item">
-        <div class="ui white compact button js-change-image">
-          <div class="ui fluid image mini"><img src="/assets/shapes.png"></div>
+    <div id="container">
+      <div class="ui inverted top fixed menu">
+        <div class="item">
+          <div class="ui fluid image small"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(100%);"></a></div>
         </div>
-      </div>
-      <div class="item">
-        <div class="ui white compact button js-change-image">
-          <div class="ui fluid image tiny"><img src="/assets/demo.jpg"></div>
+        <div class="item">
+          <h3>Select an image for processing:</h3>
         </div>
-      </div>
-      <div class="item">
-        <div class="ui white compact button js-change-image">
-          <div class="ui fluid image mini"><img src="/assets/demo2.jpg"></div>
-        </div>
-      </div>
-      <div class="item">
-        <div class="ui labeled icon blue button" id="image_select"><i class="upload icon"></i>Upload</div>
-        <input type="file" id="image_input" accept="image/*">
-      </div>
-    </div>
-    <div class="ui main container">
-      <div class="ui stackable two column grid">
-        <div class="column">
-          <h3>Original Bitmap</h3>
-          <div class="ui fluid image"><img id="original-image" src="/assets/shapes.png"></div>
-        </div>
-        <div class="column">
-          <h3>imagetracerjs Result</h3>
-          <div class="ui fluid image" id="svg-preview">
-            <div class="ui active centered inline loader"></div>
+        <div class="item">
+          <div class="ui white compact button js-change-image">
+            <div class="ui fluid image mini"><img src="/assets/shapes.png"></div>
           </div>
         </div>
-      </div>
-      <div class="ui stackable two column grid">
-        <div class="column">
-          <h3>Potrace Result</h3>
-          <div id="potrace-preview">
-            <div class="ui active centered inline loader"></div>
+        <div class="item">
+          <div class="ui white compact button js-change-image">
+            <div class="ui fluid image tiny"><img src="/assets/demo.jpg"></div>
           </div>
         </div>
-        <div class="column">
-          <div class="row">
-            <button class="fluid ui button" id="btnRender"><i class="icon clone outline"></i>Make it 3D!</button>
+        <div class="item">
+          <div class="ui white compact button js-change-image">
+            <div class="ui fluid image mini"><img src="/assets/demo2.jpg"></div>
           </div>
-          <div class="row">
-            <div id="model-preview"></div>
+        </div>
+        <div class="item">
+          <div class="ui labeled icon blue button" id="image_select"><i class="upload icon"></i>Upload</div>
+          <input type="file" id="image_input" accept="image/*">
+        </div>
+      </div>
+      <div class="ui main container">
+        <div class="ui stackable two column grid">
+          <div class="column">
+            <h3>Original Bitmap</h3>
+            <div class="ui fluid image"><img id="original-image" src="/assets/shapes.png"></div>
+          </div>
+          <div class="column">
+            <h3>imagetracerjs Result</h3>
+            <div class="ui fluid image" id="svg-preview">
+              <div class="ui active centered inline loader"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ui stackable two column grid">
+          <div class="column">
+            <h3>Potrace Result</h3>
+            <div id="potrace-preview">
+              <div class="ui active centered inline loader"></div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="row">
+              <button class="fluid ui button" id="btnRender"><i class="icon clone outline"></i>Make it 3D!</button>
+            </div>
+            <div class="row">
+              <div id="model-preview"></div>
+            </div>
           </div>
         </div>
       </div>

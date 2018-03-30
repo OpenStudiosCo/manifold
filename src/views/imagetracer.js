@@ -10,31 +10,30 @@ import ImageTracerControls from '../models/controls/imagetracer.js';
 
 export default class ImageTracerView extends BaseView {
   constructor() {
-    this.el = '#svg-preview';
-    this.controls = new ImageTracerControls();
-    super();
+    super({
+      el: '#svg-preview',
+      model: new ImageTracerControls()
+    });
     this.render();
   }
 
   render() {
     var guiFolder = this.gui.addFolder('ImageTracer Controls');
-    for (var controlName in this.controls.attributes) {
-      var _this = this;
-      
+    for (var controlName in this.model.attributes) {
       var callback = function() {
-        _this.$el.html('<div class="ui active centered inline loader"></div>');
+        this.$el.html('<div class="ui active centered inline loader"></div>');
         // Wait 100ms so the loader can appear.
-        setTimeout(_this.createSVG.bind(_this), 100);
+        setTimeout(this.createSVG.bind(this), 100);
       };
-      if (isNaN(this.controls.attributes[controlName])) {
-        guiFolder.add(this.controls.attributes, controlName)
-          .onFinishChange(callback);
+      if (isNaN(this.model.attributes[controlName])) {
+        guiFolder.add(this.model.attributes, controlName)
+          .onFinishChange(callback.bind(this));
       }
       else {
-        var max = this.controls.attributes[controlName] * 2;
+        var max = this.model.attributes[controlName] * 2;
         max = (max > 0) ? max : 100;
-        guiFolder.add(this.controls.attributes, controlName, 0, max)
-          .onFinishChange(callback);
+        guiFolder.add(this.model.attributes, controlName, 0, max)
+          .onFinishChange(callback.bind(this));
       }
     }
     this.createSVG();
@@ -42,7 +41,7 @@ export default class ImageTracerView extends BaseView {
 
   // Create an SVG from data and settings, draw to screen.
   createSVG() {  
-    var svgStr = ImageTracer.imagedataToSVG(this.getImageDimensions(), this.controls.attributes);
+    var svgStr = ImageTracer.imagedataToSVG(this.getImageDimensions(), this.model.attributes);
     this.$el.html('');
     ImageTracer.appendSVGString( svgStr, 'svg-preview' );
   }

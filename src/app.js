@@ -2,17 +2,21 @@ import $ from 'jQuery';
 import ImageTracerView from './views/imagetracer.js';
 import PotraceView from './views/potrace.js';
 import ThreeView from './views/three.js';
+import AppUI from './views/ui.js';
 
 /**
  * Manifold Browser Application
  */
-$(function() {
-  var itv = new ImageTracerView();
-  console.log(itv);
+$(() => {
+  var imageTracerView = new ImageTracerView();
+  console.log(imageTracerView);
 
-  var ptv = new PotraceView();
-  console.log(ptv);
+  var potraceView = new PotraceView();
+  console.log(potraceView);
 
-  var ttv = new ThreeView();
-  console.log(ttv);
+  var threeView = new ThreeView();
+  console.log(threeView);
+
+  var appUI = new AppUI(imageTracerView, potraceView, threeView);
+  console.log(appUI);
 });

@@ -12,23 +12,18 @@ import ThreeControls from '../models/controls/three.js';
 
 export default class ThreeView extends BaseView {
   constructor() {
-    this.el = '#model-preview';
-    this.controls = new ThreeControls();
-    super();
+    super({
+      el: '#model-preview',
+      model: new ThreeControls()
+    });
     this.render();
   }
 
   render() {
     var guiFolder = this.gui.addFolder('THREE.JS Controls');
-    guiFolder.addColor(this.controls.attributes, 'Example 1');
-    guiFolder.addColor(this.controls.attributes, 'Example 2');
-    guiFolder.addColor(this.controls.attributes, 'Example 3');
-
-    var _this = this;
-    $('#btnRender').click(function(){
-      _this.$el.html( '<div class="ui active centered inline loader"></div>' );
-      setTimeout(_this.createScene.bind(_this), 100);
-    });
+    guiFolder.addColor(this.model.attributes, 'Example 1');
+    guiFolder.addColor(this.model.attributes, 'Example 2');
+    guiFolder.addColor(this.model.attributes, 'Example 3');
   }
 
   createScene() {
