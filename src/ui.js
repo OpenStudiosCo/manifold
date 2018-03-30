@@ -1,6 +1,6 @@
 import dat from 'dat';
 import $ from 'jQuery';
-//import { imagetracer } from './integration/imagetracer.js';
+// import { imagetracer } from './integration/imagetracer.js';
 import { potrace } from './integration/potrace.js';
 
 export function init_ui() {  
@@ -21,7 +21,7 @@ export function init_ui() {
     $('#original-image').attr('src', $(this).find('img').attr('src'));
     $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
     var callback = function(){
-      //imagetracer();
+      // imagetracer();
       potrace();
     };
     setTimeout(callback, 100);
