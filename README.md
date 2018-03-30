@@ -10,8 +10,9 @@ There's a lot to come, but more info can be found in my blog posts about this pr
 - [My angel is the manifold](https://medium.com/@mail_59849/my-angel-is-the-manifold-d0b718d03071)
   - My initial attempt to define what Manifold is meant to be.
 - [Creating good tools for a brave new world](https://medium.com/@mail_59849/creating-good-tools-for-a-brave-new-world-a85fa2da43cf)
-- A broad discussion of graphics design software and how Manifold can create shortcuts in the design process using pre-modelled "macros"
+  - A broad discussion of graphics design software and how Manifold can create shortcuts in the design process using pre-modelled "macros"
 
 ## Credits
-- Image Tracer for the base functionality to import images https://github.com/jankovicsandras/imagetracerjs
+- Image Tracer https://github.com/jankovicsandras/imagetracerjs
 - Potrace JS port https://github.com/kilobtye/potrace
+- Using new SVGLoader https://github.com/mrdoob/three.js/issues/13478 and old example from https://threejs.org/examples/#webgl_geometry_extrude_shapes2

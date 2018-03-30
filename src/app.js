@@ -1,24 +1,22 @@
 import $ from 'jQuery';
-import { init_imagetracer, imagetracer } from './integration/imagetracer.js';
-import { init_potrace, potrace } from './integration/potrace.js';
-import { init_three } from './integration/three.js';
-import { init_ui } from './ui.js';
+import ImageTracerView from './views/imagetracer.js';
+import PotraceView from './views/potrace.js';
+import ThreeView from './views/three.js';
+import AppUI from './views/ui.js';
 
 /**
  * Manifold Browser Application
  */
-$(function() {
-  // Setup UI.
-  var gui = init_ui();
+$(() => {
+  var imageTracerView = new ImageTracerView();
+  console.log(imageTracerView);
 
-  // Setup imagetracer controls and run.
-  init_imagetracer(gui);
-  imagetracer();
+  var potraceView = new PotraceView();
+  console.log(potraceView);
 
-  // Setup Potrace controls and run.
-  init_potrace(gui);
-  potrace();
+  var threeView = new ThreeView();
+  console.log(threeView);
 
-  // Setup Three.JS controls.
-  init_three(gui);
+  var appUI = new AppUI(imageTracerView, potraceView, threeView);
+  console.log(appUI);
 });

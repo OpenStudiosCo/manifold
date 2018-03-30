@@ -2,7 +2,7 @@ import buble from 'rollup-plugin-buble';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  external: [ '$d3g', 'Backbone', 'dat', 'jQuery', 'ImageTracer', 'THREE', 'Potrace' ],
+  external: [ '$d3g', 'Backbone', 'dat', 'jQuery', 'ImageTracer', 'THREE', 'Potrace', '_' ],
   input: 'src/app.js',
   output: {
   	file: 'dist/app.js',
@@ -14,7 +14,8 @@ export default {
       jQuery: 'jQuery',
       ImageTracer: 'ImageTracer',
       Potrace: 'Potrace',
-      THREE: 'THREE'
+      THREE: 'THREE',
+      _: '_'
     }
   },
   plugins: [
