@@ -13,5 +13,5 @@ There's a lot to come, but more info can be found in my blog posts about this pr
 - A broad discussion of graphics design software and how Manifold can create shortcuts in the design process using pre-modelled "macros"
 
 ## Credits
-- Image Tracer for the base functionality to import images https://github.com/jankovicsandras/imagetracerjs
+- Image Tracer https://github.com/jankovicsandras/imagetracerjs
 - Potrace JS port https://github.com/kilobtye/potrace

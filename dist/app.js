@@ -1,317 +1,155 @@
-(function (ImageTracer,$,Potrace,THREE,$d3g,dat) {
+(function (Potrace,$,THREE,$d3g,dat,Backbone,ImageTracer,_) {
   'use strict';
 
-  ImageTracer = ImageTracer && ImageTracer.hasOwnProperty('default') ? ImageTracer['default'] : ImageTracer;
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
+  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
   $d3g = $d3g && $d3g.hasOwnProperty('default') ? $d3g['default'] : $d3g;
   dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
+  Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
+  var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
+  _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
 
   /**
-    * imagetracerjs method
-    * 
-    * Credit - https://github.com/jankovicsandras/imagetracerjs
+    * Base view.
     */
-  var controls;
 
-  // Setup imagetracer controls.
-  function init_imagetracer(gui) {
-    controls = ImageTracer.checkoptions();
-    controls.numberofcolors = 2;
-    controls.strokewidth = 1;
-    controls.viewbox = true;
-    var imagetracerControls = gui.addFolder('imagetracerjs Controls');
-    for (var controlName in controls) {
-      var callback = function() {
-        $('#svg-preview').html('<div class="ui active centered inline loader"></div>');
-        // Wait 100ms so the loader can appear.
-        setTimeout(imagetracer, 100);
-      };
-      if (isNaN(controls[controlName])) {
-        imagetracerControls.add(controls, controlName)
-          .onFinishChange(callback);
-      }
-      else {
-        var max = controls[controlName] * 2;
-        max = (max > 0) ? max : 100;
-        imagetracerControls.add(controls, controlName, 0, max)
-          .onFinishChange(callback);
-      }
-    }
-  }
+  var gui = new dat.GUI();
 
-  function imagetracer() {
-    // Duplicate the img programatically so we can get its original dimensions.
-    var original_image = document.getElementById('original-image');
-    var img = document.createElement('img');
-    img.src = original_image.src;
+  var BaseView = (function (superclass) {
+  	function BaseView() {
+  		this.gui = gui;
+  	}
+
+  	if ( superclass ) BaseView.__proto__ = superclass;
+  	BaseView.prototype = Object.create( superclass && superclass.prototype );
+  	BaseView.prototype.constructor = BaseView;
+
+  	return BaseView;
+  }(Backbone.View));
+
+  /**
+    * Base model.
+    */
+
+  var BaseModel = (function (superclass) {
+    function BaseModel () {
+      superclass.apply(this, arguments);
+    }if ( superclass ) BaseModel.__proto__ = superclass;
+    BaseModel.prototype = Object.create( superclass && superclass.prototype );
+    BaseModel.prototype.constructor = BaseModel;
+
     
-    // Get the image data from a virtual canvas.
-    var canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    var context = canvas.getContext('2d');
-    context.drawImage(img,0,0);
-    var imgData = context.getImageData(0, 0, img.width, img.height);
 
-    // Create an SVG from data and settings, draw to screen.
-    var svgStr = ImageTracer.imagedataToSVG(imgData, controls);
-    $('#svg-preview').html('');
-    ImageTracer.appendSVGString( svgStr, 'svg-preview' );
-  }
+    return BaseModel;
+  }(Backbone.Model));
 
   /**
-     * Potrace method
-     * 
-     * Credit - https://github.com/kilobtye/potrace
-    **/
+    * Imagetracer Integration models.
+    */
 
-  var potraceConfig;
+  var ImageTracerControls = (function (BaseModel$$1) {
+  	function ImageTracerControls () {
+  		BaseModel$$1.apply(this, arguments);
+  	}
 
-  // Setup Potrace controls.
-  function init_potrace(gui) {
-    var potraceControls = gui.addFolder('Potrace Controls');
-    potraceConfig = {
-      alphamax: 1,
-      optcurve: false,
-      opttolerance: 0.2,
-      turdsize: 2,
-      turnpolicy: "minority"
-    };
-    for (var controlName in potraceConfig) {
-      var callback = function() {
-        $('#potrace-preview').html('<div class="ui active centered inline loader"></div>');
-        // Wait 100ms so the loader can appear.
-        setTimeout(potrace, 100);
-      };
-      // Choose from accepted values
-      if (controlName == 'turnpolicy') {
-        potraceControls.add(potraceConfig, 'turnpolicy', [ 'black', 'white', 'left', 'right', 'minority', 'majority' ] )
-          .onFinishChange(callback);  
-      }
-      else {
-        if (isNaN(potraceConfig[controlName])) {
-          potraceControls.add(potraceConfig, controlName)
-            .onFinishChange(callback);
-        }
-        else {
-          var max = potraceConfig[controlName] * 2;
-          max = (max > 0) ? max : 100;
-          potraceControls.add(potraceConfig, controlName, 0, max)
-            .onFinishChange(callback);
-        }
-      }
-    }
-  }
-  // Setup Potrace controls.
-  function potrace() {
-    Potrace.clear();
-    Potrace.setParameter(potraceConfig);
-    Potrace.loadImageFromId('original-image');
-    Potrace.process(function(){
-      var svgdiv = document.getElementById('potrace-preview');
-      svgdiv.innerHTML = Potrace.getSVG(1, 'curve');
-    });
-  }
+  	if ( BaseModel$$1 ) ImageTracerControls.__proto__ = BaseModel$$1;
+  	ImageTracerControls.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+  	ImageTracerControls.prototype.constructor = ImageTracerControls;
+
+  	ImageTracerControls.prototype.defaults = function defaults () {
+  		var controls = ImageTracer.checkoptions();
+  		controls.numberofcolors = 2;
+  	  controls.strokewidth = 1;
+  	  controls.viewbox = true;
+  		return controls;
+  	};
+
+  	return ImageTracerControls;
+  }(BaseModel));
 
   /**
-   * Three.JS integration
-   *
-   * Using new SVGLoader https://github.com/mrdoob/three.js/issues/13478 and
-   * old example from https://threejs.org/examples/#webgl_geometry_extrude_shapes2
-  **/
-  var threeControls;
-  var colours = { Example: "#ffae23" };
-  var $container;
+    * ImageTracer view.
+    *
+    * Manages all UI elements relating to ImageTracer integration.
+    */
 
-  // Setup THREE.JS controls.
-  function init_three(gui) {
-    threeControls = gui.addFolder('THREE.JS Controls');
-    threeControls.addColor(colours, 'Example');
-    $('button.fluid.ui.button').click(function() {
-      $container = $('#model-preview');
-      $container.html( '<div class="ui active centered inline loader"></div>' );
-      setTimeout(setup_scene, 100);
-    });
-  }
+  var ImageTracerView = (function (BaseView$$1) {
+  	function ImageTracerView() {
+  		BaseView$$1.call(this);
+  		this.el = '#svg-preview';
+  		this.controls = new ImageTracerControls();
+  		this.render();
+  	}
 
-  // Setup the model scene.
-  function setup_scene() {
-    var scene = new THREE.Scene();
-    var width = $container.parent().innerWidth();
-    var height = 400;
-    var camera = new THREE.PerspectiveCamera( 50, width / height, 1, 100000 );
-    camera.position.set( 0, 0, 400 );
-    camera.lookAt( 0, 0, 0 );
-    var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( width, height );
-    $container.html( renderer.domElement );
+  	if ( BaseView$$1 ) ImageTracerView.__proto__ = BaseView$$1;
+  	ImageTracerView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+  	ImageTracerView.prototype.constructor = ImageTracerView;
 
-    var controls = new THREE.OrbitControls( camera, renderer.domElement );
-    function animate() {
-      requestAnimationFrame( animate );
-      render();
-    }
-    function render() {
-      controls.update();
-      renderer.render( scene, camera );
-    }
+  	ImageTracerView.prototype.render = function render () {
+  		var this$1 = this;
 
-    var extrudeAmount = 40;
-    // Load the potrace SVG using d3-threeD.
-    var group = new THREE.Group();
-    scene.add( group );
-    addGeoObject(group, {
-      paths: [$('#potrace-preview path').attr('d') + " Z"],
-      amounts: [ extrudeAmount ],
-      center: { x: width, y: height /2 }
-    });
-    group.scale.multiplyScalar(0.25);
-    group.position.setX(150);
+  		var guiFolder = this.gui.addFolder('imagetracerjs Controls');
+  		for (var controlName in this$1.controls.attributes) {
+  			var _this = this$1;
+  			
+  	    var callback = function() {
+  	      $(_this.el).html('<div class="ui active centered inline loader"></div>');
+  	      // Wait 100ms so the loader can appear.
+  	      setTimeout(_this.createSVG.bind(_this), 100);
+  	    };
+  	    if (isNaN(this$1.controls.attributes[controlName])) {
+  	      guiFolder.add(this$1.controls.attributes, controlName)
+  	        .onFinishChange(callback);
+  	    }
+  	    else {
+  	      var max = this$1.controls.attributes[controlName] * 2;
+  	      max = (max > 0) ? max : 100;
+  	      guiFolder.add(this$1.controls.attributes, controlName, 0, max)
+  	        .onFinishChange(callback);
+  	    }
+  	  }
+  	  this.createSVG();
+  	};
 
-     // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
-    var loader = new THREE.SVGLoader();
-    var paths = loader.parse($('#svg-preview').html());
-    var group2 = new THREE.Group();
-    group2.scale.multiplyScalar( 0.25 );
-    for ( var i = 0; i < paths.length; i ++ ) {
-      var path = paths[ i ];
-      var shapes = path.toShapes( true );
-      for ( var j = 0; j < shapes.length; j ++ ) {
-        var color = new THREE.Color(Math.random() * 0xffffff);
-        var material = new THREE.MeshLambertMaterial( {
-          color: color,
-          emissive: color
-        } );
-        var simpleShape = shapes[ j ];
-        var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-          amount: extrudeAmount * (Math.random() * 10),
-          bevelEnabled: false
-        } );
+  	// Create an SVG from data and settings, draw to screen.
+  	ImageTracerView.prototype.createSVG = function createSVG () {  
+  	  var svgStr = ImageTracer__default.imagedataToSVG(this.getImageDimensions(), this.controls.attributes);
+  	  $(this.el).html('');
+  	  console.log(this);
+  	  ImageTracer__default.appendSVGString( svgStr, 'svg-preview' );
+  	};
+  	
+  	// Duplicates the image programatically so we can get its original dimensions.
+  	ImageTracerView.prototype.getImageDimensions = function getImageDimensions () {
+  	  var original_image = document.getElementById('original-image');
+  	  var img = document.createElement('img');
+  	  img.src = original_image.src;
+  	  
+  	  // Get the image data from a virtual canvas.
+  	  var canvas = document.createElement('canvas');
+  	  canvas.width = img.width;
+  	  canvas.height = img.height;
+  	  var context = canvas.getContext('2d');
+  	  context.drawImage(img,0,0);
+  	  return context.getImageData(0, 0, img.width, img.height);
+  	};
 
-        var center = { x: width, y: height /2 };
-
-        var mesh = new THREE.Mesh( shape3d, material );
-        mesh.rotation.x = Math.PI;
-        mesh.translateZ( - extrudeAmount - 1 );
-        mesh.translateX( - center.x );
-        mesh.translateY( - center.y );
-
-        group2.add( mesh );
-      }
-    }
-    group2.position.setX(-125);
-    scene.add( group2 );
-
-    var size = 2000;
-    var divisions = 100;
-    var gridColour = new THREE.Color(0xEFEFEF);
-
-    var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-    gridHelper.position.setX(-712.5);
-    gridHelper.position.setZ(-500);
-    gridHelper.rotateX(Math.PI / 2);
-    gridHelper.rotateZ(-Math.PI / 4);
-    scene.add( gridHelper );
-
-    var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-    gridHelper2.position.setX(712.5);
-    gridHelper2.position.setZ(-500);
-    gridHelper2.rotateX(Math.PI / 2);
-    gridHelper2.rotateZ(Math.PI / 4);
-    scene.add( gridHelper2 );
-
-    var axesHelper = new THREE.AxesHelper( 500 );
-    axesHelper.rotateY(-Math.PI / 4);
-    axesHelper.position.set(0, -100, -350);
-    scene.add( axesHelper );
-
-    animate();
-  }
-
-  // Adds an object from an SVG.
-  function addGeoObject( group, svgObject ) {
-    var paths = svgObject.paths;
-    var amounts = svgObject.amounts;
-    var center = svgObject.center;
-
-    for ( var i = 0; i < paths.length; i ++ ) {
-      var path = $d3g.transformSVGPath( paths[ i ] );       
-      var amount = amounts[ i ];
-      var simpleShapes = path.toShapes( true );
-
-      for ( var j = 0; j < simpleShapes.length; j ++ ) {
-        var color = new THREE.Color(Math.random() * 0xffffff);
-        var material = new THREE.MeshLambertMaterial( {
-          color: color,
-          emissive: color
-        } );
-        var simpleShape = simpleShapes[ j ];
-        var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-          amount: amount * (Math.random() * 10),
-          bevelEnabled: false
-        } );
-
-        var mesh = new THREE.Mesh( shape3d, material );
-        mesh.rotation.x = Math.PI;
-        mesh.translateZ( - amount - 1 );
-        mesh.translateX( - center.x );
-        mesh.translateY( - center.y );
-
-        group.add( mesh );
-
-      }
-
-    }
-
-  }
-
-  function init_ui() {  
-
-    $('#image_select').click(function(e){
-      $('#image_input').click();
-      e.preventDefault();
-    });
-
-    window.URL = window.URL || window.webkitURL || window.mozURL;
-    $('#image_input').change(function(){
-      var url = URL.createObjectURL(this.files[0]);
-      $('<div class="item"><div class="ui white compact button js-change-image"><div class="ui fluid image mini"><img src="' + url + '" /></div></div></div>')
-        .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
-    });
-
-    $('.ui.inverted.top.fixed.menu').on('click', '.js-change-image', function(){
-      $('#original-image').attr('src', $(this).find('img').attr('src'));
-      $('#svg-preview, #potrace-preview').html('<div class="ui active centered inline loader"></div>');
-      var callback = function(){
-        imagetracer();
-        potrace();
-      };
-      setTimeout(callback, 100);
-    });
-
-    return new dat.GUI();
-  }
+  	return ImageTracerView;
+  }(BaseView));
 
   /**
    * Manifold Browser Application
    */
   $(function() {
-    // Setup UI.
-    var gui = init_ui();
-
-    // Setup imagetracer controls and run.
-    init_imagetracer(gui);
-    imagetracer();
+    new ImageTracerView();
 
     // Setup Potrace controls and run.
-    init_potrace(gui);
-    potrace();
+    //init_potrace(gui);
+    //potrace();
 
     // Setup Three.JS controls.
-    init_three(gui);
+    //init_three(gui);
   });
 
-}(ImageTracer,jQuery,Potrace,THREE,$d3g,dat));
+}(Potrace,jQuery,THREE,$d3g,dat,Backbone,ImageTracer,_));

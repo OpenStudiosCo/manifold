@@ -1,7 +1,13 @@
-import Backbone from 'Backbone';
+import Integration from './models/integration.js';
+import UI from './models/ui.js';
 
 /**
   * Model definitions.
   */
 
-export var models = new Backbone.Model.extend();
+export default class Models {
+	constructor() {
+		this.integration = new Integration();
+		this.ui = new UI();
+	}
+}
