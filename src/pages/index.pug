@@ -7,30 +7,9 @@ block append title
 	| Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-	.ui.inverted.top.fixed.menu
-		.item
-			.ui.fluid.image.small
-				a(href='/', title='Manifold')
-					img(src='/assets/manifold.svg', style='filter: invert(100%);')
-		.item
-			h3 Select an image for processing:
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
-					img(src='/assets/shapes.png')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.tiny
-					img(src='/assets/demo.jpg')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
-					img(src='/assets/demo2.jpg')
-		.item
-			.ui.labeled.icon.blue.button#image_select
-				i.upload.icon
-				| Upload
-			input(type="file", id="image_input", accept="image/*")
+	.ui.fluid.image.small
+		a(href='/', title='Manifold')
+			img(src='/assets/manifold.svg', style='filter: invert(75%);')
 	.ui.main.container
 		.ui.stackable.two.column.grid
 			.column
