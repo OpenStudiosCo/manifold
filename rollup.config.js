@@ -3,21 +3,21 @@ import pug from 'rollup-plugin-pug';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  external: [ '$d3g', 'Backbone', 'dat', 'jQuery', 'ImageTracer', 'THREE', 'Potrace', '_' ],
+  external: [ 'jQuery', '_', 'Backbone', 'dat', 'ImageTracer', 'THREE', 'Potrace' ],
   input: 'src/app.js',
   output: {
+    name: 'ManifoldApplication',
   	file: 'dist/app.js',
   	format: 'iife',
     sourcemap: true,
     globals: {
-      '$d3g': '$d3g',
+      jQuery: 'jQuery',
+      _: '_',
       Backbone: 'Backbone',
       dat: 'dat',
-      jQuery: 'jQuery',
       ImageTracer: 'ImageTracer',
       Potrace: 'Potrace',
-      THREE: 'THREE',
-      _: '_'
+      THREE: 'THREE'
     }
   },
   plugins: [

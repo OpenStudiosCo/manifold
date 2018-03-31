@@ -15,4 +15,4 @@ There's a lot to come, but more info can be found in my blog posts about this pr
 ## Credits
 - Image Tracer https://github.com/jankovicsandras/imagetracerjs
 - Potrace JS port https://github.com/kilobtye/potrace
-- Using new SVGLoader https://github.com/mrdoob/three.js/issues/13478 and old example from https://threejs.org/examples/#webgl_geometry_extrude_shapes2
+- Using new SVGLoader https://github.com/mrdoob/three.js/issues/13478

@@ -1,13 +1,12 @@
-(function (Backbone,ImageTracer,dat,Potrace,$,THREE,$d3g) {
+var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
+  THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
   dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
-  THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
-  $d3g = $d3g && $d3g.hasOwnProperty('default') ? $d3g['default'] : $d3g;
 
   /**
     * Base model.
@@ -29,16 +28,16 @@
     * Imagetracer Controls model.
     */
 
-  var ImageTracerControls = (function (BaseModel$$1) {
-    function ImageTracerControls () {
+  var ImageTracerControlsModel = (function (BaseModel$$1) {
+    function ImageTracerControlsModel () {
       BaseModel$$1.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) ImageTracerControls.__proto__ = BaseModel$$1;
-    ImageTracerControls.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
-    ImageTracerControls.prototype.constructor = ImageTracerControls;
+    if ( BaseModel$$1 ) ImageTracerControlsModel.__proto__ = BaseModel$$1;
+    ImageTracerControlsModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    ImageTracerControlsModel.prototype.constructor = ImageTracerControlsModel;
 
-    ImageTracerControls.prototype.defaults = function defaults () {
+    ImageTracerControlsModel.prototype.defaults = function defaults () {
       var controls = ImageTracer.checkoptions();
       controls.numberofcolors = 2;
       controls.strokewidth = 1;
@@ -47,23 +46,23 @@
       return controls;
     };
 
-    return ImageTracerControls;
+    return ImageTracerControlsModel;
   }(BaseModel));
 
   /**
     * Potrace Controls model.
     */
 
-  var PotraceControls = (function (BaseModel$$1) {
-    function PotraceControls () {
+  var PotraceControlsModel = (function (BaseModel$$1) {
+    function PotraceControlsModel () {
       BaseModel$$1.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) PotraceControls.__proto__ = BaseModel$$1;
-    PotraceControls.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
-    PotraceControls.prototype.constructor = PotraceControls;
+    if ( BaseModel$$1 ) PotraceControlsModel.__proto__ = BaseModel$$1;
+    PotraceControlsModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    PotraceControlsModel.prototype.constructor = PotraceControlsModel;
 
-    PotraceControls.prototype.defaults = function defaults () {
+    PotraceControlsModel.prototype.defaults = function defaults () {
       var controls = {
         alphamax: 1,
         optcurve: false,
@@ -75,34 +74,135 @@
       return controls;
     };
 
-    return PotraceControls;
+    return PotraceControlsModel;
   }(BaseModel));
 
   /**
     * Three Controls model.
     */
 
-  var ThreeControls = (function (BaseModel$$1) {
-    function ThreeControls () {
+  var ThreeControlsModel = (function (BaseModel$$1) {
+    function ThreeControlsModel () {
       BaseModel$$1.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) ThreeControls.__proto__ = BaseModel$$1;
-    ThreeControls.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
-    ThreeControls.prototype.constructor = ThreeControls;
+    if ( BaseModel$$1 ) ThreeControlsModel.__proto__ = BaseModel$$1;
+    ThreeControlsModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    ThreeControlsModel.prototype.constructor = ThreeControlsModel;
 
-    ThreeControls.prototype.defaults = function defaults () {
+    ThreeControlsModel.prototype.defaults = function defaults () {
       var controls = {
         'Example 1': "#ffae23",
         'Example 2': "#ae23ff",
-        'Example 3': "#23ffae"
+        'Example 3': "#23ffae",
+        'Show Helpers': true
       };
       
       return controls;
     };
 
-    return ThreeControls;
+    return ThreeControlsModel;
   }(BaseModel));
+
+  /**
+    * Three Canvas model.
+    */
+
+  var ThreeCanvasModel = (function (BaseModel$$1) {
+    function ThreeCanvasModel(options) {
+      BaseModel$$1.call(this, options);
+      this.attributes.scene = new THREE.Scene();
+      this.attributes.camera = new THREE.PerspectiveCamera( 50, this.attributes.width / this.attributes.height, 1, 100000 );
+      this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
+      this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
+    }
+
+    if ( BaseModel$$1 ) ThreeCanvasModel.__proto__ = BaseModel$$1;
+    ThreeCanvasModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    ThreeCanvasModel.prototype.constructor = ThreeCanvasModel;
+
+    // Scene helpers.
+    ThreeCanvasModel.prototype.defaults = function defaults () {
+      var attributes = {
+        animationId: null,
+        renderer: null,
+        scene: null,
+        width: 400,
+        height: 400,
+        camera: null,
+        controls: null,
+        extrudeAmount: 40
+      };
+      
+      return attributes;
+    };
+
+    ThreeCanvasModel.prototype.addHelpers = function addHelpers () {
+      var size = 2000;
+      var divisions = 100;
+      var gridColour = new THREE.Color(0xEFEFEF);
+
+      var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+      gridHelper.position.setX(-712.5);
+      gridHelper.position.setZ(-500);
+      gridHelper.rotateX(Math.PI / 2);
+      gridHelper.rotateZ(-Math.PI / 4);
+      this.attributes.scene.add( gridHelper );
+
+      var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+      gridHelper2.position.setX(712.5);
+      gridHelper2.position.setZ(-500);
+      gridHelper2.rotateX(Math.PI / 2);
+      gridHelper2.rotateZ(Math.PI / 4);
+      this.attributes.scene.add( gridHelper2 );
+
+      var axesHelper = new THREE.AxesHelper( 500 );
+      axesHelper.rotateY(-Math.PI / 4);
+      axesHelper.position.set(0, -100, -350);
+      this.attributes.scene.add( axesHelper );
+    };
+
+    ThreeCanvasModel.prototype.clearScene = function clearScene () {
+      cancelAnimationFrame( this.attributes.animationId );
+      this.attributes.scene.children = [];
+      this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
+      this.addHelpers();
+    };
+
+    ThreeCanvasModel.prototype.animate = function animate () {
+      this.attributes.animationId = requestAnimationFrame( this.animate.bind(this) );
+      this.render.bind(this)();
+    };
+
+    ThreeCanvasModel.prototype.render = function render () {
+      this.attributes.controls.update();
+      this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
+    };
+
+    return ThreeCanvasModel;
+  }(BaseModel));
+
+  /**
+    * Base view.
+    */
+
+  var gui = new dat.GUI();
+
+  var BaseView = (function (superclass) {
+    function BaseView(options) {
+      superclass.call(this, options);
+      this.gui = gui;
+
+      return this;
+  	}
+
+    if ( superclass ) BaseView.__proto__ = superclass;
+    BaseView.prototype = Object.create( superclass && superclass.prototype );
+    BaseView.prototype.constructor = BaseView;
+
+    return BaseView;
+  }(Backbone.View));
 
   var pug = (function(exports){
 
@@ -362,21 +462,16 @@
     * Base view.
     */
 
-  var gui = new dat.GUI();
+  var BaseControlsView = (function (BaseView$$1) {
+    function BaseControlsView () {
+      BaseView$$1.apply(this, arguments);
+    }
 
-  var BaseView = (function (superclass) {
-    function BaseView(options) {
-      superclass.call(this, options);
-      this.gui = gui;
+    if ( BaseView$$1 ) BaseControlsView.__proto__ = BaseView$$1;
+    BaseControlsView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+    BaseControlsView.prototype.constructor = BaseControlsView;
 
-      return this;
-  	}
-
-    if ( superclass ) BaseView.__proto__ = superclass;
-    BaseView.prototype = Object.create( superclass && superclass.prototype );
-    BaseView.prototype.constructor = BaseView;
-
-    BaseView.prototype.generateControls = function generateControls (title) {
+    BaseControlsView.prototype.generateControls = function generateControls (title) {
       var this$1 = this;
 
       var guiFolder = this.gui.addFolder(title);
@@ -399,8 +494,8 @@
       }
     };
 
-    return BaseView;
-  }(Backbone.View));
+    return BaseControlsView;
+  }(BaseView));
 
   /**
     * ImageTracer view.
@@ -408,10 +503,10 @@
     * Manages all UI elements relating to ImageTracer integration.
     */
 
-  var ImageTracerView = (function (BaseView$$1) {
-    function ImageTracerView(options) {
-      BaseView$$1.call(this, {
-        el: '#svg-preview',
+  var ImageTracerControlsView = (function (BaseControlsView$$1) {
+    function ImageTracerControlsView(options) {
+      BaseControlsView$$1.call(this, {
+        el: '#imagetracer-preview',
         model: options.model
       });
 
@@ -419,19 +514,19 @@
       this.createSVG();
     }
 
-    if ( BaseView$$1 ) ImageTracerView.__proto__ = BaseView$$1;
-    ImageTracerView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
-    ImageTracerView.prototype.constructor = ImageTracerView;
+    if ( BaseControlsView$$1 ) ImageTracerControlsView.__proto__ = BaseControlsView$$1;
+    ImageTracerControlsView.prototype = Object.create( BaseControlsView$$1 && BaseControlsView$$1.prototype );
+    ImageTracerControlsView.prototype.constructor = ImageTracerControlsView;
 
     // Create an SVG from data and settings, draw to screen.
-    ImageTracerView.prototype.createSVG = function createSVG () {  
+    ImageTracerControlsView.prototype.createSVG = function createSVG () {  
       var svgStr = ImageTracer__default.imagedataToSVG(this.getImageDimensions(), this.model.attributes);
       this.$el.html('');
-      ImageTracer__default.appendSVGString( svgStr, 'svg-preview' );
+      ImageTracer__default.appendSVGString( svgStr, 'imagetracer-preview' );
     };
     
     // Duplicates the image programatically so we can get its original dimensions.
-    ImageTracerView.prototype.getImageDimensions = function getImageDimensions () {
+    ImageTracerControlsView.prototype.getImageDimensions = function getImageDimensions () {
       var original_image = document.getElementById('original-image');
       var img = document.createElement('img');
       img.src = original_image.src;
@@ -446,8 +541,8 @@
       return context.getImageData(0, 0, img.width, img.height);
     };
 
-    return ImageTracerView;
-  }(BaseView));
+    return ImageTracerControlsView;
+  }(BaseControlsView));
 
   /**
     * Potrace view.
@@ -455,9 +550,9 @@
     * Manages all UI elements relating to Potrace integration.
     */
 
-  var PotraceView = (function (BaseView$$1) {
-    function PotraceView(options) {
-      BaseView$$1.call(this, {
+  var PotraceControlsView = (function (BaseControlsView$$1) {
+    function PotraceControlsView(options) {
+      BaseControlsView$$1.call(this, {
         el: '#potrace-preview',
         model: options.model
       });
@@ -465,12 +560,12 @@
       this.createSVG();
     }
 
-    if ( BaseView$$1 ) PotraceView.__proto__ = BaseView$$1;
-    PotraceView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
-    PotraceView.prototype.constructor = PotraceView;
+    if ( BaseControlsView$$1 ) PotraceControlsView.__proto__ = BaseControlsView$$1;
+    PotraceControlsView.prototype = Object.create( BaseControlsView$$1 && BaseControlsView$$1.prototype );
+    PotraceControlsView.prototype.constructor = PotraceControlsView;
 
     // Create an SVG from data and settings, draw to screen.
-    PotraceView.prototype.createSVG = function createSVG () {  
+    PotraceControlsView.prototype.createSVG = function createSVG () {  
       Potrace.clear();
       Potrace.setParameter(this.model.attributes);
       Potrace.loadImageFromId('original-image');
@@ -480,70 +575,79 @@
       });
     };
 
-    return PotraceView;
-  }(BaseView));
+    return PotraceControlsView;
+  }(BaseControlsView));
 
   /**
-    * Potrace view.
+    * Three Controls view.
     *
-    * Manages all UI elements relating to Potrace integration.
+    * Manages all UI elements relating to THREE.JS integration.
     */
 
-  var ThreeView = (function (BaseView$$1) {
-    function ThreeView(options) {
-      BaseView$$1.call(this, {
-        el: '#model-preview',
-        model: options.model
-      });
+  var ThreeControlsView = (function (BaseControlsView$$1) {
+    function ThreeControlsView(options) {
+      BaseControlsView$$1.call(this, { model: options.model });
       var guiFolder = this.gui.addFolder('THREE.JS Controls');
       guiFolder.addColor(this.model.attributes, 'Example 1');
       guiFolder.addColor(this.model.attributes, 'Example 2');
       guiFolder.addColor(this.model.attributes, 'Example 3');
+      guiFolder.add(this.model.attributes, 'Show Helpers');
     }
 
-    if ( BaseView$$1 ) ThreeView.__proto__ = BaseView$$1;
-    ThreeView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
-    ThreeView.prototype.constructor = ThreeView;
+    if ( BaseControlsView$$1 ) ThreeControlsView.__proto__ = BaseControlsView$$1;
+    ThreeControlsView.prototype = Object.create( BaseControlsView$$1 && BaseControlsView$$1.prototype );
+    ThreeControlsView.prototype.constructor = ThreeControlsView;
 
-    ThreeView.prototype.createScene = function createScene () {
-      var scene = new THREE.Scene();
-      var width = this.$el.parent().innerWidth();
-      var height = 400;
-      var camera = new THREE.PerspectiveCamera( 50, width / height, 1, 100000 );
-      camera.position.set( 0, 0, 400 );
-      camera.lookAt( 0, 0, 0 );
-      var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setPixelRatio( window.devicePixelRatio );
-      renderer.setSize( width, height );
-      this.$el.html( renderer.domElement );
+    return ThreeControlsView;
+  }(BaseControlsView));
 
-      var controls = new THREE.OrbitControls( camera, renderer.domElement );
-      function animate() {
-        requestAnimationFrame( animate );
-        render();
-      }
-      function render() {
-        controls.update();
-        renderer.render( scene, camera );
-      }
+  /**
+    * Three Canvas view.
+    *
+    * Manages a THREE.JS canvas view.
+    */
 
-      var extrudeAmount = 40;
-      // Load the potrace SVG using d3-threeD.
-      var group = new THREE.Group();
-      scene.add( group );
-      this.addGeoObject(group, {
-        paths: [$('#potrace-preview path').attr('d') + " Z"],
-        amounts: [ extrudeAmount ],
-        center: { x: width, y: height /2 }
+  var ThreeCanvasView = (function (BaseView$$1) {
+    function ThreeCanvasView(options) {
+      BaseView$$1.call(this, {
+        el: '#model-preview',
+        model: options.model
       });
-      group.scale.multiplyScalar(0.25);
-      group.position.setX(150);
+    }
+
+    if ( BaseView$$1 ) ThreeCanvasView.__proto__ = BaseView$$1;
+    ThreeCanvasView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+    ThreeCanvasView.prototype.constructor = ThreeCanvasView;
+
+    ThreeCanvasView.prototype.createScene = function createScene () {
+      this.model.clearScene();
+      this.model.attributes.width = this.$el.parent().innerWidth();
+      this.model.attributes.camera.position.set( 0, 0, 400 );
+      this.model.attributes.camera.lookAt( 0, 0, 0 );
+      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
+      this.$el.html( this.model.attributes.renderer.domElement );
 
        // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
       var loader = new THREE.SVGLoader();
-      var paths = loader.parse($('#svg-preview').html());
-      var group2 = new THREE.Group();
-      group2.scale.multiplyScalar( 0.25 );
+      var paths = loader.parse($('#potrace-preview').html());
+      var svg = this.extrudeSVG({
+        paths: paths,
+        amount: this.model.attributes.extrudeAmount,
+        center: { x: this.model.attributes.width, y: this.model.attributes.height /2 }
+      });
+      this.model.attributes.scene.add( svg );
+
+      this.model.animate();
+    };
+
+    // Populate a 3D group from an SVG using SVGLoader
+    ThreeCanvasView.prototype.extrudeSVG = function extrudeSVG (svgObject) {
+      var paths = svgObject.paths;
+      var amount = svgObject.amount;
+      var center = svgObject.center;
+
+      var group = new THREE.Group();
+      group.scale.multiplyScalar( 0.25 );
       for ( var i = 0; i < paths.length; i ++ ) {
         var path = paths[ i ];
         var shapes = path.toShapes( true );
@@ -554,69 +658,6 @@
             emissive: color
           } );
           var simpleShape = shapes[ j ];
-          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            amount: extrudeAmount * (Math.random() * 10),
-            bevelEnabled: false
-          } );
-
-          var center = { x: width, y: height /2 };
-
-          var mesh = new THREE.Mesh( shape3d, material );
-          mesh.rotation.x = Math.PI;
-          mesh.translateZ( - extrudeAmount - 1 );
-          mesh.translateX( - center.x );
-          mesh.translateY( - center.y );
-
-          group2.add( mesh );
-        }
-      }
-      group2.position.setX(-125);
-      scene.add( group2 );
-
-      var size = 2000;
-      var divisions = 100;
-      var gridColour = new THREE.Color(0xEFEFEF);
-
-      var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-      gridHelper.position.setX(-712.5);
-      gridHelper.position.setZ(-500);
-      gridHelper.rotateX(Math.PI / 2);
-      gridHelper.rotateZ(-Math.PI / 4);
-      scene.add( gridHelper );
-
-      var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-      gridHelper2.position.setX(712.5);
-      gridHelper2.position.setZ(-500);
-      gridHelper2.rotateX(Math.PI / 2);
-      gridHelper2.rotateZ(Math.PI / 4);
-      scene.add( gridHelper2 );
-
-      var axesHelper = new THREE.AxesHelper( 500 );
-      axesHelper.rotateY(-Math.PI / 4);
-      axesHelper.position.set(0, -100, -350);
-      scene.add( axesHelper );
-
-      animate();
-    };
-    
-    // Adds an object from an SVG.
-    ThreeView.prototype.addGeoObject = function addGeoObject ( group, svgObject ) {
-      var paths = svgObject.paths;
-      var amounts = svgObject.amounts;
-      var center = svgObject.center;
-
-      for ( var i = 0; i < paths.length; i ++ ) {
-        var path = $d3g.transformSVGPath( paths[ i ] );       
-        var amount = amounts[ i ];
-        var simpleShapes = path.toShapes( true );
-
-        for ( var j = 0; j < simpleShapes.length; j ++ ) {
-          var color = new THREE.Color(Math.random() * 0xffffff);
-          var material = new THREE.MeshLambertMaterial( {
-            color: color,
-            emissive: color
-          } );
-          var simpleShape = simpleShapes[ j ];
           var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
             amount: amount * (Math.random() * 10),
             bevelEnabled: false
@@ -629,13 +670,15 @@
           mesh.translateY( - center.y );
 
           group.add( mesh );
-
         }
-
       }
+      var size = new THREE.Box3().setFromObject( group ).getSize();
+      group.position.setX(size.x / 2);
+
+      return group;
     };
 
-    return ThreeView;
+    return ThreeCanvasView;
   }(BaseView));
 
   function imageContainer(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
@@ -652,8 +695,8 @@
     * Manages all UI elements for the core application.
     */
 
-  var AppUI = (function (BaseView$$1) {
-    function AppUI(imageTracerView, potraceView, threeView) {
+  var AppView = (function (BaseView$$1) {
+    function AppView(app) {
       BaseView$$1.call(this, {
         el: '#container',
         events: {
@@ -663,32 +706,34 @@
           'click #btnRender': 'render3D'
         }  
       });
+      this.models = {};
       this.views = {
-        imagetracer: imageTracerView,
-        potrace: potraceView,
-        three: threeView
+        imagetracer: app.views.controls.imagetracer,
+        potrace: app.views.controls.potrace,
+        three: app.views.controls.three,
+        threeCanvas: app.views.threeCanvas
       };
     }
 
-    if ( BaseView$$1 ) AppUI.__proto__ = BaseView$$1;
-    AppUI.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
-    AppUI.prototype.constructor = AppUI;
+    if ( BaseView$$1 ) AppView.__proto__ = BaseView$$1;
+    AppView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+    AppView.prototype.constructor = AppView;
 
-    AppUI.prototype.launchFileBrowser = function launchFileBrowser (e) {
+    AppView.prototype.launchFileBrowser = function launchFileBrowser (e) {
       $('#image_input').click();
       e.preventDefault();
     };
 
-    AppUI.prototype.processFile = function processFile (e) {
+    AppView.prototype.processFile = function processFile (e) {
       window.URL = window.URL || window.webkitURL || window.mozURL;
       var url = URL.createObjectURL(e.currentTarget.files[0]);
-      $(imageContainer({url: url}))
+      $(imageContainer({ url: url }))
         .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
     };
 
-    AppUI.prototype.changeImage = function changeImage (e) {
+    AppView.prototype.changeImage = function changeImage (e) {
       $('#original-image').attr('src', $(e.currentTarget).find('img').attr('src'));
-      $('#svg-preview, #potrace-preview').html(loader());
+      $('#imagetracer-preview, #potrace-preview').html(loader());
       var callback = function(){
         this.views.imagetracer.createSVG();
         this.views.potrace.createSVG();
@@ -696,12 +741,12 @@
       setTimeout(callback.bind(this), 100);
     };
 
-    AppUI.prototype.render3D = function render3D () {
-      this.views.three.$el.html(loader());
-      setTimeout(this.views.three.createScene.bind(this.views.three), 100);
+    AppView.prototype.render3D = function render3D () {
+      this.views.threeCanvas.$el.html(loader());
+      setTimeout(this.views.threeCanvas.createScene.bind(this.views.threeCanvas), 100);
     };
 
-    return AppUI;
+    return AppView;
   }(BaseView));
 
   // External libs
@@ -709,22 +754,33 @@
   /**
    * Manifold Browser Application
    */
+  var App = function App() {
+    this.models = {
+      controls: {
+        imagetracer: new ImageTracerControlsModel(),
+        potrace: new PotraceControlsModel(),
+        three: new ThreeControlsModel()
+      },
+      threeCanvas: new ThreeCanvasModel()
+    };
+    this.views = {
+      controls: {
+        imagetracer: new ImageTracerControlsView({ model: this.models.controls.imagetracer }),
+        potrace: new PotraceControlsView({ model: this.models.controls.potrace }),
+        three: new ThreeControlsView({ model: this.models.controls.three })
+      },
+      threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })
+    };
+  };
+
+  // Startup using jQuery.ready()
   $(function () {
-    var imageTracerView = new ImageTracerView({
-      model: new ImageTracerControls()
-    });
-
-    var potraceView = new PotraceView({
-      model: new PotraceControls()
-    });
-
-    var threeView = new ThreeView({
-      model: new ThreeControls()
-    });
-
-    var appUI = new AppUI(imageTracerView, potraceView, threeView);
-    console.log(appUI);
+    var app = new App();
+    app.views.ui = new AppView(app);
+    window.app = app;
   });
 
-}(Backbone,ImageTracer,dat,Potrace,jQuery,THREE,$d3g));
+  return App;
+
+}(Backbone,ImageTracer,THREE,dat,Potrace,jQuery));
 //# sourceMappingURL=app.js.map
