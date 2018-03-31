@@ -1,55 +1,35 @@
 extends /src/templates/layout.pug
 
 block append scripts
-	script(src='./dist/app.js')
+  script(src='./dist/app.js')
 
 block append title
-	| Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
+  | Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-	.ui.inverted.top.fixed.menu
-		.item
-			.ui.fluid.image.small
-				a(href='/', title='Manifold')
-					img(src='/assets/manifold.svg', style='filter: invert(100%);')
-		.item
-			h3 Select an image for processing:
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
-					img(src='/assets/shapes.png')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.tiny
-					img(src='/assets/demo.jpg')
-		.item
-			.ui.white.compact.button.js-change-image
-				.ui.fluid.image.mini
-					img(src='/assets/demo2.jpg')
-		.item
-			.ui.labeled.icon.blue.button#image_select
-				i.upload.icon
-				| Upload
-			input(type="file", id="image_input", accept="image/*")
-	.ui.main.container
-		.ui.stackable.two.column.grid
-			.column
-				h3 Original Bitmap
-				.ui.fluid.image
-					img#original-image(src='/assets/shapes.png')
-			.column
-				h3 imagetracerjs Result
-				#imagetracer-preview.ui.fluid.image
-					.ui.active.centered.inline.loader
-		.ui.stackable.two.column.grid
-			.column
-				h3 Potrace Result
-				#potrace-preview
-					.ui.active.centered.inline.loader
-			.column
-				.row
-					button.fluid.ui.button#btnRender
-						i.icon.clone.outline
-						| Make it 3D!
-				.row
-					#model-preview
+  #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar.icon.menu
+    include /src/templates/toolbar/default.pug
+  #container.pusher
+    #logo.ui.fluid.image.small(onclick='app.models.mainCanvas.toggleToolbar();')
+      a(href='#', title='Toggle Toolbar')
+        img(src='/assets/manifold.svg')
+    canvas#main-canvas
+  .ui.dimmer.modals.top.aligned.page.transition.hidden
+    .ui.fullscreen.special.modal.transition.hidden
+      .header Select an image
+      .content
+        .ui.four.stackable.cards
+          .card
+            a.image
+              img#original-image.ui.fluid.small(src='/assets/shapes.png')
+          .card
+            a.image
+              img.ui.fluid.image.small(src='/assets/demo.jpg')
+          .card
+            a.image
+              img.ui.fluid.image.small(src='/assets/demo2.jpg')
+          .card
+            .content
+            .ui.bottom.attached.button
+              i.add.icon
+              | Upload

@@ -10,64 +10,29 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css" rel="stylesheet">
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div id="container">
-      <div class="ui inverted top fixed menu">
-        <div class="item">
-          <div class="ui fluid image small"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(100%);"></a></div>
-        </div>
-        <div class="item">
-          <h3>Select an image for processing:</h3>
-        </div>
-        <div class="item">
-          <div class="ui white compact button js-change-image">
-            <div class="ui fluid image mini"><img src="/assets/shapes.png"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="ui white compact button js-change-image">
-            <div class="ui fluid image tiny"><img src="/assets/demo.jpg"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="ui white compact button js-change-image">
-            <div class="ui fluid image mini"><img src="/assets/demo2.jpg"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="ui labeled icon blue button" id="image_select"><i class="upload icon"></i>Upload</div>
-          <input type="file" id="image_input" accept="image/*">
-        </div>
-      </div>
-      <div class="ui main container">
-        <div class="ui stackable two column grid">
-          <div class="column">
-            <h3>Original Bitmap</h3>
-            <div class="ui fluid image"><img id="original-image" src="/assets/shapes.png"></div>
-          </div>
-          <div class="column">
-            <h3>imagetracerjs Result</h3>
-            <div class="ui fluid image" id="imagetracer-preview">
-              <div class="ui active centered inline loader"></div>
-            </div>
-          </div>
-        </div>
-        <div class="ui stackable two column grid">
-          <div class="column">
-            <h3>Potrace Result</h3>
-            <div id="potrace-preview">
-              <div class="ui active centered inline loader"></div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="row">
-              <button class="fluid ui button" id="btnRender"><i class="icon clone outline"></i>Make it 3D!</button>
-            </div>
-            <div class="row">
-              <div id="model-preview"></div>
+    <div class="ui very thin left vertical inverted visible sidebar icon menu" id="toolbar">
+      <div class="item" id="btnAddImage"><i class="large icons"><i class="image icon"></i><i class="corner plus icon green"></i></i></div>
+      <div class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon"></i><i class="corner plus icon green"></i></i></div>
+    </div>
+    <div class="pusher" id="container">
+      <div class="ui fluid image small" id="logo" onclick="app.models.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
+      <canvas id="main-canvas"></canvas>
+    </div>
+    <div class="ui dimmer modals top aligned page transition hidden">
+      <div class="ui fullscreen special modal transition hidden">
+        <div class="header">Select an image</div>
+        <div class="content">
+          <div class="ui four stackable cards">
+            <div class="card"><a class="image"><img class="ui fluid small" id="original-image" src="/assets/shapes.png"></a></div>
+            <div class="card"><a class="image"><img class="ui fluid image small" src="/assets/demo.jpg"></a></div>
+            <div class="card"><a class="image"><img class="ui fluid image small" src="/assets/demo2.jpg"></a></div>
+            <div class="card">
+              <div class="content"></div>
+              <div class="ui bottom attached button"><i class="add icon"></i>Upload</div>
             </div>
           </div>
         </div>
@@ -75,11 +40,14 @@
     </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>
+  <script src="./vendor/path-data-polyfill.js"></script>
+  <script src="./vendor/Tween.js"></script>
   <script src="./vendor/three.91.js"></script>
-  <script src="./vendor/semantic.2.3.0.js"></script>
+  <script src="./vendor/semantic.2.3.1.js"></script>
   <script src="./vendor/dat.gui.min.js"></script>
   <script src="./vendor/underscore.js"></script>
   <script src="./vendor/backbone.js"></script>
+  <script src="./vendor/fabric.js"></script>
   <script src="./vendor/OrbitControls.js"></script>
   <script src="./vendor/SVGLoader.js"></script>
   <script src="./vendor/SVGRenderer.js"></script>

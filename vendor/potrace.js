@@ -110,7 +110,7 @@ var Potrace = (function() {
         isReady: false,
         turnpolicy: "minority", 
         turdsize: 2,
-        optcurve: true,
+        optcurve: false,
         alphamax: 1,
         opttolerance: 0.2
       };
@@ -127,7 +127,10 @@ var Potrace = (function() {
 
   function loadImageFromId(elementId){
     imgElement.src = document.getElementById(elementId).src;
-    //imgElement.onload();
+  }
+
+  function loadImageFromSrc(src){
+    imgElement.src = src;
   }
 
   function loadImageFromFile(file) {
@@ -1306,6 +1309,7 @@ var Potrace = (function() {
   return{
     loadImageFromFile: loadImageFromFile,
     loadImageFromId: loadImageFromId,
+    loadImageFromSrc: loadImageFromSrc,
     loadImageFromUrl: loadImageFromUrl,
     setParameter: setParameter,
     process: process,

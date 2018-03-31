@@ -3,16 +3,46 @@
   padding-top: 7.6em
 
 .dg.ac
-	select,
-	option
-		color: #000000
+  select,
+  option
+    color: #000000
+
+#toolbar
+  .item
+    cursor: pointer
+
+#container
+  position: relative
+
+#logo
+  position: absolute
+  top: 0
+  left: 0
+  z-index: 1
+
+  img
+    filter: invert(50%)
+    transition: filter 0.25s;
+    &:hover
+      filter: invert(0%) drop-shadow(16px 16px 20px black)
+
+
+#main-canvas
+  position: absolute
+  bottom: 0
+  left: 0
+  right: 0
+  top: 0
+  width: 100%
+  height: 100%
+  z-index: 0
 
 #image_input
-	display: none
+  display: none
 
 .ui.white.button
-	background-color: #FFFFFF
-	&:hover
-		box-shadow: 0 0 2px #FFFFFF
-	&:active
-		box-shadow: 0 0 5px #FFFFFF
+  background-color: #FFFFFF
+  &:hover
+    box-shadow: 0 0 2px #FFFFFF
+  &:active
+    box-shadow: 0 0 5px #FFFFFF
