@@ -14,6 +14,11 @@ export default class ThreeCanvasView extends BaseView {
       el: '#model-preview',
       model: options.model
     });
+
+    document.addEventListener( 'mousemove', function(event){
+      this.model.attributes.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;;
+      this.model.attributes.mouse.y =  - ( event.clientY / window.innerHeight ) * 2 + 1;;
+    }.bind(this), false );
   }
 
   createScene() {
@@ -32,8 +37,14 @@ export default class ThreeCanvasView extends BaseView {
       amount: this.model.attributes.extrudeAmount,
       center: { x: this.model.attributes.width, y: this.model.attributes.height /2 }
     });
-    this.model.attributes.scene.add( svg );
+    var box = new THREE.Box3().setFromObject( svg );
+    var boundingBoxSize = box.max.sub( box.min );
+    var width = boundingBoxSize.x;
+    svg.position.setX(width / 2);
+    this.model.attributes.mesh = svg;
+    this.model.attributes.scene.add( this.model.attributes.mesh );
 
+    // Start the animation loop.
     this.model.animate();
   }
 
@@ -56,7 +67,7 @@ export default class ThreeCanvasView extends BaseView {
         } );
         var simpleShape = shapes[ j ];
         var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-          amount: amount * (Math.random() * 10),
+          amount: amount ,
           bevelEnabled: false
         } );
 
@@ -69,8 +80,6 @@ export default class ThreeCanvasView extends BaseView {
         group.add( mesh );
       }
     }
-    var size = new THREE.Box3().setFromObject( group ).getSize();
-    group.position.setX(size.x / 2);
 
     return group;
   }

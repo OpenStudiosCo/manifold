@@ -15,6 +15,10 @@ export default class ThreeCanvasModel extends BaseModel {
       height: 400,
       camera: null,
       controls: null,
+      mesh: null,
+      raycaster: null,
+      highlighter: null,
+      mouse: null,
       extrudeAmount: 40
     };
     
@@ -28,6 +32,8 @@ export default class ThreeCanvasModel extends BaseModel {
     this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
     this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
+    this.attributes.raycaster = new THREE.Raycaster();
+    this.attributes.mouse = new THREE.Vector2();
   }
 
   // Scene helpers.
@@ -59,8 +65,11 @@ export default class ThreeCanvasModel extends BaseModel {
   clearScene() {
     cancelAnimationFrame( this.attributes.animationId );
     this.attributes.scene.children = [];
+    this.attributes.mesh = null;
     this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-    this.addHelpers();
+    if (app && app.models.controls.three.attributes['Show Helpers']) {
+      this.addHelpers();
+    }
   }
 
   animate() {
@@ -71,5 +80,17 @@ export default class ThreeCanvasModel extends BaseModel {
   render() {
     this.attributes.controls.update();
     this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
+
+    this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+    
+    var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
+    if ( intersects.length > 0 ) {
+      console.log(intersects);
+      if (this.attributes.highlighter) {
+        this.attributes.scene.remove( this.attributes.highlighter );
+      }
+      this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
+      this.attributes.scene.add( this.attributes.highlighter );
+    }
   }
 }

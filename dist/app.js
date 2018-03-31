@@ -116,6 +116,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
       this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
       this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
+      this.attributes.raycaster = new THREE.Raycaster();
+      this.attributes.mouse = new THREE.Vector2();
     }
 
     if ( BaseModel$$1 ) ThreeCanvasModel.__proto__ = BaseModel$$1;
@@ -132,6 +134,10 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         height: 400,
         camera: null,
         controls: null,
+        mesh: null,
+        raycaster: null,
+        highlighter: null,
+        mouse: null,
         extrudeAmount: 40
       };
       
@@ -166,8 +172,11 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
     ThreeCanvasModel.prototype.clearScene = function clearScene () {
       cancelAnimationFrame( this.attributes.animationId );
       this.attributes.scene.children = [];
+      this.attributes.mesh = null;
       this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-      this.addHelpers();
+      if (app && app.models.controls.three.attributes['Show Helpers']) {
+        this.addHelpers();
+      }
     };
 
     ThreeCanvasModel.prototype.animate = function animate () {
@@ -178,6 +187,18 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
     ThreeCanvasModel.prototype.render = function render () {
       this.attributes.controls.update();
       this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
+
+      this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+      
+      var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
+      if ( intersects.length > 0 ) {
+        console.log(intersects);
+        if (this.attributes.highlighter) {
+          this.attributes.scene.remove( this.attributes.highlighter );
+        }
+        this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
+        this.attributes.scene.add( this.attributes.highlighter );
+      }
     };
 
     return ThreeCanvasModel;
@@ -613,6 +634,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         el: '#model-preview',
         model: options.model
       });
+
+      document.addEventListener( 'mousemove', function(event){
+        this.model.attributes.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;      this.model.attributes.mouse.y =  - ( event.clientY / window.innerHeight ) * 2 + 1;    }.bind(this), false );
     }
 
     if ( BaseView$$1 ) ThreeCanvasView.__proto__ = BaseView$$1;
@@ -635,8 +659,14 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         amount: this.model.attributes.extrudeAmount,
         center: { x: this.model.attributes.width, y: this.model.attributes.height /2 }
       });
-      this.model.attributes.scene.add( svg );
+      var box = new THREE.Box3().setFromObject( svg );
+      var boundingBoxSize = box.max.sub( box.min );
+      var width = boundingBoxSize.x;
+      svg.position.setX(width / 2);
+      this.model.attributes.mesh = svg;
+      this.model.attributes.scene.add( this.model.attributes.mesh );
 
+      // Start the animation loop.
       this.model.animate();
     };
 
@@ -659,7 +689,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
           } );
           var simpleShape = shapes[ j ];
           var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            amount: amount * (Math.random() * 10),
+            amount: amount ,
             bevelEnabled: false
           } );
 
@@ -672,8 +702,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
           group.add( mesh );
         }
       }
-      var size = new THREE.Box3().setFromObject( group ).getSize();
-      group.position.setX(size.x / 2);
 
       return group;
     };
