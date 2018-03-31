@@ -392,26 +392,20 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,Potrace,fabr
       this.attributes.canvas = new fabric.Canvas('main-canvas');
       this.updateCanvasSize();
 
-      // TODO: Move this into app view logic.
-        // Create an SVG from data and settings, draw to screen.
-      Potrace.clear();
-      Potrace.loadImageFromId('original-image');
-      Potrace.process(function(){
-        var svg = Potrace.getSVG(1);
-        fabric.loadSVGFromString(svg, function(objects, options){
-          var obj = fabric.util.groupSVGElements(objects, options);
-          console.log(obj.toSVG());
-          this.addToCenter(obj);         
-        }.bind(this));
-      }.bind(this));
-
-    
+      this.createSVG($('#original-image').attr('src'));
 
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
       this.setupDefaultMenu();
 
-      $(window).on('resize', function(){
+      $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
+        var src = $(this).find('img').attr('src');
+        app.models.mainCanvas.createSVG(src);
+        $('.ui.special.modal')
+          .modal('hide');
+      });
+
+      $(window).on('resize', function() {
         this.updateCanvasSize();
       }.bind(this));
     }
@@ -427,6 +421,37 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,Potrace,fabr
       };
       
       return attributes;
+    };
+
+    MainCanvasModel.prototype.createSVG = function createSVG (src) {
+      // Create an SVG from data and settings, draw to screen.
+      Potrace.clear();
+      Potrace.loadImageFromSrc(src);
+      Potrace.process(function() {
+        var svg = Potrace.getSVG(1);
+        var randomColor = function () { return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6); };
+        var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+        // normalize should be used to get back absolute segments
+        var pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce(function (acc, seg) {
+          var pathData = seg.type === 'M' ? [] : acc.pop();
+          seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
+          pathData.push(seg);
+          acc.push(pathData);
+          return acc
+        }, []);
+
+        pathsDatas.forEach(function(d) {
+          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setPathData(d);
+          path.setAttribute('fill', randomColor());
+          newSVG.appendChild(path);
+        });
+        fabric.loadSVGFromString(newSVG.outerHTML, function(objects, options){
+          objects.forEach(function(object) {
+            this.addToCenter(object);
+          }.bind(this));
+        }.bind(this));
+      }.bind(this));
     };
 
     MainCanvasModel.prototype.setupDefaultMenu = function setupDefaultMenu () {
@@ -533,14 +558,19 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,Potrace,fabr
       this.attributes.canvas.setHeight( height );
       this.attributes.canvas.setWidth( width );
     };
-
     MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
       var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
       if ($("#toolbar").sidebar('is visible')) {
         canvasWidth -= $('#toolbar').width();  
       }
       var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
+      if (object.left > 0 || object.top > 0) {
+        object.set({left: (canvasWidth / 3.5) + object.left, top: (canvasHeight / 3.5) + object.top});
+      }
+      else {
+        object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
+      }
+      
       this.attributes.canvas.add(object);
     };
 
