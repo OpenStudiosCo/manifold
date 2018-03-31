@@ -8,14 +8,7 @@ block append title
 
 block append page
   #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar.icon.menu
-    .item#btnAddImage
-      i.large.icons
-        i.image.icon
-        i.corner.plus.icon.green
-    .item#btnAddShape
-      i.large.icons
-        i.chart.pie.icon
-        i.corner.plus.icon.green
+    include /src/templates/toolbar/default.pug
   #container.pusher
     #logo.ui.fluid.image.small(onclick='app.models.mainCanvas.toggleToolbar();')
       a(href='#', title='Toggle Toolbar')
@@ -28,7 +21,7 @@ block append page
         .ui.four.stackable.cards
           .card
             .image
-              img.ui.fluid.small(src='/assets/shapes.png')
+              img#original-image.ui.fluid.small(src='/assets/shapes.png')
           .card
             .image
               img.ui.fluid.image.small(src='/assets/demo.jpg')
