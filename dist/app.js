@@ -1,9 +1,10 @@
-var ManifoldApplication = (function (Backbone,ImageTracer,$,_,fabric,THREE,dat,Potrace) {
+var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,fabric,THREE,dat,Potrace) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  TWEEN = TWEEN && TWEEN.hasOwnProperty('default') ? TWEEN['default'] : TWEEN;
   _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
@@ -123,11 +124,31 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,_,fabric,THREE,dat,P
       }.bind(this));
 
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
-      $('#btnAddImage').popup({
-        title: 'Add Image',
-        variation: 'inverted',
-        position: 'right center'
-      });
+      $('#btnAddImage')
+        .popup({
+          title: 'Add Image',
+          position: 'right center'
+        })
+        .on('click', function(){
+          $('.ui.special.modal')
+            .modal({
+              centered: false
+            })
+            .modal('show');
+        });
+
+      $('#btnAddShape')
+        .popup({
+          title: 'Add Shape',
+          position: 'right center'
+        })
+        .on('click', function(){
+          
+        });
+
+      $(window).on('resize', function(){
+        this.updateCanvasSize();
+      }.bind(this));
     }
 
     if ( BaseModel$$1 ) MainCanvasModel.__proto__ = BaseModel$$1;
@@ -176,7 +197,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,_,fabric,THREE,dat,P
 
     MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
       var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
-      canvasWidth -= $('#toolbar').width();
+      if ($("#toolbar").sidebar('is visible')) {
+        canvasWidth -= $('#toolbar').width();  
+      }
       var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
       object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
       this.attributes.canvas.add(object);
@@ -891,5 +914,5 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,_,fabric,THREE,dat,P
 
   return App;
 
-}(Backbone,ImageTracer,jQuery,_,fabric,THREE,dat,Potrace));
+}(Backbone,ImageTracer,jQuery,TWEEN,_,fabric,THREE,dat,Potrace));
 //# sourceMappingURL=app.js.map

@@ -7,12 +7,36 @@ block append title
   | Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-  #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar
-    .ui.vertical.icon.buttons
-      button#btnAddImage.ui.icon.button.black.mini
+  #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar.icon.menu
+    .item#btnAddImage
+      i.large.icons
         i.image.icon
+        i.corner.plus.icon.green
+    .item#btnAddShape
+      i.large.icons
+        i.chart.pie.icon
+        i.corner.plus.icon.green
   #container.pusher
     #logo.ui.fluid.image.small(onclick='app.models.mainCanvas.toggleToolbar();')
       a(href='#', title='Toggle Toolbar')
-        img(src='/assets/manifold.svg', style='filter: invert(75%);')
+        img(src='/assets/manifold.svg')
     canvas#main-canvas
+  .ui.dimmer.modals.top.aligned.page.transition.hidden
+    .ui.fullscreen.special.modal.transition.hidden
+      .header Select an image
+      .content
+        .ui.four.stackable.cards
+          .card
+            .image
+              img.ui.fluid.small(src='/assets/shapes.png')
+          .card
+            .image
+              img.ui.fluid.image.small(src='/assets/demo.jpg')
+          .card
+            .image
+              img.ui.fluid.image.small(src='/assets/demo2.jpg')
+          .card
+            .content
+            .ui.bottom.attached.button
+              i.add.icon
+              | Upload

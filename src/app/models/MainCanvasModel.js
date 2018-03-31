@@ -1,7 +1,9 @@
 import $ from 'jQuery';
+import TWEEN from 'TWEEN';
 import _ from '_';
 import BaseModel from './BaseModel.js';
 import fabric from 'fabric';
+
 
 /**
   * Raster To SVG model.
@@ -29,11 +31,31 @@ export default class MainCanvasModel extends BaseModel {
     }.bind(this));
 
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
-    $('#btnAddImage').popup({
-      title: 'Add Image',
-      variation: 'inverted',
-      position: 'right center'
-    });
+    $('#btnAddImage')
+      .popup({
+        title: 'Add Image',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $('.ui.special.modal')
+          .modal({
+            centered: false
+          })
+          .modal('show');
+      });
+
+    $('#btnAddShape')
+      .popup({
+        title: 'Add Shape',
+        position: 'right center'
+      })
+      .on('click', function(){
+        
+      });
+
+    $(window).on('resize', function(){
+      this.updateCanvasSize();
+    }.bind(this));
   }
 
   toggleToolbar() {
@@ -69,7 +91,9 @@ export default class MainCanvasModel extends BaseModel {
 
   addToCenter(object) {
     var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
-    canvasWidth -= $('#toolbar').width();
+    if ($("#toolbar").sidebar('is visible')) {
+      canvasWidth -= $('#toolbar').width();  
+    }
     var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
     this.attributes.canvas.add(object);

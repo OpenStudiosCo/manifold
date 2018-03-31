@@ -10,23 +10,45 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css" rel="stylesheet">
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical inverted visible sidebar" id="toolbar">
-      <div class="ui vertical icon buttons">
-        <button class="ui icon button black mini" id="btnAddImage"><i class="image icon"></i></button>
-      </div>
+    <div class="ui very thin left vertical inverted visible sidebar icon menu" id="toolbar">
+      <div class="item" id="btnAddImage"><i class="large icons"><i class="image icon"></i><i class="corner plus icon green"></i></i></div>
+      <div class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon"></i><i class="corner plus icon green"></i></i></div>
     </div>
     <div class="pusher" id="container">
-      <div class="ui fluid image small" id="logo" onclick="app.models.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg" style="filter: invert(75%);"></a></div>
+      <div class="ui fluid image small" id="logo" onclick="app.models.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
       <canvas id="main-canvas"></canvas>
+    </div>
+    <div class="ui dimmer modals top aligned page transition hidden">
+      <div class="ui fullscreen special modal transition hidden">
+        <div class="header">Select an image</div>
+        <div class="content">
+          <div class="ui four stackable cards">
+            <div class="card">
+              <div class="image"><img class="ui fluid small" src="/assets/shapes.png"></div>
+            </div>
+            <div class="card">
+              <div class="image"><img class="ui fluid image small" src="/assets/demo.jpg"></div>
+            </div>
+            <div class="card">
+              <div class="image"><img class="ui fluid image small" src="/assets/demo2.jpg"></div>
+            </div>
+            <div class="card">
+              <div class="content"></div>
+              <div class="ui bottom attached button"><i class="add icon"></i>Upload</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>
+  <script src="./vendor/Tween.js"></script>
   <script src="./vendor/three.91.js"></script>
-  <script src="./vendor/semantic.2.3.0.js"></script>
+  <script src="./vendor/semantic.2.3.1.js"></script>
   <script src="./vendor/dat.gui.min.js"></script>
   <script src="./vendor/underscore.js"></script>
   <script src="./vendor/backbone.js"></script>

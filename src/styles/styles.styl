@@ -8,16 +8,24 @@
     color: #000000
 
 #toolbar
-  padding: .75em
+  .item
+    cursor: pointer
 
 #container
-  positition: relative
+  position: relative
 
 #logo
   position: absolute
   top: 0
   left: 0
   z-index: 1
+
+  img
+    filter: invert(50%)
+    transition: filter 0.25s;
+    &:hover
+      filter: invert(0%) drop-shadow(16px 16px 20px black)
+
 
 #main-canvas
   position: absolute
