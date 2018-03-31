@@ -192,7 +192,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
       
       var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
       if ( intersects.length > 0 ) {
-        console.log(intersects);
         if (this.attributes.highlighter) {
           this.attributes.scene.remove( this.attributes.highlighter );
         }
@@ -635,8 +634,10 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         model: options.model
       });
 
-      document.addEventListener( 'mousemove', function(event){
-        this.model.attributes.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;      this.model.attributes.mouse.y =  - ( event.clientY / window.innerHeight ) * 2 + 1;    }.bind(this), false );
+      document.getElementById('model-preview').addEventListener( 'mousemove', function(event){
+        this.model.attributes.mouse.x = ( ( event.offsetX - this.model.attributes.renderer.domElement.offsetLeft ) / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
+        this.model.attributes.mouse.y = - ( ( event.offsetY - this.model.attributes.renderer.domElement.offsetTop ) / this.model.attributes.renderer.domElement.clientHeight ) * 2 + 1;
+      }.bind(this), false );
     }
 
     if ( BaseView$$1 ) ThreeCanvasView.__proto__ = BaseView$$1;

@@ -85,7 +85,6 @@ export default class ThreeCanvasModel extends BaseModel {
     
     var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
     if ( intersects.length > 0 ) {
-      console.log(intersects);
       if (this.attributes.highlighter) {
         this.attributes.scene.remove( this.attributes.highlighter );
       }
