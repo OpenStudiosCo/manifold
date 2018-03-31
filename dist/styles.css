@@ -6,11 +6,17 @@
 .dg.ac option {
   color: #000;
 }
+#toolbar {
+  padding: 0.75em;
+}
+#container {
+  positition: relative;
+}
 #logo {
   position: absolute;
-  z-index: 1;
   top: 0;
   left: 0;
+  z-index: 1;
 }
 #main-canvas {
   position: absolute;

@@ -1,13 +1,18 @@
 extends /src/templates/layout.pug
 
 block append scripts
-	script(src='./dist/app.js')
+  script(src='./dist/app.js')
 
 block append title
-	| Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
+  | Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-	#logo.ui.fluid.image.small
-		a(href='/', title='Manifold')
-			img(src='/assets/manifold.svg', style='filter: invert(75%);')
-	canvas#main-canvas
+  #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar
+    .ui.vertical.icon.buttons
+      button#btnAddImage.ui.icon.button.black.mini
+        i.image.icon
+  #container.pusher
+    #logo.ui.fluid.image.small(onclick='app.models.mainCanvas.toggleToolbar();')
+      a(href='#', title='Toggle Toolbar')
+        img(src='/assets/manifold.svg', style='filter: invert(75%);')
+    canvas#main-canvas

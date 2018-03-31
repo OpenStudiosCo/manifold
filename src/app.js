@@ -19,13 +19,13 @@ import AppView from './app/views/AppView.js';
 export default class App {
   constructor() {
     this.models = {
-      controls: {
-        imagetracer: new ImageTracerControlsModel(),
-        potrace: new PotraceControlsModel(),
-        three: new ThreeControlsModel()
-      },
-      mainCanvas: new MainCanvasModel(),
-      threeCanvas: new ThreeCanvasModel()
+      // controls: {
+      //   imagetracer: new ImageTracerControlsModel(),
+      //   potrace: new PotraceControlsModel(),
+      //   three: new ThreeControlsModel()
+      // },
+      mainCanvas: new MainCanvasModel()
+      //threeCanvas: new ThreeCanvasModel()
     };
     // this.views = {
     //   controls: {

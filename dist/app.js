@@ -1,13 +1,14 @@
-var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Potrace,$) {
+var ManifoldApplication = (function (Backbone,ImageTracer,$,_,fabric,THREE,dat,Potrace) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
+  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
-  dat$1 = dat$1 && dat$1.hasOwnProperty('default') ? dat$1['default'] : dat$1;
+  dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
   /**
     * Base model.
@@ -114,22 +115,19 @@ var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Pot
       BaseModel$$1.call(this);
       this.attributes.canvas = new fabric.Canvas('main-canvas');
       this.updateCanvasSize();
-      var rect = new fabric.Rect({
-          top : 100,
-          left : 100,
-          width : 60,
-          height : 70,
-          fill : 'red'
-      });
 
+      // TODO: Move this into app view logic.
       fabric.Image.fromURL('/assets/shapes.png', function(oImg) {
         // scale image down, and flip it, before adding it onto canvas
-        oImg
-          .set({left: oImg.width, top: oImg.height});
-        this.attributes.canvas.add(oImg);
+        this.addToCenter(oImg);
       }.bind(this));
 
-      this.attributes.canvas.add(rect);
+      this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
+      $('#btnAddImage').popup({
+        title: 'Add Image',
+        variation: 'inverted',
+        position: 'right center'
+      });
     }
 
     if ( BaseModel$$1 ) MainCanvasModel.__proto__ = BaseModel$$1;
@@ -138,17 +136,50 @@ var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Pot
 
     MainCanvasModel.prototype.defaults = function defaults () {
       var attributes = {
-        canvas: null
+        canvas: null,
+        transitioning: false
       };
       
       return attributes;
     };
 
+    MainCanvasModel.prototype.toggleToolbar = function toggleToolbar () {
+      if (!this.attributes.transitioning) {
+        $("#toolbar")
+          .sidebar({
+            dimPage:false,
+            onChange: function() {
+              app.models.mainCanvas.attributes.transitioning = true;
+            },
+            onHide : function() {
+              app.models.mainCanvas.attributes.transitioning = false;
+            },
+            onShow : function() {
+              app.models.mainCanvas.attributes.transitioning = false;
+            }
+          })
+          .sidebar("toggle");
+        this.updateCanvasSize();
+      }
+    };
+
     MainCanvasModel.prototype.updateCanvasSize = function updateCanvasSize () {
+      // TODO: Move this into app view logic.
       var width  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
+      if ($("#toolbar").sidebar('is visible')) {
+        width -= $('#toolbar').width();  
+      }
       var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
       this.attributes.canvas.setHeight( height );
       this.attributes.canvas.setWidth( width );
+    };
+
+    MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
+      var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
+      canvasWidth -= $('#toolbar').width();
+      var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
+      this.attributes.canvas.add(object);
     };
 
     return MainCanvasModel;
@@ -528,7 +559,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Pot
     * Base Controls view.
     */
 
-  var gui = new dat.GUI();
+  //var gui = new dat.GUI();
 
   var BaseControlsView = (function (BaseView$$1) {
     function BaseControlsView(options) {
@@ -834,13 +865,13 @@ var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Pot
    */
   var App = function App() {
     this.models = {
-      controls: {
-        imagetracer: new ImageTracerControlsModel(),
-        potrace: new PotraceControlsModel(),
-        three: new ThreeControlsModel()
-      },
-      mainCanvas: new MainCanvasModel(),
-      threeCanvas: new ThreeCanvasModel()
+      // controls: {
+      // imagetracer: new ImageTracerControlsModel(),
+      // potrace: new PotraceControlsModel(),
+      // three: new ThreeControlsModel()
+      // },
+      mainCanvas: new MainCanvasModel()
+      //threeCanvas: new ThreeCanvasModel()
     };
     // this.views = {
     // controls: {
@@ -860,5 +891,5 @@ var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Pot
 
   return App;
 
-}(Backbone,ImageTracer,fabric,THREE,dat,Potrace,jQuery));
+}(Backbone,ImageTracer,jQuery,_,fabric,THREE,dat,Potrace));
 //# sourceMappingURL=app.js.map

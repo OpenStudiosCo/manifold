@@ -14,8 +14,13 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div id="container">
-      <div class="ui fluid image small" id="logo"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(75%);"></a></div>
+    <div class="ui very thin left vertical inverted visible sidebar" id="toolbar">
+      <div class="ui vertical icon buttons">
+        <button class="ui icon button black mini" id="btnAddImage"><i class="image icon"></i></button>
+      </div>
+    </div>
+    <div class="pusher" id="container">
+      <div class="ui fluid image small" id="logo" onclick="app.models.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg" style="filter: invert(75%);"></a></div>
       <canvas id="main-canvas"></canvas>
     </div>
   </body>
