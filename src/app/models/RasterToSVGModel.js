@@ -15,7 +15,8 @@ export default class RasterToSVGModel extends BaseModel {
     return attributes;
   }
 
-  constructor() {
+  constructor(options) {
+    super(options);
     this.attributes.canvas = document.createElement('canvas');
   }
 }

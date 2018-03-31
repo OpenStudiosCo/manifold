@@ -15,7 +15,6 @@ export default class ImageTracerControlsView extends BaseControlsView {
     });
 
     this.generateControls('ImageTracer Controls');
-    this.createSVG();
   }
 
   // Create an SVG from data and settings, draw to screen.

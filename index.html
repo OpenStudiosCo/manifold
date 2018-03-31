@@ -15,37 +15,8 @@
   </head>
   <body>
     <div id="container">
-      <div class="ui fluid image small"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(75%);"></a></div>
-      <div class="ui main container">
-        <div class="ui stackable two column grid">
-          <div class="column">
-            <h3>Original Bitmap</h3>
-            <div class="ui fluid image"><img id="original-image" src="/assets/shapes.png"></div>
-          </div>
-          <div class="column">
-            <h3>imagetracerjs Result</h3>
-            <div class="ui fluid image" id="imagetracer-preview">
-              <div class="ui active centered inline loader"></div>
-            </div>
-          </div>
-        </div>
-        <div class="ui stackable two column grid">
-          <div class="column">
-            <h3>Potrace Result</h3>
-            <div id="potrace-preview">
-              <div class="ui active centered inline loader"></div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="row">
-              <button class="fluid ui button" id="btnRender"><i class="icon clone outline"></i>Make it 3D!</button>
-            </div>
-            <div class="row">
-              <div id="model-preview"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="ui fluid image small" id="logo"><a href="/" title="Manifold"><img src="/assets/manifold.svg" style="filter: invert(75%);"></a></div>
+      <canvas id="main-canvas"></canvas>
     </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>
@@ -54,6 +25,7 @@
   <script src="./vendor/dat.gui.min.js"></script>
   <script src="./vendor/underscore.js"></script>
   <script src="./vendor/backbone.js"></script>
+  <script src="./vendor/fabric.js"></script>
   <script src="./vendor/OrbitControls.js"></script>
   <script src="./vendor/SVGLoader.js"></script>
   <script src="./vendor/SVGRenderer.js"></script>

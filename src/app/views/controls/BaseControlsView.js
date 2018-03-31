@@ -2,10 +2,19 @@ import BaseView from '../BaseView.js';
 import loader from '../../../templates/loader.pug';
 
 /**
-  * Base view.
+  * Base Controls view.
   */
 
+var gui = new dat.GUI();
+
 export default class BaseControlsView extends BaseView {
+  constructor(options) {
+    super(options);
+    this.gui = gui;
+
+    return this;
+  }
+
   generateControls(title) {
     var guiFolder = this.gui.addFolder(title);
     for (var controlName in this.model.attributes) {

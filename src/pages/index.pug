@@ -7,28 +7,7 @@ block append title
 	| Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-	.ui.fluid.image.small
+	#logo.ui.fluid.image.small
 		a(href='/', title='Manifold')
 			img(src='/assets/manifold.svg', style='filter: invert(75%);')
-	.ui.main.container
-		.ui.stackable.two.column.grid
-			.column
-				h3 Original Bitmap
-				.ui.fluid.image
-					img#original-image(src='/assets/shapes.png')
-			.column
-				h3 imagetracerjs Result
-				#imagetracer-preview.ui.fluid.image
-					.ui.active.centered.inline.loader
-		.ui.stackable.two.column.grid
-			.column
-				h3 Potrace Result
-				#potrace-preview
-					.ui.active.centered.inline.loader
-			.column
-				.row
-					button.fluid.ui.button#btnRender
-						i.icon.clone.outline
-						| Make it 3D!
-				.row
-					#model-preview
+	canvas#main-canvas

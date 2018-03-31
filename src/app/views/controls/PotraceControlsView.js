@@ -14,7 +14,6 @@ export default class PotraceControlsView extends BaseControlsView {
       model: options.model
     });
     this.generateControls('Potrace Controls');
-    this.createSVG();
   }
 
   // Create an SVG from data and settings, draw to screen.

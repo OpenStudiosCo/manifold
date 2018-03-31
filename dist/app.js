@@ -1,10 +1,11 @@
-var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
+var ManifoldApplication = (function (Backbone,ImageTracer,fabric,THREE,dat$1,Potrace,$) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
+  fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
-  dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
+  dat$1 = dat$1 && dat$1.hasOwnProperty('default') ? dat$1['default'] : dat$1;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
@@ -102,6 +103,55 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
     };
 
     return ThreeControlsModel;
+  }(BaseModel));
+
+  /**
+    * Raster To SVG model.
+    */
+
+  var MainCanvasModel = (function (BaseModel$$1) {
+    function MainCanvasModel() {
+      BaseModel$$1.call(this);
+      this.attributes.canvas = new fabric.Canvas('main-canvas');
+      this.updateCanvasSize();
+      var rect = new fabric.Rect({
+          top : 100,
+          left : 100,
+          width : 60,
+          height : 70,
+          fill : 'red'
+      });
+
+      fabric.Image.fromURL('/assets/shapes.png', function(oImg) {
+        // scale image down, and flip it, before adding it onto canvas
+        oImg
+          .set({left: oImg.width, top: oImg.height});
+        this.attributes.canvas.add(oImg);
+      }.bind(this));
+
+      this.attributes.canvas.add(rect);
+    }
+
+    if ( BaseModel$$1 ) MainCanvasModel.__proto__ = BaseModel$$1;
+    MainCanvasModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    MainCanvasModel.prototype.constructor = MainCanvasModel;
+
+    MainCanvasModel.prototype.defaults = function defaults () {
+      var attributes = {
+        canvas: null
+      };
+      
+      return attributes;
+    };
+
+    MainCanvasModel.prototype.updateCanvasSize = function updateCanvasSize () {
+      var width  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
+      var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      this.attributes.canvas.setHeight( height );
+      this.attributes.canvas.setWidth( width );
+    };
+
+    return MainCanvasModel;
   }(BaseModel));
 
   /**
@@ -207,19 +257,15 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
     * Base view.
     */
 
-  var gui = new dat.GUI();
 
   var BaseView = (function (superclass) {
-    function BaseView(options) {
-      superclass.call(this, options);
-      this.gui = gui;
-
-      return this;
-  	}
-
-    if ( superclass ) BaseView.__proto__ = superclass;
+    function BaseView () {
+      superclass.apply(this, arguments);
+    }if ( superclass ) BaseView.__proto__ = superclass;
     BaseView.prototype = Object.create( superclass && superclass.prototype );
     BaseView.prototype.constructor = BaseView;
+
+    
 
     return BaseView;
   }(Backbone.View));
@@ -479,12 +525,17 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
   pug_html = pug_html + "\u003Cdiv class=\"ui active centered inline loader\"\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
-    * Base view.
+    * Base Controls view.
     */
 
+  var gui = new dat.GUI();
+
   var BaseControlsView = (function (BaseView$$1) {
-    function BaseControlsView () {
-      BaseView$$1.apply(this, arguments);
+    function BaseControlsView(options) {
+      BaseView$$1.call(this, options);
+      this.gui = gui;
+
+      return this;
     }
 
     if ( BaseView$$1 ) BaseControlsView.__proto__ = BaseView$$1;
@@ -531,7 +582,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
       });
 
       this.generateControls('ImageTracer Controls');
-      this.createSVG();
     }
 
     if ( BaseControlsView$$1 ) ImageTracerControlsView.__proto__ = BaseControlsView$$1;
@@ -577,7 +627,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         model: options.model
       });
       this.generateControls('Potrace Controls');
-      this.createSVG();
     }
 
     if ( BaseControlsView$$1 ) PotraceControlsView.__proto__ = BaseControlsView$$1;
@@ -635,8 +684,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
       });
 
       document.getElementById('model-preview').addEventListener( 'mousemove', function(event) {
-        this.model.attributes.mouse.x = ( ( event.offsetX - this.model.attributes.renderer.domElement.offsetLeft ) / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
-        this.model.attributes.mouse.y = - ( ( event.offsetY - this.model.attributes.renderer.domElement.offsetTop ) / this.model.attributes.renderer.domElement.clientHeight ) * 2 + 1;
+        this.model.attributes.mouse.x = ( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
+        this.model.attributes.mouse.y = - ( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 + 1;
       }.bind(this), false );
     }
 
@@ -790,26 +839,26 @@ var ManifoldApplication = (function (Backbone,ImageTracer,THREE,dat,Potrace,$) {
         potrace: new PotraceControlsModel(),
         three: new ThreeControlsModel()
       },
+      mainCanvas: new MainCanvasModel(),
       threeCanvas: new ThreeCanvasModel()
     };
-    this.views = {
-      controls: {
-        imagetracer: new ImageTracerControlsView({ model: this.models.controls.imagetracer }),
-        potrace: new PotraceControlsView({ model: this.models.controls.potrace }),
-        three: new ThreeControlsView({ model: this.models.controls.three })
-      },
-      threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })
-    };
+    // this.views = {
+    // controls: {
+    //   imagetracer: new ImageTracerControlsView({ model: this.models.controls.imagetracer }),
+    //   potrace: new PotraceControlsView({ model: this.models.controls.potrace }),
+    //   three: new ThreeControlsView({ model: this.models.controls.three })
+    // },
+    // threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })
+    // };
   };
 
   // Startup using jQuery.ready()
   $(function () {
     var app = new App();
-    app.views.ui = new AppView(app);
     window.app = app;
   });
 
   return App;
 
-}(Backbone,ImageTracer,THREE,dat,Potrace,jQuery));
+}(Backbone,ImageTracer,fabric,THREE,dat,Potrace,jQuery));
 //# sourceMappingURL=app.js.map
