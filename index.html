@@ -14,13 +14,14 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical inverted visible sidebar icon menu" id="toolbar">
+    <div class="ui very thin left vertical secondary visible sidebar icon menu" id="toolbar">
       <div class="item" id="btnAddImage"><i class="large icons"><i class="image icon"></i><i class="corner plus icon green"></i></i></div>
       <div class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon"></i><i class="corner plus icon green"></i></i></div>
     </div>
     <div class="pusher" id="container">
       <div class="ui fluid image small" id="logo" onclick="app.views.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
       <canvas id="main-canvas"></canvas>
+      <div class="ui mini menu floating labeled icon" id="active-object-context"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a></div>
     </div>
     <div class="ui dimmer modals top aligned page transition hidden">
       <div class="ui fullscreen special modal transition hidden">

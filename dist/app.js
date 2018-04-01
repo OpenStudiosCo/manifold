@@ -121,7 +121,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
         var zoom = this.attributes.canvas.getZoom();
         zoom = zoom + delta/200;
         if (zoom > 20) { zoom = 20; }
-        if (zoom < 0.01) { zoom = 0.001; }
+        if (zoom < 0.01) { zoom = 0.01; }
         this.attributes.canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
@@ -896,7 +896,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
             }
           })
           .sidebar("toggle");
-        this.updateCanvasSize();
+        this.model.updateCanvasSize();
       }
     };
 

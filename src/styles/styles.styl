@@ -7,7 +7,15 @@
   option
     color: #000000
 
+.floating
+  position: absolute
+
+#active-object-context
+  top: 100px
+  left: 100px
+
 #toolbar
+  box-shadow: inset -10px 0px 50px 0px #222
   .item
     cursor: pointer
 
@@ -22,9 +30,9 @@
 
   img
     filter: invert(50%)
-    transition: filter 0.25s;
+    transition: filter 0.25s
     &:hover
-      filter: invert(0%) drop-shadow(16px 16px 20px black)
+      filter: invert(0%) drop-shadow(5px 5px 5px black)
 
 
 #main-canvas

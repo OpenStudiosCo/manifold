@@ -7,13 +7,14 @@ block append title
   | Manifold | Made in Kettlefish (https://github.com/paulbrzeski/kettlefish)
 
 block append page
-  #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar.icon.menu
+  #toolbar.ui.very.thin.left.vertical.secondary.visible.sidebar.icon.menu
     include /src/templates/toolbar/default.pug
   #container.pusher
     #logo.ui.fluid.image.small(onclick='app.views.mainCanvas.toggleToolbar();')
       a(href='#', title='Toggle Toolbar')
         img(src='/assets/manifold.svg')
     canvas#main-canvas
+    include /src/templates/toolbar/active-object-context.pug
   .ui.dimmer.modals.top.aligned.page.transition.hidden
     .ui.fullscreen.special.modal.transition.hidden
       .header Select an image

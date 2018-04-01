@@ -127,7 +127,7 @@ export default class MainCanvasView extends BaseView {
           }
         })
         .sidebar("toggle");
-      this.updateCanvasSize();
+      this.model.updateCanvasSize();
     }
   }
 }
