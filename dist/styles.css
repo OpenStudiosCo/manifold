@@ -7,7 +7,13 @@
   color: #000;
 }
 .floating {
+  display: none;
   position: absolute;
+}
+@media screen and (min-width: 600px) {
+  .floating {
+    display: block;
+  }
 }
 #active-object-context {
   top: 100px;
@@ -18,7 +24,7 @@
   left: 50px;
 }
 #layers-tool {
-  top: 450px;
+  top: 500px;
   left: 50px;
 }
 #toolbar {
