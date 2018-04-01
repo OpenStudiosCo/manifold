@@ -10,7 +10,7 @@ block append page
   #toolbar.ui.very.thin.left.vertical.inverted.visible.sidebar.icon.menu
     include /src/templates/toolbar/default.pug
   #container.pusher
-    #logo.ui.fluid.image.small(onclick='app.models.mainCanvas.toggleToolbar();')
+    #logo.ui.fluid.image.small(onclick='app.views.mainCanvas.toggleToolbar();')
       a(href='#', title='Toggle Toolbar')
         img(src='/assets/manifold.svg')
     canvas#main-canvas
