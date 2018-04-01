@@ -1,12 +1,7 @@
 import $ from 'jQuery';
-import TWEEN from 'TWEEN';
-import _ from '_';
-import defaultMenu from '../../templates/toolbar/default.pug';
-import addShapes from '../../templates/toolbar/add-shapes.pug';
+import fabric from 'fabric';
 import Potrace from 'Potrace';
 import BaseModel from './BaseModel.js';
-import fabric from 'fabric';
-
 
 /**
   * Raster To SVG model.
@@ -25,24 +20,41 @@ export default class MainCanvasModel extends BaseModel {
   constructor() {
     super();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
-    this.updateCanvasSize();
 
-    this.createSVG($('#original-image').attr('src'));
-
-    this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
-
-    this.setupDefaultMenu();
-
-    $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
-      var src = $(this).find('img').attr('src');
-      app.models.mainCanvas.createSVG(src);
-      $('.ui.special.modal')
-        .modal('hide');
-    });
-
-    $(window).on('resize', function() {
-      this.updateCanvasSize();
+    // Setup pan and zoom.
+    this.attributes.canvas.on('mouse:wheel', function(opt) {
+      var delta = opt.e.deltaY;
+      var pointer = this.attributes.canvas.getPointer(opt.e);
+      var zoom = this.attributes.canvas.getZoom();
+      zoom = zoom + delta/200;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.01) zoom = 0.001;
+      this.attributes.canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
     }.bind(this));
+
+    // Credit - https://stackoverflow.com/a/24238960
+    this.attributes.canvas.on('object:moving', function (e) {
+      var obj = e.target;
+       // if object is too big ignore
+      if(obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
+          return;
+      }        
+      obj.setCoords();        
+      // top-left  corner
+      if(obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
+          obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+          obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+      }
+      // bot-right corner
+      if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+          obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+          obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+      }
+    });
+        
+    this.updateCanvasSize();
   }
 
   createSVG(src) {
@@ -83,100 +95,6 @@ export default class MainCanvasModel extends BaseModel {
         this.attributes.canvas.renderAll();
       }.bind(this));
     }.bind(this));
-  }
-
-  setupDefaultMenu() {
-    $('#btnAddImage')
-      .popup({
-        title: 'Add Image',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('.ui.special.modal')
-          .modal({
-            centered: false
-          })
-          .modal('show');
-      });
-
-    $('#btnAddShape')
-      .popup({
-        title: 'Add Shape',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#toolbar').html(addShapes());
-        this.setupAddShapesMenu();
-      }.bind(this));
-  }
-
-  setupAddShapesMenu() {
-    $('#btnBack')
-      .popup({
-        title: 'Back',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#toolbar').html(defaultMenu());
-        this.setupDefaultMenu();
-      }.bind(this));
-    $('#btnAddCircle')
-      .popup({
-        title: 'Circle',
-        position: 'right center'
-      })
-      .on('click', function(){
-        var circle = new fabric.Circle({
-          radius: 100, fill: 'green', left: 100, top: 100
-        });
-        this.addToCenter(circle);
-      }.bind(this));
-    $('#btnAddSquare')
-      .popup({
-        title: 'Square',
-        position: 'right center'
-      })
-      .on('click', function(){
-        var rect = new fabric.Rect({
-          left: 100,
-          top: 100,
-          fill: 'red',
-          width: 200,
-          height: 200
-        });
-        this.addToCenter(rect);
-      }.bind(this));
-    $('#btnAddTriangle')
-      .popup({
-        title: 'Square',
-        position: 'right center'
-      })
-      .on('click', function(){
-        var triangle = new fabric.Triangle({
-          width: 100, height: 100, fill: 'blue', left: 50, top: 50
-        });
-        this.addToCenter(triangle);
-      }.bind(this));
-  }
-
-  toggleToolbar() {
-    if (!this.attributes.transitioning) {
-      $("#toolbar")
-        .sidebar({
-          dimPage:false,
-          onChange: function() {
-            app.models.mainCanvas.attributes.transitioning = true;
-          },
-          onHide : function() {
-            app.models.mainCanvas.attributes.transitioning = false;
-          },
-          onShow : function() {
-            app.models.mainCanvas.attributes.transitioning = false;
-          }
-        })
-        .sidebar("toggle");
-      this.updateCanvasSize();
-    }
   }
 
   updateCanvasSize() {

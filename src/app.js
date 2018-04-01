@@ -10,6 +10,7 @@ import ThreeCanvasModel from './app/models/ThreeCanvasModel.js';
 import ImageTracerControlsView from './app/views/controls/ImageTracerControlsView.js';
 import PotraceControlsView from './app/views/controls/PotraceControlsView.js';
 import ThreeControlsView from './app/views/controls/ThreeControlsView.js';
+import MainCanvasView from './app/views/MainCanvasView.js';
 import ThreeCanvasView from './app/views/ThreeCanvasView.js';
 import AppView from './app/views/AppView.js';
 
@@ -27,14 +28,15 @@ export default class App {
       mainCanvas: new MainCanvasModel()
       //threeCanvas: new ThreeCanvasModel()
     };
-    // this.views = {
+    this.views = {
+      mainCanvas: new MainCanvasView({model: this.models.mainCanvas})
     //   controls: {
     //     imagetracer: new ImageTracerControlsView({ model: this.models.controls.imagetracer }),
     //     potrace: new PotraceControlsView({ model: this.models.controls.potrace }),
     //     three: new ThreeControlsView({ model: this.models.controls.three })
     //   },
     //   threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })
-    // };
+    };
   }
 }
 
