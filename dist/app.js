@@ -746,28 +746,29 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
   }(BaseControlsView));
 
   function defaultMenu(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  pug_html = pug_html + "\u003Cdiv class=\"item\" id=\"btnAddImage\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"image icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"item\" id=\"btnAddShape\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"image icon inverted\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddShape\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"chart pie icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  pug_html = pug_html + "\u003Ci class=\"chart pie icon inverted\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   function addShapes(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  pug_html = pug_html + "\u003Cdiv class=\"item\" id=\"btnBack\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large arrow left icon\"\u003E\u003C\u002Fi\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"menu\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnBack\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large arrow left icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"menu\"\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"header\"\u003E";
   pug_html = pug_html + "\u003Ch6 class=\"ui header inverted\"\u003E";
   pug_html = pug_html + "Shapes\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddCircle\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"circle icon large\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ci class=\"circle icon large green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddSquare\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"square icon large\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ci class=\"square icon large red\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddTriangle\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"play icon large\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  pug_html = pug_html + "\u003Ci class=\"play icon large blue\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
     * MainCanvas view.

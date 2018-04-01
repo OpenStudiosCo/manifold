@@ -14,14 +14,70 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical secondary visible sidebar icon menu" id="toolbar">
-      <div class="item" id="btnAddImage"><i class="large icons"><i class="image icon"></i><i class="corner plus icon green"></i></i></div>
-      <div class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon"></i><i class="corner plus icon green"></i></i></div>
-    </div>
+    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnAddImage"><i class="large icons"><i class="image icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon inverted"></i><i class="corner plus icon green"></i></i></a></div>
     <div class="pusher" id="container">
       <div class="ui fluid image small" id="logo" onclick="app.views.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
       <canvas id="main-canvas"></canvas>
-      <div class="ui mini menu floating labeled icon" id="active-object-context"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a></div>
+      <div class="floating" id="active-object-context">
+        <div class="ui mini menu labeled icon pointing"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item disabled"><i class="object ungroup icon"></i>Ungroup (1)</a><a class="item active"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a></div>
+      </div>
+      <div class="floating" id="fill-tool">
+        <div class="ui card">
+          <div class="content">
+            <div class="ui horizontal list">
+              <div class="item"><span style="background-color: #FFFF00; padding: 1em 2.35em; border: solid 1px #eee;"> </span></div>
+              <div class="item">
+                <div class="ui input">
+                  <input type="text" value="#FFFF00">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="content"><img class="ui image" src="./assets/spectrum.jpg" style="border: solid 1px #eee; cursor: crosshair;"></div>
+        </div>
+      </div>
+      <div class="floating" id="layers-tool">
+        <div class="ui card">
+          <div class="content">
+            <div class="header">Layers</div>
+            <div class="description">
+              <div class="ui celled list" style="border: solid 1px #eee; padding: 1em;">
+                <div class="item">
+                  <div class="right floated content"><a class="ui link"><i class="minus icon"></i></a></div><i class="image icon"></i>
+                  <div class="content"><a class="description">Processed Image</a>
+                    <div class="list">
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                      <div class="item"><i class="file outline icon"></i>
+                        <div class="content"><a class="description">Path</a></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ui dimmer modals top aligned page transition hidden">
       <div class="ui fullscreen special modal transition hidden">
