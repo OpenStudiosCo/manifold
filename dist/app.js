@@ -447,9 +447,20 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,Potrace,fabr
           newSVG.appendChild(path);
         });
         fabric.loadSVGFromString(newSVG.outerHTML, function(objects, options){
-          objects.forEach(function(object) {
-            this.addToCenter(object);
-          }.bind(this));
+          var this$1 = this;
+
+          // Create a group so we add to center accurately.
+          var group = new fabric.Group(objects);
+          this.addToCenter(group);
+
+          // Ungroup.
+          var items = group._objects;
+          group._restoreObjectsState();
+          this.attributes.canvas.remove(group);
+          for (var i = 0; i < items.length; i++) {
+            this$1.attributes.canvas.add(items[i]);
+          }
+          this.attributes.canvas.renderAll();
         }.bind(this));
       }.bind(this));
     };
@@ -564,12 +575,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,TWEEN,_,Potrace,fabr
         canvasWidth -= $('#toolbar').width();  
       }
       var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      if (object.left > 0 || object.top > 0) {
-        object.set({left: (canvasWidth / 3.5) + object.left, top: (canvasHeight / 3.5) + object.top});
-      }
-      else {
-        object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight / 2) - (object.height / 2)});
-      }
+      
+      object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight /2 - object.height / 2)});
       
       this.attributes.canvas.add(object);
     };
