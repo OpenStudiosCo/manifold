@@ -760,9 +760,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
   pug_html = pug_html + "\u003Ci class=\"large arrow left icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"menu\"\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"header\"\u003E";
-  pug_html = pug_html + "\u003Ch6 class=\"ui header inverted\"\u003E";
-  pug_html = pug_html + "Shapes\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider inverted\"\u003E";
+  pug_html = pug_html + "Shapes\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddCircle\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"circle icon large green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddSquare\"\u003E";
@@ -794,6 +793,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
         $('.ui.special.modal')
           .modal('hide');
       });
+
+      $('.ui.dropdown').dropdown();
 
       $(window).on('resize', function () {
         app.models.mainCanvas.updateCanvasSize();

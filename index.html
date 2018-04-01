@@ -28,7 +28,7 @@
           </div>
           <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
             <div class="ui horizontal list">
-              <div class="item"><span style="background-color: #FFFF00; padding: 1em 2.35em; border: solid 1px #eee;"> </span></div>
+              <div class="item"><span style="background-color: #FFFF00; padding: 1em 2em; border: solid 1px #eee;"> </span></div>
               <div class="item">
                 <div class="ui input">
                   <input type="text" value="#FFFF00">
@@ -79,6 +79,56 @@
                       <div class="content"><a class="description">Path</a></div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="floating" id="vector-tool">
+        <div class="ui card">
+          <div class="content">
+            <div class="ui header tiny">Vector options</div>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui header tiny">Select method</div>
+            <select class="ui dropdown fluid">
+              <option value="imagetracer">Imagetracer</option>
+              <option value="potrace" selected="">Potrace</option>
+            </select>
+          </div>
+          <div class="content">
+            <div class="ui header tiny">Potrace Options</div>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui mini form">
+              <div class="field">
+                <label>Turn Policy</label>
+                <select class="ui dropdown fluid">
+                  <option>Black</option>
+                  <option>White</option>
+                  <option>Left</option>
+                  <option>Right</option>
+                  <option>Majority</option>
+                  <option>Minority</option>
+                </select>
+              </div>
+              <div class="field inline">
+                <label>Turd Size</label>
+                <input class="ui input" type="text" placeholder="2">
+              </div>
+              <div class="field inline">
+                <label>Corner Threshold</label>
+                <input class="ui input" type="text" placeholder="1">
+              </div>
+              <div class="field inline">
+                <label>Curve Tolerance</label>
+                <input class="ui input" type="text" placeholder="0.2">
+              </div>
+              <div class="field inline">
+                <div class="ui checkbox">
+                  <input type="checkbox">
+                  <label>Curve Optimisation</label>
                 </div>
               </div>
             </div>

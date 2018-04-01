@@ -16,7 +16,7 @@
   }
 }
 #active-object-context {
-  top: 100px;
+  top: 75px;
   left: 50px;
 }
 #fill-tool {
@@ -27,9 +27,13 @@
   top: 500px;
   left: 50px;
 }
+#vector-tool {
+  top: 100px;
+  right: 100px;
+}
 #toolbar {
   background: #555;
-  box-shadow: inset -10px 0px 50px 0px #222;
+  box-shadow: inset -10px 0px 50px 0px #000;
 }
 #toolbar .item {
   cursor: pointer;
@@ -44,11 +48,11 @@
   z-index: 1;
 }
 #logo img {
-  filter: invert(50%);
+  filter: invert(75%);
   transition: filter 0.25s;
 }
 #logo img:hover {
-  filter: invert(0%) drop-shadow(5px 5px 5px #000);
+  filter: invert(0%) drop-shadow(5px 5px 5px #666);
 }
 #main-canvas {
   position: absolute;

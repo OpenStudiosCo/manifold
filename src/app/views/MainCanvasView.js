@@ -29,6 +29,8 @@ export default class MainCanvasView extends BaseView {
         .modal('hide');
     });
 
+    $('.ui.dropdown').dropdown();
+
     $(window).on('resize', () => {
       app.models.mainCanvas.updateCanvasSize();
     });
