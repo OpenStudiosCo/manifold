@@ -14,10 +14,9 @@ block append page
       a(href='#', title='Toggle Toolbar')
         img(src='/assets/manifold.svg')
     canvas#main-canvas
-    include /src/templates/toolbar/active-object-context.pug
     include /src/templates/toolbar/fill-tool.pug
     include /src/templates/toolbar/layers-tool.pug
-    //- include /src/templates/toolbar/vector-tool.pug
+    include /src/templates/toolbar/vector-tool.pug
     include /src/templates/toolbar/3d-tool.pug
     include /src/templates/toolbar/model-preview.pug
   .ui.dimmer.modals.top.aligned.page.transition.hidden

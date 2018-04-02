@@ -1,3 +1,4 @@
+import _ from '_';
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseView from './BaseView.js';
@@ -30,7 +31,6 @@ export default class MainCanvasView extends BaseView {
 
     this.setupDefaultMenu();
 
-    // TODO: Move this somewhere
     $('.floating.overlay').draggable();
 
     $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
@@ -74,15 +74,74 @@ export default class MainCanvasView extends BaseView {
         this.setupAddShapesMenu();
       }.bind(this));
 
+    // Track which overlays we hid so we don't override other settings.
+    var overlays_visible = [];
     $('#btnToggleOverlays')
       .popup({
         title: 'Toggle Overlays',
         position: 'right center'
       })
       .on('click', function(){
-        $(this).find('i.eye.icon').toggleClass('slash');
-        $('.floating.overlay').toggle();
+        if ($(this).find('i.eye.icon').hasClass('slash')) {
+          if (overlays_visible.length > 0) {
+            $(overlays_visible).each(function(i, overlay){
+              $(overlay).show();
+            });
+            overlays_visible = [];
+          }
+        }
+        else {
+          overlays_visible = $('.floating.overlay:visible');
+          $('.floating.overlay:visible').hide();
+        }
+        $(this).find('i.icon').toggleClass('slash');
       });
+    $('#btnToggleFill')
+      .popup({
+        title: 'Toggle Fill',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('disabled');
+        $('#fill-tool').toggle();
+      });
+    $('#btnToggleVector')
+      .popup({
+        title: 'Toggle Vector',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('disabled');
+        $('#vector-tool').toggle();
+      });
+    $('#btnToggleLayers')
+      .popup({
+        title: 'Toggle Layers',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('disabled');
+        $('#layers-tool').toggle();
+      });
+    $('#btnToggle3DOptions')
+      .popup({
+        title: 'Toggle 3D Options',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('disabled');
+        $('#threeD-tool').toggle();
+      });
+    $('#btnToggle3DPreview')
+      .popup({
+        title: 'Toggle 3D Preview',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('disabled');
+        $('#model-preview-container').toggle();
+      });
+
   }
 
   setupAddShapesMenu() {

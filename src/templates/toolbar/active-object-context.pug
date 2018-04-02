@@ -1,5 +1,4 @@
-#active-object-context.floating.overlay.toggleable
-  .ui.header.tiny.grey Appears when an object is selected
+.active-object-context.floating.overlay.toggleable
   .ui.mini.menu.labeled.icon.pointing
     a.item
       i.trash.alternate.icon
@@ -10,15 +9,15 @@
     a.item.disabled
       i.object.ungroup.icon
       | Ungroup (1)
-    a.item.active
+    a.item.disabled
       i.tint.icon
       | Fill
-    a.item
+    a.item.disabled
       i.pencil.alternate.icon
       | Stroke
     a.item.disabled
       i.paper.plane.outline.icon
       | Vector
-    a.item.disabled
+    a#btnToggle3DPreview.item.disabled
       i.snowflake.outline.icon
       | 3D

@@ -1,3 +1,5 @@
+import $ from 'jQuery';
+import Potrace from 'Potrace';
 import BaseModel from '../BaseModel.js';
 
 /**
@@ -31,6 +33,7 @@ export default class PotraceModel extends BaseModel {
         seg.values = seg.values.map((v) => Math.round(v * 1000) / 1000);
         pathData.push(seg);
         acc.push(pathData); 
+        
         return acc;
       }, []);
 

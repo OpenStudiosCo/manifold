@@ -1,3 +1,4 @@
+import $ from 'jQuery';
 import BaseModel from '../BaseModel.js';
 
 /**
@@ -8,7 +9,8 @@ import BaseModel from '../BaseModel.js';
 export default class ColourPickerModel extends BaseModel {
   defaults() {
     var settings = {
-      color: '#FFFFFF'
+      color: '#FFFFFF',
+      canvas: null
     };
 
     return settings;
@@ -16,44 +18,70 @@ export default class ColourPickerModel extends BaseModel {
 
   constructor() {
     super();
-    var canvas = document.getElementById('colour-picker').getContext('2d');
+
+    var el = document.getElementById('colour-picker');
+    if (!el) {
+      return;
+    }
+
+    this.attributes.canvas = el.getContext('2d');
     // create an image object and get it’s source
     var img = new Image();
     img.onload = function(){
-      canvas.drawImage(img,0,0);
-    };
+      this.attributes.canvas.drawImage(img,0,0);
+    }.bind(this);
     img.src = '/assets/spectrum.jpg';
-    canvas.scale(0.49, 0.4);
+    this.attributes.canvas.scale(0.49, 0.4);
 
     $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
 
-    $('#colour-picker').on('click drag', function(event){
-
-      // http://www.javascripter.net/faq/rgbtohex.htm
-      function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
-
-      function toHex(n) {
-        n = parseInt(n,10);
-        if (isNaN(n)) return "00";
-        n = Math.max(0,Math.min(n,255));
-        return "0123456789ABCDEF".charAt((n-n%16)/16)  + "0123456789ABCDEF".charAt(n%16);
+    var mouseDown = false;
+    $('#colour-picker').on('mousedown', function(event){
+      mouseDown = true;
+      this.pickColour(event);
+    }.bind(this));
+    $('#colour-picker').on('mousemove', function(event){
+      if (mouseDown) {
+        this.pickColour(event);
       }
-
-      // getting user coordinates
-      var x = event.offsetX;
-      var y = event.offsetY;
-      // getting image data and RGB values
-      var img_data = canvas.getImageData(x, y, 1, 1).data;
-      var R = img_data[0];
-      var G = img_data[1];
-      var B = img_data[2];  var rgb = R + ', ' + G + ', ' + B;
-      // convert RGB to HEX
-      var hex = rgbToHex(R,G,B);
-      // making the color the value of the input
-      $('input#rgb').val(rgb);
-      $('input#hex').val('#' + hex);
-      $('#colour-picker-preview').css('background-color', '#' + hex);
+    }.bind(this));
+    $('#colour-picker').on('mouseup', function(){
+      mouseDown = false;
     });
+     
+  }
+
+  pickColour(event) {
+    // http://www.javascripter.net/faq/rgbtohex.htm
+    function rgbToHex(R,G,B) {
+     return toHex(R)+toHex(G)+toHex(B); 
+    }
+
+    function toHex(m) {
+      var n = parseInt(m,10);
+      if (isNaN(n)) {
+       return "00";
+      }
+      n = Math.max(0,Math.min(n,255));
+      
+      return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
+    }
+
+    // getting user coordinates
+    var x = event.offsetX;
+    var y = event.offsetY;
+    // getting image data and RGB values
+    var img_data = this.attributes.canvas.getImageData(x, y, 1, 1).data;
+    var R = img_data[0];
+    var G = img_data[1];
+    var B = img_data[2];
+    var rgb = R + ', ' + G + ', ' + B;
+    // convert RGB to HEX
+    var hex = rgbToHex(R,G,B);
+    // making the color the value of the input
+    $('input#rgb').val(rgb);
+    $('input#hex').val('#' + hex);
+    $('#colour-picker-preview').css('background-color', '#' + hex);
   }
 
 }

@@ -1,7 +1,7 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
-import Potrace from 'Potrace';
 import BaseModel from './BaseModel.js';
+import activeObjectContext from '../../templates/toolbar/active-object-context.pug';
 import ColourPickerModel from './main-canvas/ColourPickerModel.js';
 import PotraceModel from './main-canvas/PotraceModel.js';
 
@@ -24,24 +24,11 @@ export default class MainCanvasModel extends BaseModel {
     this.colourPickerModel = new ColourPickerModel();
     this.potrace = new PotraceModel();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
+    this.updateCanvasSize();
+    this.setupEvents();
+  }
 
-    // Setup pan and zoom.
-    this.attributes.canvas.on('mouse:wheel', function(opt) {
-      var delta = opt.e.deltaY;
-      var pointer = this.attributes.canvas.getPointer(opt.e);
-      var zoom = this.attributes.canvas.getZoom();
-      zoom += delta/200;
-      if (zoom > 20) {
-        zoom = 20; 
-      }
-      if (zoom < 0.01) {
-       zoom = 0.01;
-      }
-      this.attributes.canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    }.bind(this));
-
+  setupEvents() {
     // Credit - https://stackoverflow.com/a/24238960
     this.attributes.canvas.on('object:moving', function (e) {
       var obj = e.target;
@@ -61,13 +48,39 @@ export default class MainCanvasModel extends BaseModel {
           obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
       }
     });
-        
-    this.updateCanvasSize();
+
+    var selectionCallback = function(e) {
+      $('.active-object-context').remove();
+      var $menu = $(activeObjectContext());
+      $('#container').append($menu);
+      var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
+      var offsetY = e.target.top - ($menu.height()) - 50;
+      $menu.css('left', offsetX);
+      $menu.css('top', offsetY);
+
+      $('.floating.overlay').draggable();
+    };
+
+    // Separated for Fabric's On not supporting multiple.
+    this.attributes.canvas.on('selection:created', selectionCallback);
+    this.attributes.canvas.on('selection:updated', selectionCallback);
+
+    this.attributes.canvas.on('selection:cleared', function(){
+      $('.active-object-context').remove();
+    });
+
+    this.attributes.canvas.on('object:moving', function(e) {
+      var $menu = $('.active-object-context');
+      var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
+      var offsetY = e.target.top - ($menu.height()) - 50;
+      $menu.css('left', offsetX);
+      $menu.css('top', offsetY);
+    });
   }
 
   // Loads an SVG string and splits up objects so they're loaded in the right position.
   loadSVG(svg, callback) {
-    fabric.loadSVGFromString(svg, function(objects, options){
+    fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
       this.addToCenter(group);
@@ -76,7 +89,6 @@ export default class MainCanvasModel extends BaseModel {
       var items = group._objects;
       group._restoreObjectsState();
       this.attributes.canvas.remove(group);
-      var paths = [];
       for (var i = 0; i < items.length; i++) {
         this.attributes.canvas.add(items[i]);
       }
@@ -88,7 +100,6 @@ export default class MainCanvasModel extends BaseModel {
   }
 
   updateCanvasSize() {
-    // TODO: Move this into app view logic.
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
       width -= $('#toolbar').width();  
@@ -106,7 +117,7 @@ export default class MainCanvasModel extends BaseModel {
     }
     var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     
-    object.set({ left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight /2 - object.height / 2) });
+    object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
     
     this.attributes.canvas.add(object);
   }

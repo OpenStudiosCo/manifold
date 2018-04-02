@@ -15,15 +15,18 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnAddImage"><i class="large icons"><i class="image icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnToggleOverlays"><i class="large eye slash icon inverted"></i></a></div>
+    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar">
+      <div class="ui horizontal divider fitted inverted">
+        <h6>Add</h6>
+      </div><a class="item" id="btnAddImage"><i class="large icons"><i class="image icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon inverted"></i><i class="corner plus icon green"></i></i></a>
+      <div class="ui horizontal divider fitted inverted">
+        <h6>Overlays</h6>
+      </div><a class="item" id="btnToggleOverlays"><i class="large eye icon inverted"></i></a><a class="item" id="btnToggleFill"><i class="large tint icon inverted disabled"></i></a><a class="item" id="btnToggleVector"><i class="large paper plane outline icon inverted disabled"></i></a><a class="item" id="btnToggleLayers"><i class="large align justify icon inverted disabled"></i></a><a class="item" id="btnToggle3DOptions"><i class="icons large"><i class="cog icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a><a class="item" id="btnToggle3DPreview"><i class="icons large"><i class="expand icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a>
+    </div>
     <div class="pusher" id="container">
       <div class="ui fluid image small" id="logo" onclick="app.views.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
       <canvas id="main-canvas"></canvas>
-      <div class="floating overlay toggleable" id="active-object-context">
-        <div class="ui header tiny grey">Appears when an object is selected</div>
-        <div class="ui mini menu labeled icon pointing"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item disabled"><i class="object ungroup icon"></i>Ungroup (1)</a><a class="item active"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a><a class="item disabled"><i class="snowflake outline icon"></i>3D</a></div>
-      </div>
-      <div class="floating overlay" id="fill-tool">
+      <div class="floating overlay" id="fill-tool" style="display: none">
         <div class="ui card">
           <div class="content">
             <div class="ui header tiny"><i class="tint icon"></i>Fill options</div>
@@ -51,7 +54,7 @@
           </div>
         </div>
       </div>
-      <div class="floating overlay" id="layers-tool">
+      <div class="floating overlay" id="layers-tool" style="display: none">
         <div class="ui header tiny grey">Can be launched from an upcoming context menu</div>
         <div class="ui card">
           <div class="content">
@@ -98,7 +101,56 @@
           </div>
         </div>
       </div>
-      <div class="floating overlay" id="threeD-tool">
+      <div class="floating overlay" id="vector-tool" style="display: none">
+        <div class="ui header tiny grey">Options for converting raster to vector</div>
+        <div class="ui card">
+          <div class="content">
+            <div class="ui header tiny"><i class="paper plane outline icon"></i>Vector options</div>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui header tiny">Select method</div>
+            <select class="ui dropdown fluid">
+              <option value="imagetracer">Imagetracer</option>
+              <option value="potrace" selected="">Potrace</option>
+            </select>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui header tiny">Potrace Options</div>
+            <div class="ui mini form">
+              <div class="field">
+                <label>Turn Policy</label>
+                <select class="ui dropdown fluid">
+                  <option>Black</option>
+                  <option>White</option>
+                  <option>Left</option>
+                  <option>Right</option>
+                  <option>Majority</option>
+                  <option>Minority</option>
+                </select>
+              </div>
+              <div class="field inline">
+                <label>Turd Size</label>
+                <input class="ui input" type="text" placeholder="2">
+              </div>
+              <div class="field inline">
+                <label>Corner Threshold</label>
+                <input class="ui input" type="text" placeholder="1">
+              </div>
+              <div class="field inline">
+                <label>Curve Tolerance</label>
+                <input class="ui input" type="text" placeholder="0.2">
+              </div>
+              <div class="field inline">
+                <div class="ui checkbox">
+                  <input type="checkbox">
+                  <label>Curve Optimisation</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="floating overlay" id="threeD-tool" style="display: none">
         <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
         <div class="ui card">
           <div class="content">
@@ -134,11 +186,11 @@
           </div>
         </div>
       </div>
-      <div class="floating overlay" id="model-preview-container">
+      <div class="floating overlay" id="model-preview-container" style="display: none">
         <div class="ui header tiny grey">Control the 3D output using a viewport preview</div>
         <div class="ui card fluid">
           <div class="content">
-            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D Model Viewport</div>
+            <div class="ui header tiny"><i class="icons large">&nbsp;<i class="expand icon"></i><i class="snowflake outline icon"></i></i>3D Model Viewport</div>
           </div>
           <div class="content">
             <div id="model-preview" style="box-shadow: inset 0 0 5px #ccc; margin: -1em;"></div>

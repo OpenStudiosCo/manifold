@@ -18,8 +18,8 @@ export default class ThreeCanvasView extends BaseView {
     $('#model-preview-container').draggable({ cancel: "#model-preview" });
 
     document.getElementById('model-preview').addEventListener( 'mousemove', function(event) {
-      this.model.attributes.mouse.x = ( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
-      this.model.attributes.mouse.y = - ( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 + 1;
+      this.model.attributes.mouse.x = (( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 ) - 1;
+      this.model.attributes.mouse.y = - (( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 ) + 1;
     }.bind(this), false );
   }
 
