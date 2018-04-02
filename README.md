@@ -4,9 +4,8 @@ The Swiss Army knife of graphics tools for indie game development.
 ![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold.svg)
 
 [Demo](http://manifold.paulbrzeski.com)
-- Currently convert raster images into vectors using Potrace
-- Fabric.JS as an interactive canvas
 - Preview of UI, some elements are working in a rudimentary way 
+- Currently convert raster images into vectors using Potrace
 ![Screenshot](/assets/screenshot.png)
 
 There's a lot to come, but more info can be found in my blog posts about this project: 
