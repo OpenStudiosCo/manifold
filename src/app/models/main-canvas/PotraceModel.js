@@ -27,18 +27,18 @@ export default class PotraceModel extends BaseModel {
       var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
       // normalize should be used to get back absolute segments
       const pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce((acc, seg) => {
-        let pathData = seg.type === 'M' ? [] : acc.pop()
-        seg.values = seg.values.map(v => Math.round(v * 1000) / 1000)
-        pathData.push(seg)
-        acc.push(pathData)
-        return acc
+        const pathData = seg.type === 'M' ? [] : acc.pop();
+        seg.values = seg.values.map((v) => Math.round(v * 1000) / 1000);
+        pathData.push(seg);
+        acc.push(pathData); 
+        return acc;
       }, []);
 
       pathsDatas.forEach(function(d) {
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        path.setPathData(d)
-        path.setAttribute('fill', randomColor())
-        newSVG.appendChild(path)
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setPathData(d);
+        path.setAttribute('fill', randomColor());
+        newSVG.appendChild(path);
       });
 
       callback(newSVG.outerHTML);

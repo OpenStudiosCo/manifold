@@ -5,7 +5,7 @@ import loader from '../../../templates/loader.pug';
   * Base Controls view.
   */
 
-//var gui = new dat.GUI();
+// var gui = new dat.GUI();
 
 export default class BaseControlsView extends BaseView {
   constructor(options) {

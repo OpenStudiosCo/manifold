@@ -7,8 +7,8 @@
     "url": "https://github.com/paulbrzeski/manifold"
   },
   "scripts": {
-    "build": "pug src/pages -P -o . -b . && stylus src/styles -o dist && rollup -c",
-    "css": "stylus src/styles -o dist -w",
+    "build": "pug src/pages -P -o . -b . && stylus -u autoprefixer-stylus src/styles -o dist && rollup -c",
+    "css": "stylus -u autoprefixer-stylus src/styles -o dist -w",
     "pug": "pug src/pages -P -o . -b . -w",
     "rollup": "rollup -c -w",
     "dev-osx": "sudo http-server -p 80 -c-1 .",
@@ -31,6 +31,7 @@
     "stylus": "^0.54.5"
   },
   "devDependencies": {
+    "autoprefixer-stylus": "^0.14.0",
     "eslint": "^4.19.1",
     "imagetracerjs": "^1.2.3",
     "jquery": "^3.3.1",

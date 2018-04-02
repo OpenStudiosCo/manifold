@@ -1,11 +1,3 @@
-.main.container,
-.dg.ac {
-  padding-top: 7.6em;
-}
-.dg.ac select,
-.dg.ac option {
-  color: #000;
-}
 .floating {
   display: none;
   position: absolute;
@@ -39,6 +31,13 @@
   bottom: 50px;
   left: 500px;
 }
+#model-preview-container .header {
+  cursor: move;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
 #model-preview-container #model-preview {
   width: 600px;
   height: 400px;
@@ -48,7 +47,8 @@
 }
 #toolbar {
   background: #555;
-  box-shadow: inset -10px 0px 50px 0px #000;
+  -webkit-box-shadow: inset -10px 0px 50px 0px #000;
+          box-shadow: inset -10px 0px 50px 0px #000;
 }
 #toolbar .item {
   cursor: pointer;
@@ -63,11 +63,20 @@
   z-index: 1;
 }
 #logo img {
-  filter: invert(75%);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  -webkit-filter: invert(75%);
+          filter: invert(75%);
+  -webkit-transition: -webkit-filter 0.25s;
+  transition: -webkit-filter 0.25s;
   transition: filter 0.25s;
+  transition: filter 0.25s, -webkit-filter 0.25s;
 }
 #logo img:hover {
-  filter: invert(0%) drop-shadow(5px 5px 5px #666);
+  -webkit-filter: invert(0%) drop-shadow(5px 5px 5px #666);
+          filter: invert(0%) drop-shadow(5px 5px 5px #666);
 }
 #main-canvas {
   position: absolute;
@@ -86,8 +95,10 @@
   background-color: #fff;
 }
 .ui.white.button:hover {
-  box-shadow: 0 0 2px #fff;
+  -webkit-box-shadow: 0 0 2px #fff;
+          box-shadow: 0 0 2px #fff;
 }
 .ui.white.button:active {
-  box-shadow: 0 0 5px #fff;
+  -webkit-box-shadow: 0 0 5px #fff;
+          box-shadow: 0 0 5px #fff;
 }

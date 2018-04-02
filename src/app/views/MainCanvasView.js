@@ -17,7 +17,7 @@ export default class MainCanvasView extends BaseView {
 
     // Initial image
     var callback = function(svg) {
-      //this.model.loadSVG(svg, callback);
+      // this.model.loadSVG(svg, callback);
       app.views.threeCanvas.createScene(svg);
       var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0], {
         originX: 'center',
@@ -32,10 +32,15 @@ export default class MainCanvasView extends BaseView {
     this.setupDefaultMenu();
 
     $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
-      var src = $(this).find('img').attr('src');
-      app.models.mainCanvas.potrace.createSVG(src, this.model.loadSVG.bind(this.model));
-      $('.ui.special.modal')
-        .modal('hide');
+      var src = $(e.target).attr('src');
+      var callback = function(svg) {
+        var callback = function() {
+          $('.ui.special.modal')
+            .modal('hide');
+        };
+        app.models.mainCanvas.loadSVG(svg, callback);
+      };
+      app.models.mainCanvas.potrace.createSVG(src, callback);
     });
 
     $('.ui.dropdown').dropdown();
@@ -53,9 +58,7 @@ export default class MainCanvasView extends BaseView {
       })
       .on('click', function(){
         $('.ui.special.modal')
-          .modal({
-            centered: false
-          })
+          .modal({ centered: false })
           .modal('show');
       });
 
@@ -68,6 +71,16 @@ export default class MainCanvasView extends BaseView {
         $('#toolbar').html(addShapes());
         this.setupAddShapesMenu();
       }.bind(this));
+
+    $('#btnToggleOverlays')
+      .popup({
+        title: 'Toggle Overlays',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.large.eye.icon.inverted').toggleClass('slash');
+        $('.floating.toggleable').toggle();
+      });
   }
 
   setupAddShapesMenu() {
@@ -86,9 +99,7 @@ export default class MainCanvasView extends BaseView {
         position: 'right center'
       })
       .on('click', function(){
-        var circle = new fabric.Circle({
-          radius: 100, fill: 'green', left: 100, top: 100
-        });
+        var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
         this.model.addToCenter(circle);
       }.bind(this));
     $('#btnAddSquare')
@@ -112,9 +123,7 @@ export default class MainCanvasView extends BaseView {
         position: 'right center'
       })
       .on('click', function(){
-        var triangle = new fabric.Triangle({
-          width: 100, height: 100, fill: 'blue', left: 50, top: 50
-        });
+        var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
         this.model.addToCenter(triangle);
       }.bind(this));
   }
@@ -123,17 +132,17 @@ export default class MainCanvasView extends BaseView {
     if (!this.model.attributes.transitioning) {
       $("#toolbar")
         .sidebar({
-          dimPage:false,
+          dimPage: false,
           transition: 'push',
           exclusive: false,
           closable: false,
           onChange: function() {
             app.models.mainCanvas.attributes.transitioning = true;
           },
-          onHide : function() {
+          onHide: function() {
             app.models.mainCanvas.attributes.transitioning = false;
           },
-          onShow : function() {
+          onShow: function() {
             app.models.mainCanvas.attributes.transitioning = false;
           }
         })

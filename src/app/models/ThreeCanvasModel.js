@@ -72,7 +72,7 @@ export default class ThreeCanvasModel extends BaseModel {
     this.attributes.mesh = null;
     this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
    
-    //this.addHelpers();
+    // this.addHelpers();
   }
 
   animate() {

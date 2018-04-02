@@ -88,8 +88,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
           var pathData = seg.type === 'M' ? [] : acc.pop();
           seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
           pathData.push(seg);
-          acc.push(pathData);
-          return acc
+          acc.push(pathData); 
+          return acc;
         }, []);
 
         pathsDatas.forEach(function(d) {
@@ -121,9 +121,13 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         var delta = opt.e.deltaY;
         var pointer = this.attributes.canvas.getPointer(opt.e);
         var zoom = this.attributes.canvas.getZoom();
-        zoom = zoom + delta/200;
-        if (zoom > 20) { zoom = 20; }
-        if (zoom < 0.01) { zoom = 0.01; }
+        zoom += delta/200;
+        if (zoom > 20) {
+          zoom = 20; 
+        }
+        if (zoom < 0.01) {
+         zoom = 0.01;
+        }
         this.attributes.canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
@@ -133,17 +137,17 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       this.attributes.canvas.on('object:moving', function (e) {
         var obj = e.target;
          // if object is too big ignore
-        if(obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
+        if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
             return;
         }        
         obj.setCoords();        
         // top-left  corner
-        if(obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
+        if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
             obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
             obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
         }
         // bot-right corner
-        if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+        if (obj.getBoundingRect().top+obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width > obj.canvas.width){
             obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
             obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
         }
@@ -170,7 +174,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       fabric.loadSVGFromString(svg, function(objects, options){
         var this$1 = this;
 
-        // TODO: Move this out of here
         // Create a group so we add to center accurately.
         var group = new fabric.Group(objects);
         this.addToCenter(group);
@@ -191,7 +194,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
 
     MainCanvasModel.prototype.updateCanvasSize = function updateCanvasSize () {
       // TODO: Move this into app view logic.
-      var width  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
+      var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
       if ($$1("#toolbar").sidebar('is visible')) {
         width -= $$1('#toolbar').width();  
       }
@@ -202,13 +205,13 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
 
     // Add an object to the center of the canvas.
     MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
-      var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
+      var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
       if ($$1("#toolbar").sidebar('is visible')) {
         canvasWidth -= $$1('#toolbar').width();  
       }
       var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
       
-      object.set({left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight /2 - object.height / 2)});
+      object.set({ left: (canvasWidth / 2) - (object.width / 2), top: (canvasHeight /2 - object.height / 2) });
       
       this.attributes.canvas.add(object);
     };
@@ -291,7 +294,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       this.attributes.mesh = null;
       this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
      
-      //this.addHelpers();
+      // this.addHelpers();
     };
 
     ThreeCanvasModel.prototype.animate = function animate () {
@@ -596,7 +599,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
     * Base Controls view.
     */
 
-  //var gui = new dat.GUI();
+  // var gui = new dat.GUI();
 
   var BaseControlsView = (function (BaseView$$1) {
     function BaseControlsView(options) {
@@ -690,7 +693,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddShape\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"chart pie icon inverted\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large eye slash icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   function addShapes(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnBack\"\u003E";
@@ -720,7 +725,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
 
       // Initial image
       var callback = function(svg) {
-        //this.model.loadSVG(svg, callback);
+        // this.model.loadSVG(svg, callback);
         app.views.threeCanvas.createScene(svg);
         var threeD = new fabric.Image($$1(app.views.threeCanvas.el).find('canvas')[0], {
           originX: 'center',
@@ -735,10 +740,15 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       this.setupDefaultMenu();
 
       $$1('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
-        var src = $$1(this).find('img').attr('src');
-        app.models.mainCanvas.potrace.createSVG(src, this.model.loadSVG.bind(this.model));
-        $$1('.ui.special.modal')
-          .modal('hide');
+        var src = $$1(e.target).attr('src');
+        var callback = function(svg) {
+          var callback = function() {
+            $$1('.ui.special.modal')
+              .modal('hide');
+          };
+          app.models.mainCanvas.loadSVG(svg, callback);
+        };
+        app.models.mainCanvas.potrace.createSVG(src, callback);
       });
 
       $$1('.ui.dropdown').dropdown();
@@ -760,9 +770,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         })
         .on('click', function(){
           $$1('.ui.special.modal')
-            .modal({
-              centered: false
-            })
+            .modal({ centered: false })
             .modal('show');
         });
 
@@ -775,6 +783,16 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
           $$1('#toolbar').html(addShapes());
           this.setupAddShapesMenu();
         }.bind(this));
+
+      $$1('#btnToggleOverlays')
+        .popup({
+          title: 'Toggle Overlays',
+          position: 'right center'
+        })
+        .on('click', function(){
+          $$1(this).find('i.large.eye.icon.inverted').toggleClass('slash');
+          $$1('.floating.toggleable').toggle();
+        });
     };
 
     MainCanvasView.prototype.setupAddShapesMenu = function setupAddShapesMenu () {
@@ -793,9 +811,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
           position: 'right center'
         })
         .on('click', function(){
-          var circle = new fabric.Circle({
-            radius: 100, fill: 'green', left: 100, top: 100
-          });
+          var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
           this.model.addToCenter(circle);
         }.bind(this));
       $$1('#btnAddSquare')
@@ -819,9 +835,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
           position: 'right center'
         })
         .on('click', function(){
-          var triangle = new fabric.Triangle({
-            width: 100, height: 100, fill: 'blue', left: 50, top: 50
-          });
+          var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
           this.model.addToCenter(triangle);
         }.bind(this));
     };
@@ -830,17 +844,17 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       if (!this.model.attributes.transitioning) {
         $$1("#toolbar")
           .sidebar({
-            dimPage:false,
+            dimPage: false,
             transition: 'push',
             exclusive: false,
             closable: false,
             onChange: function() {
               app.models.mainCanvas.attributes.transitioning = true;
             },
-            onHide : function() {
+            onHide: function() {
               app.models.mainCanvas.attributes.transitioning = false;
             },
-            onShow : function() {
+            onShow: function() {
               app.models.mainCanvas.attributes.transitioning = false;
             }
           })
@@ -864,6 +878,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         el: '#model-preview',
         model: options.model
       });
+
+      $$1('#model-preview-container').draggable();
 
       document.getElementById('model-preview').addEventListener( 'mousemove', function(event) {
         this.model.attributes.mouse.x = ( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
