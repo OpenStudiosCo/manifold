@@ -67,6 +67,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       img.src = '/assets/spectrum.jpg';
       canvas.scale(0.49, 0.4);
 
+      $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
+
       $('#colour-picker').on('click drag', function(event){
 
         // http://www.javascripter.net/faq/rgbtohex.htm
@@ -959,10 +961,10 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
     ThreeCanvasView.prototype.createScene = function createScene (svg) {
       this.model.attributes.width = this.$el.innerWidth();
       this.model.attributes.height = this.$el.innerHeight();
+      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
       this.model.clearScene();
       this.model.attributes.camera.position.set( 0, 0, 200 );
       this.model.attributes.camera.lookAt( 0, 0, 0 );
-      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
       this.$el.append( this.model.attributes.renderer.domElement );
 
        // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.

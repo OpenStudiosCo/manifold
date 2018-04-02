@@ -25,6 +25,8 @@ export default class ColourPickerModel extends BaseModel {
     img.src = '/assets/spectrum.jpg';
     canvas.scale(0.49, 0.4);
 
+    $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
+
     $('#colour-picker').on('click drag', function(event){
 
       // http://www.javascripter.net/faq/rgbtohex.htm
