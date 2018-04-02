@@ -19,7 +19,8 @@ export default class ThreeCanvasModel extends BaseModel {
       raycaster: null,
       highlighter: null,
       mouse: null,
-      extrudeAmount: 40
+      extrudeAmount: 40,
+      helpers: []
     };
     
     return attributes;
@@ -47,19 +48,22 @@ export default class ThreeCanvasModel extends BaseModel {
     gridHelper.position.setZ(-500);
     gridHelper.rotateX(Math.PI / 2);
     gridHelper.rotateZ(-Math.PI / 4);
-    this.attributes.scene.add( gridHelper );
+    this.attributes.helpers.push(gridHelper);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
 
     var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
     gridHelper2.position.setX(712.5);
     gridHelper2.position.setZ(-500);
     gridHelper2.rotateX(Math.PI / 2);
     gridHelper2.rotateZ(Math.PI / 4);
-    this.attributes.scene.add( gridHelper2 );
+    this.attributes.helpers.push(gridHelper2);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
 
     var axesHelper = new THREE.AxesHelper( 500 );
     axesHelper.rotateY(-Math.PI / 4);
     axesHelper.position.set(0, -100, -350);
-    this.attributes.scene.add( axesHelper );
+    this.attributes.helpers.push(axesHelper);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
   }
 
   clearScene() {
@@ -67,9 +71,8 @@ export default class ThreeCanvasModel extends BaseModel {
     this.attributes.scene.children = [];
     this.attributes.mesh = null;
     this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-    if (app && app.models.controls.three.attributes['Show Helpers']) {
-      this.addHelpers();
-    }
+   
+    //this.addHelpers();
   }
 
   animate() {
@@ -90,6 +93,10 @@ export default class ThreeCanvasModel extends BaseModel {
       }
       this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
       this.attributes.scene.add( this.attributes.highlighter );
+    }
+
+    if (app.models.mainCanvas) {
+      app.models.mainCanvas.attributes.canvas.renderAll();      
     }
   }
 }

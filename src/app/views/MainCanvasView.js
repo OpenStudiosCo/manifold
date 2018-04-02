@@ -16,7 +16,16 @@ export default class MainCanvasView extends BaseView {
     });
 
     // Initial image
-    this.model.createSVG($('#original-image').attr('src'));
+    var callback = function(svg) {
+      //this.model.loadSVG(svg, callback);
+      app.views.threeCanvas.createScene(svg);
+      var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0], {
+        originX: 'center',
+        originY: 'center'
+      });
+      this.model.addToCenter(threeD);
+    }.bind(this);
+    this.model.potrace.createSVG($('#original-image').attr('src'), callback);
 
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
@@ -24,7 +33,7 @@ export default class MainCanvasView extends BaseView {
 
     $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
       var src = $(this).find('img').attr('src');
-      app.models.mainCanvas.createSVG(src);
+      app.models.mainCanvas.potrace.createSVG(src, this.model.loadSVG.bind(this.model));
       $('.ui.special.modal')
         .modal('hide');
     });

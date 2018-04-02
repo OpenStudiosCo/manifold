@@ -21,27 +21,27 @@ export default class ThreeCanvasView extends BaseView {
     }.bind(this), false );
   }
 
-  createScene() {
+  createScene(svg) {
     this.model.clearScene();
-    this.model.attributes.width = this.$el.parent().innerWidth();
-    this.model.attributes.camera.position.set( 0, 0, 400 );
+    this.model.attributes.width = this.$el.innerWidth();
+    this.model.attributes.camera.position.set( 0, 0, 200 );
     this.model.attributes.camera.lookAt( 0, 0, 0 );
     this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
-    this.$el.html( this.model.attributes.renderer.domElement );
+    this.$el.append( this.model.attributes.renderer.domElement );
 
      // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
     var loader = new THREE.SVGLoader();
-    var paths = loader.parse($('#potrace-preview').html());
-    var svg = this.extrudeSVG({
+    var paths = loader.parse(svg);
+    var svgExtruded = this.extrudeSVG({
       paths: paths,
       amount: this.model.attributes.extrudeAmount,
       center: { x: this.model.attributes.width, y: this.model.attributes.height /2 }
     });
-    var box = new THREE.Box3().setFromObject( svg );
+    var box = new THREE.Box3().setFromObject( svgExtruded );
     var boundingBoxSize = box.max.sub( box.min );
     var width = boundingBoxSize.x;
-    svg.position.setX(width / 2);
-    this.model.attributes.mesh = svg;
+    svgExtruded.position.setX((width / 2) + 10);
+    this.model.attributes.mesh = svgExtruded;
     this.model.attributes.scene.add( this.model.attributes.mesh );
 
     // Start the animation loop.

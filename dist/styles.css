@@ -10,7 +10,7 @@
   display: none;
   position: absolute;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 800px) {
   .floating {
     display: block;
   }
@@ -28,12 +28,23 @@
   left: 50px;
 }
 #vector-tool {
-  top: 100px;
+  top: 75px;
   right: 100px;
 }
 #threeD-tool {
   top: 550px;
   right: 100px;
+}
+#model-preview-container {
+  bottom: 50px;
+  left: 500px;
+}
+#model-preview-container #model-preview {
+  width: 600px;
+  height: 400px;
+}
+#model-preview-container canvas {
+  background: rgba(0,0,0,0.3);
 }
 #toolbar {
   background: #555;

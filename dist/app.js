@@ -1,11 +1,11 @@
-var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE,dat) {
+var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,THREE,dat) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   var ImageTracer__default = 'default' in ImageTracer ? ImageTracer['default'] : ImageTracer;
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  $$1 = $$1 && $$1.hasOwnProperty('default') ? $$1['default'] : $$1;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
-  Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
+  Potrace$1 = Potrace$1 && Potrace$1.hasOwnProperty('default') ? Potrace$1['default'] : Potrace$1;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
   dat = dat && dat.hasOwnProperty('default') ? dat['default'] : dat;
 
@@ -51,58 +51,59 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
   }(BaseModel));
 
   /**
-    * Potrace Controls model.
+    * Potrace model for the main canvas.
     */
 
-  var PotraceControlsModel = (function (BaseModel$$1) {
-    function PotraceControlsModel () {
+  var PotraceModel = (function (BaseModel$$1) {
+    function PotraceModel () {
       BaseModel$$1.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) PotraceControlsModel.__proto__ = BaseModel$$1;
-    PotraceControlsModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
-    PotraceControlsModel.prototype.constructor = PotraceControlsModel;
+    if ( BaseModel$$1 ) PotraceModel.__proto__ = BaseModel$$1;
+    PotraceModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    PotraceModel.prototype.constructor = PotraceModel;
 
-    PotraceControlsModel.prototype.defaults = function defaults () {
-      var controls = {
+    PotraceModel.prototype.defaults = function defaults () {
+      var settings = {
         alphamax: 1,
         optcurve: false,
         opttolerance: 0.2,
         turdsize: 2,
         turnpolicy: "minority"
       };
-      
-      return controls;
+
+      return settings;
     };
 
-    return PotraceControlsModel;
-  }(BaseModel));
+    PotraceModel.prototype.createSVG = function createSVG (src, callback) {
+      // Create an SVG from data and settings, draw to screen.
+      Potrace.clear();
+      Potrace.loadImageFromSrc(src);
+      Potrace.process(function() {
+        var svg = Potrace.getSVG(1);
+        var randomColor = function () { return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6); };
+        var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+        // normalize should be used to get back absolute segments
+        var pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce(function (acc, seg) {
+          var pathData = seg.type === 'M' ? [] : acc.pop();
+          seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
+          pathData.push(seg);
+          acc.push(pathData);
+          return acc
+        }, []);
 
-  /**
-    * Three Controls model.
-    */
+        pathsDatas.forEach(function(d) {
+          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setPathData(d);
+          path.setAttribute('fill', randomColor());
+          newSVG.appendChild(path);
+        });
 
-  var ThreeControlsModel = (function (BaseModel$$1) {
-    function ThreeControlsModel () {
-      BaseModel$$1.apply(this, arguments);
-    }
-
-    if ( BaseModel$$1 ) ThreeControlsModel.__proto__ = BaseModel$$1;
-    ThreeControlsModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
-    ThreeControlsModel.prototype.constructor = ThreeControlsModel;
-
-    ThreeControlsModel.prototype.defaults = function defaults () {
-      var controls = {
-        'Example 1': "#ffae23",
-        'Example 2': "#ae23ff",
-        'Example 3': "#23ffae",
-        'Show Helpers': true
-      };
-      
-      return controls;
+        callback(newSVG.outerHTML);
+      });
     };
 
-    return ThreeControlsModel;
+    return PotraceModel;
   }(BaseModel));
 
   /**
@@ -112,6 +113,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
   var MainCanvasModel = (function (BaseModel$$1) {
     function MainCanvasModel() {
       BaseModel$$1.call(this);
+      this.potrace = new PotraceModel();
       this.attributes.canvas = new fabric.Canvas('main-canvas');
 
       // Setup pan and zoom.
@@ -154,6 +156,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
     MainCanvasModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
     MainCanvasModel.prototype.constructor = MainCanvasModel;
 
+    // Loads an SVG string and splits up objects so they're loaded in the right position.
     MainCanvasModel.prototype.defaults = function defaults () {
       var attributes = {
         canvas: null,
@@ -163,62 +166,45 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
       return attributes;
     };
 
-    MainCanvasModel.prototype.createSVG = function createSVG (src) {
-      // Create an SVG from data and settings, draw to screen.
-      Potrace.clear();
-      Potrace.loadImageFromSrc(src);
-      Potrace.process(function() {
-        var svg = Potrace.getSVG(1);
-        var randomColor = function () { return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6); };
-        var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
-        // normalize should be used to get back absolute segments
-        var pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce(function (acc, seg) {
-          var pathData = seg.type === 'M' ? [] : acc.pop();
-          seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
-          pathData.push(seg);
-          acc.push(pathData);
-          return acc
-        }, []);
+    MainCanvasModel.prototype.loadSVG = function loadSVG (svg, callback) {
+      fabric.loadSVGFromString(svg, function(objects, options){
+        var this$1 = this;
 
-        pathsDatas.forEach(function(d) {
-          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          path.setPathData(d);
-          path.setAttribute('fill', randomColor());
-          newSVG.appendChild(path);
-        });
-        fabric.loadSVGFromString(newSVG.outerHTML, function(objects, options){
-          var this$1 = this;
+        // TODO: Move this out of here
+        // Create a group so we add to center accurately.
+        var group = new fabric.Group(objects);
+        this.addToCenter(group);
 
-          // Create a group so we add to center accurately.
-          var group = new fabric.Group(objects);
-          this.addToCenter(group);
-
-          // Ungroup.
-          var items = group._objects;
-          group._restoreObjectsState();
-          this.attributes.canvas.remove(group);
-          for (var i = 0; i < items.length; i++) {
-            this$1.attributes.canvas.add(items[i]);
-          }
-          this.attributes.canvas.renderAll();
-        }.bind(this));
+        // Ungroup.
+        var items = group._objects;
+        group._restoreObjectsState();
+        this.attributes.canvas.remove(group);
+        for (var i = 0; i < items.length; i++) {
+          this$1.attributes.canvas.add(items[i]);
+        }
+        this.attributes.canvas.renderAll();
+        if (callback) {
+          callback(items);
+        }
       }.bind(this));
     };
 
     MainCanvasModel.prototype.updateCanvasSize = function updateCanvasSize () {
       // TODO: Move this into app view logic.
       var width  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
-      if ($("#toolbar").sidebar('is visible')) {
-        width -= $('#toolbar').width();  
+      if ($$1("#toolbar").sidebar('is visible')) {
+        width -= $$1('#toolbar').width();  
       }
       var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
       this.attributes.canvas.setHeight( height );
       this.attributes.canvas.setWidth( width );
     };
+
+    // Add an object to the center of the canvas.
     MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
       var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
-      if ($("#toolbar").sidebar('is visible')) {
-        canvasWidth -= $('#toolbar').width();  
+      if ($$1("#toolbar").sidebar('is visible')) {
+        canvasWidth -= $$1('#toolbar').width();  
       }
       var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
       
@@ -264,7 +250,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
         raycaster: null,
         highlighter: null,
         mouse: null,
-        extrudeAmount: 40
+        extrudeAmount: 40,
+        helpers: []
       };
       
       return attributes;
@@ -280,19 +267,22 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
       gridHelper.position.setZ(-500);
       gridHelper.rotateX(Math.PI / 2);
       gridHelper.rotateZ(-Math.PI / 4);
-      this.attributes.scene.add( gridHelper );
+      this.attributes.helpers.push(gridHelper);
+      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
 
       var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
       gridHelper2.position.setX(712.5);
       gridHelper2.position.setZ(-500);
       gridHelper2.rotateX(Math.PI / 2);
       gridHelper2.rotateZ(Math.PI / 4);
-      this.attributes.scene.add( gridHelper2 );
+      this.attributes.helpers.push(gridHelper2);
+      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
 
       var axesHelper = new THREE.AxesHelper( 500 );
       axesHelper.rotateY(-Math.PI / 4);
       axesHelper.position.set(0, -100, -350);
-      this.attributes.scene.add( axesHelper );
+      this.attributes.helpers.push(axesHelper);
+      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
     };
 
     ThreeCanvasModel.prototype.clearScene = function clearScene () {
@@ -300,9 +290,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
       this.attributes.scene.children = [];
       this.attributes.mesh = null;
       this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-      if (app && app.models.controls.three.attributes['Show Helpers']) {
-        this.addHelpers();
-      }
+     
+      //this.addHelpers();
     };
 
     ThreeCanvasModel.prototype.animate = function animate () {
@@ -323,6 +312,10 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
         }
         this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
         this.attributes.scene.add( this.attributes.highlighter );
+      }
+
+      if (app.models.mainCanvas) {
+        app.models.mainCanvas.attributes.canvas.renderAll();      
       }
     };
 
@@ -689,62 +682,6 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
     return ImageTracerControlsView;
   }(BaseControlsView));
 
-  /**
-    * Potrace view.
-    *
-    * Manages all UI elements relating to Potrace integration.
-    */
-
-  var PotraceControlsView = (function (BaseControlsView$$1) {
-    function PotraceControlsView(options) {
-      BaseControlsView$$1.call(this, {
-        el: '#potrace-preview',
-        model: options.model
-      });
-      this.generateControls('Potrace Controls');
-    }
-
-    if ( BaseControlsView$$1 ) PotraceControlsView.__proto__ = BaseControlsView$$1;
-    PotraceControlsView.prototype = Object.create( BaseControlsView$$1 && BaseControlsView$$1.prototype );
-    PotraceControlsView.prototype.constructor = PotraceControlsView;
-
-    // Create an SVG from data and settings, draw to screen.
-    PotraceControlsView.prototype.createSVG = function createSVG () {  
-      Potrace.clear();
-      Potrace.setParameter(this.model.attributes);
-      Potrace.loadImageFromId('original-image');
-      Potrace.process(function(){
-        var svgdiv = document.getElementById('potrace-preview');
-        svgdiv.innerHTML = Potrace.getSVG(1, 'curve');
-      });
-    };
-
-    return PotraceControlsView;
-  }(BaseControlsView));
-
-  /**
-    * Three Controls view.
-    *
-    * Manages all UI elements relating to THREE.JS integration.
-    */
-
-  var ThreeControlsView = (function (BaseControlsView$$1) {
-    function ThreeControlsView(options) {
-      BaseControlsView$$1.call(this, { model: options.model });
-      var guiFolder = this.gui.addFolder('THREE.JS Controls');
-      guiFolder.addColor(this.model.attributes, 'Example 1');
-      guiFolder.addColor(this.model.attributes, 'Example 2');
-      guiFolder.addColor(this.model.attributes, 'Example 3');
-      guiFolder.add(this.model.attributes, 'Show Helpers');
-    }
-
-    if ( BaseControlsView$$1 ) ThreeControlsView.__proto__ = BaseControlsView$$1;
-    ThreeControlsView.prototype = Object.create( BaseControlsView$$1 && BaseControlsView$$1.prototype );
-    ThreeControlsView.prototype.constructor = ThreeControlsView;
-
-    return ThreeControlsView;
-  }(BaseControlsView));
-
   function defaultMenu(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
@@ -760,8 +697,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
   pug_html = pug_html + "\u003Ci class=\"large arrow left icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"menu\"\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider inverted\"\u003E";
-  pug_html = pug_html + "Shapes\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
+  pug_html = pug_html + "\u003Ch6\u003E";
+  pug_html = pug_html + "Shapes\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddCircle\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"circle icon large green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddSquare\"\u003E";
@@ -781,22 +719,31 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
       });
 
       // Initial image
-      this.model.createSVG($('#original-image').attr('src'));
+      var callback = function(svg) {
+        //this.model.loadSVG(svg, callback);
+        app.views.threeCanvas.createScene(svg);
+        var threeD = new fabric.Image($$1(app.views.threeCanvas.el).find('canvas')[0], {
+          originX: 'center',
+          originY: 'center'
+        });
+        this.model.addToCenter(threeD);
+      }.bind(this);
+      this.model.potrace.createSVG($$1('#original-image').attr('src'), callback);
 
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
       this.setupDefaultMenu();
 
-      $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
-        var src = $(this).find('img').attr('src');
-        app.models.mainCanvas.createSVG(src);
-        $('.ui.special.modal')
+      $$1('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
+        var src = $$1(this).find('img').attr('src');
+        app.models.mainCanvas.potrace.createSVG(src, this.model.loadSVG.bind(this.model));
+        $$1('.ui.special.modal')
           .modal('hide');
       });
 
-      $('.ui.dropdown').dropdown();
+      $$1('.ui.dropdown').dropdown();
 
-      $(window).on('resize', function () {
+      $$1(window).on('resize', function () {
         app.models.mainCanvas.updateCanvasSize();
       });
     }
@@ -806,41 +753,41 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
     MainCanvasView.prototype.constructor = MainCanvasView;
 
     MainCanvasView.prototype.setupDefaultMenu = function setupDefaultMenu () {
-      $('#btnAddImage')
+      $$1('#btnAddImage')
         .popup({
           title: 'Add Image',
           position: 'right center'
         })
         .on('click', function(){
-          $('.ui.special.modal')
+          $$1('.ui.special.modal')
             .modal({
               centered: false
             })
             .modal('show');
         });
 
-      $('#btnAddShape')
+      $$1('#btnAddShape')
         .popup({
           title: 'Add Shape',
           position: 'right center'
         })
         .on('click', function(){
-          $('#toolbar').html(addShapes());
+          $$1('#toolbar').html(addShapes());
           this.setupAddShapesMenu();
         }.bind(this));
     };
 
     MainCanvasView.prototype.setupAddShapesMenu = function setupAddShapesMenu () {
-      $('#btnBack')
+      $$1('#btnBack')
         .popup({
           title: 'Back',
           position: 'right center'
         })
         .on('click', function(){
-          $('#toolbar').html(defaultMenu());
+          $$1('#toolbar').html(defaultMenu());
           this.setupDefaultMenu();
         }.bind(this));
-      $('#btnAddCircle')
+      $$1('#btnAddCircle')
         .popup({
           title: 'Circle',
           position: 'right center'
@@ -851,7 +798,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
           });
           this.model.addToCenter(circle);
         }.bind(this));
-      $('#btnAddSquare')
+      $$1('#btnAddSquare')
         .popup({
           title: 'Square',
           position: 'right center'
@@ -866,7 +813,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
           });
           this.model.addToCenter(rect);
         }.bind(this));
-      $('#btnAddTriangle')
+      $$1('#btnAddTriangle')
         .popup({
           title: 'Square',
           position: 'right center'
@@ -881,7 +828,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
 
     MainCanvasView.prototype.toggleToolbar = function toggleToolbar () {
       if (!this.model.attributes.transitioning) {
-        $("#toolbar")
+        $$1("#toolbar")
           .sidebar({
             dimPage:false,
             transition: 'push',
@@ -928,27 +875,27 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
     ThreeCanvasView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
     ThreeCanvasView.prototype.constructor = ThreeCanvasView;
 
-    ThreeCanvasView.prototype.createScene = function createScene () {
+    ThreeCanvasView.prototype.createScene = function createScene (svg) {
       this.model.clearScene();
-      this.model.attributes.width = this.$el.parent().innerWidth();
-      this.model.attributes.camera.position.set( 0, 0, 400 );
+      this.model.attributes.width = this.$el.innerWidth();
+      this.model.attributes.camera.position.set( 0, 0, 200 );
       this.model.attributes.camera.lookAt( 0, 0, 0 );
       this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
-      this.$el.html( this.model.attributes.renderer.domElement );
+      this.$el.append( this.model.attributes.renderer.domElement );
 
        // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
       var loader = new THREE.SVGLoader();
-      var paths = loader.parse($('#potrace-preview').html());
-      var svg = this.extrudeSVG({
+      var paths = loader.parse(svg);
+      var svgExtruded = this.extrudeSVG({
         paths: paths,
         amount: this.model.attributes.extrudeAmount,
         center: { x: this.model.attributes.width, y: this.model.attributes.height /2 }
       });
-      var box = new THREE.Box3().setFromObject( svg );
+      var box = new THREE.Box3().setFromObject( svgExtruded );
       var boundingBoxSize = box.max.sub( box.min );
       var width = boundingBoxSize.x;
-      svg.position.setX(width / 2);
-      this.model.attributes.mesh = svg;
+      svgExtruded.position.setX((width / 2) + 10);
+      this.model.attributes.mesh = svgExtruded;
       this.model.attributes.scene.add( this.model.attributes.mesh );
 
       // Start the animation loop.
@@ -1033,20 +980,20 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
     AppView.prototype.constructor = AppView;
 
     AppView.prototype.launchFileBrowser = function launchFileBrowser (e) {
-      $('#image_input').click();
+      $$1('#image_input').click();
       e.preventDefault();
     };
 
     AppView.prototype.processFile = function processFile (e) {
       window.URL = window.URL || window.webkitURL || window.mozURL;
       var url = URL.createObjectURL(e.currentTarget.files[0]);
-      $(imageContainer({ url: url }))
+      $$1(imageContainer({ url: url }))
         .insertBefore('.ui.inverted.top.fixed.menu .item:last-child');
     };
 
     AppView.prototype.changeImage = function changeImage (e) {
-      $('#original-image').attr('src', $(e.currentTarget).find('img').attr('src'));
-      $('#imagetracer-preview, #potrace-preview').html(loader());
+      $$1('#original-image').attr('src', $$1(e.currentTarget).find('img').attr('src'));
+      $$1('#imagetracer-preview, #potrace-preview').html(loader());
       var callback = function(){
         this.views.imagetracer.createSVG();
         this.views.potrace.createSVG();
@@ -1069,27 +1016,17 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$,fabric,Potrace,THREE
    */
   var App = function App() {
     this.models = {
-      // controls: {
-      // imagetracer: new ImageTracerControlsModel(),
-      // potrace: new PotraceControlsModel(),
-      // three: new ThreeControlsModel()
-      // },
-      mainCanvas: new MainCanvasModel()
-      //threeCanvas: new ThreeCanvasModel()
+      mainCanvas: new MainCanvasModel(),
+      threeCanvas: new ThreeCanvasModel()
     };
     this.views = {
-      mainCanvas: new MainCanvasView({model: this.models.mainCanvas})
-    // controls: {
-    //   imagetracer: new ImageTracerControlsView({ model: this.models.controls.imagetracer }),
-    //   potrace: new PotraceControlsView({ model: this.models.controls.potrace }),
-    //   three: new ThreeControlsView({ model: this.models.controls.three })
-    // },
-    // threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })
+      mainCanvas: new MainCanvasView({ model: this.models.mainCanvas }),
+      threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })      
     };
   };
 
   // Startup using jQuery.ready()
-  $(function () {
+  $$1(function () {
     var app = new App();
     window.app = app;
   });

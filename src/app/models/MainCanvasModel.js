@@ -2,6 +2,7 @@ import $ from 'jQuery';
 import fabric from 'fabric';
 import Potrace from 'Potrace';
 import BaseModel from './BaseModel.js';
+import PotraceModel from './main-canvas/PotraceModel.js';
 
 /**
   * Raster To SVG model.
@@ -19,6 +20,7 @@ export default class MainCanvasModel extends BaseModel {
 
   constructor() {
     super();
+    this.potrace = new PotraceModel();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
 
     // Setup pan and zoom.
@@ -57,43 +59,26 @@ export default class MainCanvasModel extends BaseModel {
     this.updateCanvasSize();
   }
 
-  createSVG(src) {
-    // Create an SVG from data and settings, draw to screen.
-    Potrace.clear();
-    Potrace.loadImageFromSrc(src);
-    Potrace.process(function() {
-      var svg = Potrace.getSVG(1);
-      const randomColor = () => '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6);
-      var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
-      // normalize should be used to get back absolute segments
-      const pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce((acc, seg) => {
-        let pathData = seg.type === 'M' ? [] : acc.pop()
-        seg.values = seg.values.map(v => Math.round(v * 1000) / 1000)
-        pathData.push(seg)
-        acc.push(pathData)
-        return acc
-      }, []);
+  // Loads an SVG string and splits up objects so they're loaded in the right position.
+  loadSVG(svg, callback) {
+    fabric.loadSVGFromString(svg, function(objects, options){
+      // TODO: Move this out of here
+      // Create a group so we add to center accurately.
+      var group = new fabric.Group(objects);
+      this.addToCenter(group);
 
-      pathsDatas.forEach(function(d) {
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        path.setPathData(d)
-        path.setAttribute('fill', randomColor())
-        newSVG.appendChild(path)
-      });
-      fabric.loadSVGFromString(newSVG.outerHTML, function(objects, options){
-        // Create a group so we add to center accurately.
-        var group = new fabric.Group(objects);
-        this.addToCenter(group);
-
-        // Ungroup.
-        var items = group._objects;
-        group._restoreObjectsState();
-        this.attributes.canvas.remove(group);
-        for (var i = 0; i < items.length; i++) {
-          this.attributes.canvas.add(items[i]);
-        }
-        this.attributes.canvas.renderAll();
-      }.bind(this));
+      // Ungroup.
+      var items = group._objects;
+      group._restoreObjectsState();
+      this.attributes.canvas.remove(group);
+      var paths = [];
+      for (var i = 0; i < items.length; i++) {
+        this.attributes.canvas.add(items[i]);
+      }
+      this.attributes.canvas.renderAll();
+      if (callback) {
+        callback(items);
+      }
     }.bind(this));
   }
 
@@ -107,6 +92,8 @@ export default class MainCanvasModel extends BaseModel {
     this.attributes.canvas.setHeight( height );
     this.attributes.canvas.setWidth( width );
   }
+
+  // Add an object to the center of the canvas.
   addToCenter(object) {
     var canvasWidth  = Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0);
     if ($("#toolbar").sidebar('is visible')) {

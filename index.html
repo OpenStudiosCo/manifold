@@ -20,12 +20,12 @@
       <canvas id="main-canvas"></canvas>
       <div class="floating" id="active-object-context">
         <div class="ui header tiny grey">Appears when an object is selected</div>
-        <div class="ui mini menu labeled icon pointing"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item disabled"><i class="object ungroup icon"></i>Ungroup (1)</a><a class="item active"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a></div>
+        <div class="ui mini menu labeled icon pointing"><a class="item"><i class="trash alternate icon"></i>Delete</a><a class="item disabled"><i class="object group icon"></i>Group (1)</a><a class="item disabled"><i class="object ungroup icon"></i>Ungroup (1)</a><a class="item active"><i class="tint icon"></i>Fill</a><a class="item"><i class="pencil alternate icon"></i>Stroke</a><a class="item disabled"><i class="paper plane outline icon"></i>Vector</a><a class="item disabled"><i class="snowflake outline icon"></i>3D</a></div>
       </div>
       <div class="floating" id="fill-tool">
         <div class="ui card">
           <div class="content">
-            <div class="ui header tiny">Fill options</div>
+            <div class="ui header tiny"><i class="tint icon"></i>Fill options</div>
           </div>
           <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
             <div class="ui horizontal list">
@@ -44,7 +44,7 @@
         <div class="ui header tiny grey">Can be launched from an upcoming context menu</div>
         <div class="ui card">
           <div class="content">
-            <div class="ui header tiny">Layers</div>
+            <div class="ui header tiny"><i class="align justify icon"></i>Layers</div>
           </div>
           <div class="content">
             <div class="description">
@@ -91,7 +91,7 @@
         <div class="ui header tiny grey">Options for converting raster to vector</div>
         <div class="ui card">
           <div class="content">
-            <div class="ui header tiny">Vector options</div>
+            <div class="ui header tiny"><i class="paper plane outline icon"></i>Vector options</div>
           </div>
           <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
             <div class="ui header tiny">Select method</div>
@@ -140,7 +140,7 @@
         <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
         <div class="ui card">
           <div class="content">
-            <div class="ui header tiny">3D options</div>
+            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D options</div>
           </div>
           <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
             <div class="ui header tiny">Select method</div>
@@ -169,6 +169,17 @@
                 <input class="ui input" type="text" placeholder="1">
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="floating" id="model-preview-container">
+        <div class="ui header tiny grey">Control the 3D output using a viewport preview</div>
+        <div class="ui card fluid">
+          <div class="content">
+            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D Model Viewport</div>
+          </div>
+          <div class="content">
+            <div id="model-preview" style="box-shadow: inset 0 0 5px #ccc; margin: -1em;"></div>
           </div>
         </div>
       </div>
