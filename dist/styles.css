@@ -31,6 +31,10 @@
   top: 100px;
   right: 100px;
 }
+#threeD-tool {
+  top: 550px;
+  right: 100px;
+}
 #toolbar {
   background: #555;
   box-shadow: inset -10px 0px 50px 0px #000;
