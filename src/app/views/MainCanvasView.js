@@ -19,10 +19,7 @@ export default class MainCanvasView extends BaseView {
     var callback = function(svg) {
       // this.model.loadSVG(svg, callback);
       app.views.threeCanvas.createScene(svg);
-      var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0], {
-        originX: 'center',
-        originY: 'center'
-      });
+      var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0]);
       this.model.addToCenter(threeD);
     }.bind(this);
     this.model.potrace.createSVG($('#original-image').attr('src'), callback);
@@ -78,8 +75,8 @@ export default class MainCanvasView extends BaseView {
         position: 'right center'
       })
       .on('click', function(){
-        $(this).find('i.large.eye.icon.inverted').toggleClass('slash');
-        $('.floating.toggleable').toggle();
+        $(this).find('i.eye.icon').toggleClass('slash');
+        $('.floating.overlay').toggle();
       });
   }
 
@@ -119,7 +116,7 @@ export default class MainCanvasView extends BaseView {
       }.bind(this));
     $('#btnAddTriangle')
       .popup({
-        title: 'Square',
+        title: 'Triangle',
         position: 'right center'
       })
       .on('click', function(){

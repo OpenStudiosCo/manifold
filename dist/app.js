@@ -51,6 +51,67 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
   }(BaseModel));
 
   /**
+    * Colour picker model for the main canvas.
+    * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
+    */
+
+  var ColourPickerModel = (function (BaseModel$$1) {
+    function ColourPickerModel() {
+      BaseModel$$1.call(this);
+      var canvas = document.getElementById('colour-picker').getContext('2d');
+      // create an image object and get it’s source
+      var img = new Image();
+      img.onload = function(){
+        canvas.drawImage(img,0,0);
+      };
+      img.src = '/assets/spectrum.jpg';
+      canvas.scale(0.49, 0.4);
+
+      $('#colour-picker').on('click drag', function(event){
+
+        // http://www.javascripter.net/faq/rgbtohex.htm
+        function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
+
+        function toHex(n) {
+          n = parseInt(n,10);
+          if (isNaN(n)) { return "00"; }
+          n = Math.max(0,Math.min(n,255));
+          return "0123456789ABCDEF".charAt((n-n%16)/16)  + "0123456789ABCDEF".charAt(n%16);
+        }
+
+        // getting user coordinates
+        var x = event.offsetX;
+        var y = event.offsetY;
+        // getting image data and RGB values
+        var img_data = canvas.getImageData(x, y, 1, 1).data;
+        var R = img_data[0];
+        var G = img_data[1];
+        var B = img_data[2];  var rgb = R + ', ' + G + ', ' + B;
+        // convert RGB to HEX
+        var hex = rgbToHex(R,G,B);
+        // making the color the value of the input
+        $('input#rgb').val(rgb);
+        $('input#hex').val('#' + hex);
+        $('#colour-picker-preview').css('background-color', '#' + hex);
+      });
+    }
+
+    if ( BaseModel$$1 ) ColourPickerModel.__proto__ = BaseModel$$1;
+    ColourPickerModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    ColourPickerModel.prototype.constructor = ColourPickerModel;
+
+    ColourPickerModel.prototype.defaults = function defaults () {
+      var settings = {
+        color: '#FFFFFF'
+      };
+
+      return settings;
+    };
+
+    return ColourPickerModel;
+  }(BaseModel));
+
+  /**
     * Potrace model for the main canvas.
     */
 
@@ -113,6 +174,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
   var MainCanvasModel = (function (BaseModel$$1) {
     function MainCanvasModel() {
       BaseModel$$1.call(this);
+      this.colourPickerModel = new ColourPickerModel();
       this.potrace = new PotraceModel();
       this.attributes.canvas = new fabric.Canvas('main-canvas');
 
@@ -710,7 +772,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddSquare\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"square icon large red\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddTriangle\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"play icon large blue\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  pug_html = pug_html + "\u003Ci class=\"play icon large blue counterclockwise rotated\"\u003E";
+  pug_html = pug_html + " \u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
     * MainCanvas view.
@@ -727,10 +790,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       var callback = function(svg) {
         // this.model.loadSVG(svg, callback);
         app.views.threeCanvas.createScene(svg);
-        var threeD = new fabric.Image($$1(app.views.threeCanvas.el).find('canvas')[0], {
-          originX: 'center',
-          originY: 'center'
-        });
+        var threeD = new fabric.Image($$1(app.views.threeCanvas.el).find('canvas')[0]);
         this.model.addToCenter(threeD);
       }.bind(this);
       this.model.potrace.createSVG($$1('#original-image').attr('src'), callback);
@@ -790,8 +850,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
           position: 'right center'
         })
         .on('click', function(){
-          $$1(this).find('i.large.eye.icon.inverted').toggleClass('slash');
-          $$1('.floating.toggleable').toggle();
+          $$1(this).find('i.eye.icon').toggleClass('slash');
+          $$1('.floating.overlay').toggle();
         });
     };
 
@@ -831,7 +891,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         }.bind(this));
       $$1('#btnAddTriangle')
         .popup({
-          title: 'Square',
+          title: 'Triangle',
           position: 'right center'
         })
         .on('click', function(){
@@ -892,8 +952,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
     ThreeCanvasView.prototype.constructor = ThreeCanvasView;
 
     ThreeCanvasView.prototype.createScene = function createScene (svg) {
-      this.model.clearScene();
       this.model.attributes.width = this.$el.innerWidth();
+      this.model.attributes.height = this.$el.innerHeight();
+      this.model.clearScene();
       this.model.attributes.camera.position.set( 0, 0, 200 );
       this.model.attributes.camera.lookAt( 0, 0, 0 );
       this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );

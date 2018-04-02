@@ -24,8 +24,9 @@ export default class ThreeCanvasView extends BaseView {
   }
 
   createScene(svg) {
-    this.model.clearScene();
     this.model.attributes.width = this.$el.innerWidth();
+    this.model.attributes.height = this.$el.innerHeight();
+    this.model.clearScene();
     this.model.attributes.camera.position.set( 0, 0, 200 );
     this.model.attributes.camera.lookAt( 0, 0, 0 );
     this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );

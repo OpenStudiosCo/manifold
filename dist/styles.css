@@ -1,9 +1,9 @@
-.floating {
+.floating.overlay {
   display: none;
   position: absolute;
 }
 @media screen and (min-width: 800px) {
-  .floating {
+  .floating.overlay {
     display: block;
   }
 }

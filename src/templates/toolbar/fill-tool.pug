@@ -1,15 +1,19 @@
-#fill-tool.floating.toggleable
+#fill-tool.floating.overlay
   .ui.card
     .content
       .ui.header.tiny
         i.tint.icon
         | Fill options
-    .content(style='box-shadow: inset 0 0 5px #ccc; padding: 1em;')
-      .ui.horizontal.list
-        .item
-          span(style='background-color: #FFFF00; padding: 1em 2em; border: solid 1px #eee;') 
-        .item
-          .ui.input
-            input(type='text', value='#FFFF00')
+    #colour-picker-preview.content(style='box-shadow: inset 0 0 5px rgba(0,0,0,0.3); padding: 1em;')
+      .ui.form.mini
+        .fields
+          .field.eight.wide
+            label(style='color: white; mix-blend-mode: difference;') Hex
+            .ui.input
+              input#hex(type='text', value='#FFFFFF')
+          .field.eight.wide
+            label(style='color: white; mix-blend-mode: difference;') RGB
+            .ui.input
+              input#rgb(type='text', value='255, 255, 255')
     .content(style='overflow:hidden')
-      img(src='./assets/spectrum.jpg', style='border: solid 1px #eee; cursor: crosshair; margin: -2em; width:120%')
+      canvas#colour-picker(style='border: solid 1px #eee; cursor: crosshair; margin: -2em; width:120%')

@@ -2,6 +2,7 @@ import $ from 'jQuery';
 import fabric from 'fabric';
 import Potrace from 'Potrace';
 import BaseModel from './BaseModel.js';
+import ColourPickerModel from './main-canvas/ColourPickerModel.js';
 import PotraceModel from './main-canvas/PotraceModel.js';
 
 /**
@@ -20,6 +21,7 @@ export default class MainCanvasModel extends BaseModel {
 
   constructor() {
     super();
+    this.colourPickerModel = new ColourPickerModel();
     this.potrace = new PotraceModel();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
 
