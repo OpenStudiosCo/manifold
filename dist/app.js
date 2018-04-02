@@ -879,7 +879,7 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         model: options.model
       });
 
-      $$1('#model-preview-container').draggable();
+      $$1('#model-preview-container').draggable({ cancel: "#model-preview" });
 
       document.getElementById('model-preview').addEventListener( 'mousemove', function(event) {
         this.model.attributes.mouse.x = ( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;

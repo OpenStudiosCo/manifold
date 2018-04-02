@@ -15,7 +15,7 @@ export default class ThreeCanvasView extends BaseView {
       model: options.model
     });
 
-    $('#model-preview-container').draggable();
+    $('#model-preview-container').draggable({ cancel: "#model-preview" });
 
     document.getElementById('model-preview').addEventListener( 'mousemove', function(event) {
       this.model.attributes.mouse.x = ( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 - 1;
