@@ -2,6 +2,13 @@
   display: none;
   position: absolute;
 }
+.floating.overlay .header {
+  cursor: move;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
 @media screen and (min-width: 800px) {
   .floating.overlay {
     display: block;
@@ -30,13 +37,6 @@
 #model-preview-container {
   bottom: 50px;
   left: 500px;
-}
-#model-preview-container .header {
-  cursor: move;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 #model-preview-container #model-preview {
   width: 600px;

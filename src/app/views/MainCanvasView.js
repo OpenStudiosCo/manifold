@@ -20,6 +20,8 @@ export default class MainCanvasView extends BaseView {
       // this.model.loadSVG(svg, callback);
       app.views.threeCanvas.createScene(svg);
       var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0]);
+      threeD.left = 0;
+      threeD.top = 0;
       this.model.addToCenter(threeD);
     }.bind(this);
     this.model.potrace.createSVG($('#original-image').attr('src'), callback);
@@ -27,6 +29,9 @@ export default class MainCanvasView extends BaseView {
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
     this.setupDefaultMenu();
+
+    // TODO: Move this somewhere
+    $('.floating.overlay').draggable();
 
     $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
       var src = $(e.target).attr('src');

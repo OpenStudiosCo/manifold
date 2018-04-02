@@ -791,6 +791,8 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
         // this.model.loadSVG(svg, callback);
         app.views.threeCanvas.createScene(svg);
         var threeD = new fabric.Image($$1(app.views.threeCanvas.el).find('canvas')[0]);
+        threeD.left = 0;
+        threeD.top = 0;
         this.model.addToCenter(threeD);
       }.bind(this);
       this.model.potrace.createSVG($$1('#original-image').attr('src'), callback);
@@ -798,6 +800,9 @@ var ManifoldApplication = (function (Backbone,ImageTracer,$$1,fabric,Potrace$1,T
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
       this.setupDefaultMenu();
+
+      // TODO: Move this somewhere
+      $$1('.floating.overlay').draggable();
 
       $$1('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
         var src = $$1(e.target).attr('src');
