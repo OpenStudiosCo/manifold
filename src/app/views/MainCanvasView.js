@@ -76,6 +76,10 @@ export default class MainCanvasView extends BaseView {
   }
 
   setupDefaultMenu() {
+    // Define slideout position based on corresponding menu item.
+    $('#add-image').css('top', function(){
+      return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
+    });
     $('#btnAddImage')
       .popup({
         title: 'Add Image',
@@ -182,16 +186,6 @@ export default class MainCanvasView extends BaseView {
         $(this).find('i.icon').toggleClass('disabled');
         $('#threeD-tool').toggle();
       });
-    $('#btnToggle3DPreview')
-      .popup({
-        title: 'Toggle 3D Preview',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $(this).find('i.icon').toggleClass('disabled');
-        $('#model-preview-container').toggle();
-      });
-
   }
 
   setupAddShapesMenu() {

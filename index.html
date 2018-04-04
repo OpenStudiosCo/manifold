@@ -17,14 +17,14 @@
   <body>
     <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar">
       <div class="ui horizontal divider fitted inverted">
+        <h6>View</h6>
+      </div><a class="item" id="btnToggleOverlays"><i class="large eye icon inverted"></i></a>
+      <div class="ui horizontal divider fitted inverted">
         <h6>Add</h6>
       </div><a class="item" id="btnAddImage"><i class="large icons"><i class="image icon inverted disabled"></i><i class="corner plus icon green disabled"></i></i></a><a class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnAddText"><i class="large icons"><i class="font icon inverted"></i><i class="corner plus icon green"></i></i></a>
       <div class="ui horizontal divider fitted inverted">
         <h6>Tools</h6>
       </div><a class="item" id="btnToggleFill"><i class="large tint icon inverted disabled"></i></a><a class="item" id="btnToggleVector"><i class="large paper plane outline icon inverted disabled"></i></a><a class="item" id="btnToggleLayers"><i class="large align justify icon inverted disabled"></i></a><a class="item" id="btnToggle3DOptions"><i class="icons large"><i class="cog icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a>
-      <div class="ui horizontal divider fitted inverted">
-        <h6>View</h6>
-      </div><a class="item" id="btnToggleOverlays"><i class="large eye icon inverted"></i></a><a class="item" id="btnToggle3DPreview"><i class="icons large"><i class="expand icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a>
     </div>
     <div class="pusher" id="container">
       <div class="ui fluid image small" id="logo" onclick="app.views.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
@@ -193,17 +193,7 @@
           </div>
         </div>
       </div>
-      <div class="floating overlay" id="model-preview-container" style="display: none">
-        <div class="ui header tiny grey">Control the 3D output using a viewport preview</div>
-        <div class="ui card fluid">
-          <div class="content">
-            <div class="ui header tiny"><i class="icons large">&nbsp;<i class="expand icon"></i><i class="snowflake outline icon"></i></i>3D Model Viewport</div>
-          </div>
-          <div class="content">
-            <div id="model-preview" style="box-shadow: inset 0 0 5px #ccc; margin: -1em;"></div>
-          </div>
-        </div>
-      </div>
+      <div id="model-preview" style="box-shadow: inset 0 0 5px #ccc; margin: -1em;"></div>
     </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>

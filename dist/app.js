@@ -525,8 +525,21 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
       this.attributes.canvas.on('selection:created', selectionCallback);
       this.attributes.canvas.on('selection:updated', selectionCallback);
 
+      this.attributes.canvas.on('mouse:dblclick', function(e){
+        if (e.target && e.target._element) {
+          var $el = $('#model-preview');
+          var offsetX = e.target.left + ((e.target.width / 2) - ($el.width() / 2)) + 13.5;
+          var offsetY = e.target.top + ((e.target.height / 2) - ($el.height() / 2)) + 13.5;
+          $el.show();
+          $el.css('left', offsetX);
+          $el.css('top', offsetY);
+        }
+       
+      }.bind(this));
+
       this.attributes.canvas.on('selection:cleared', function(){
         $('.active-object-context').remove();
+       $('#model-preview').hide();
       });
 
       // TODO: Don't follow if user moved the toolbar.
@@ -713,6 +726,11 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   function defaultMenu(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
   pug_html = pug_html + "\u003Ch6\u003E";
+  pug_html = pug_html + "View\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
+  pug_html = pug_html + "\u003Ch6\u003E";
   pug_html = pug_html + "Add\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
@@ -738,15 +756,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggle3DOptions\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"icons large\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"cog icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner snowflake outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
-  pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "View\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggle3DPreview\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"icons large\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"expand icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Ci class=\"corner snowflake outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
@@ -845,6 +854,10 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
     MainCanvasView.prototype.constructor = MainCanvasView;
 
     MainCanvasView.prototype.setupDefaultMenu = function setupDefaultMenu () {
+      // Define slideout position based on corresponding menu item.
+      $('#add-image').css('top', function(){
+        return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
+      });
       $('#btnAddImage')
         .popup({
           title: 'Add Image',
@@ -951,16 +964,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
           $(this).find('i.icon').toggleClass('disabled');
           $('#threeD-tool').toggle();
         });
-      $('#btnToggle3DPreview')
-        .popup({
-          title: 'Toggle 3D Preview',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $(this).find('i.icon').toggleClass('disabled');
-          $('#model-preview-container').toggle();
-        });
-
     };
 
     MainCanvasView.prototype.setupAddShapesMenu = function setupAddShapesMenu () {

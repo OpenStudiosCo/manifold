@@ -77,8 +77,21 @@ export default class MainCanvasModel extends BaseModel {
     this.attributes.canvas.on('selection:created', selectionCallback);
     this.attributes.canvas.on('selection:updated', selectionCallback);
 
+    this.attributes.canvas.on('mouse:dblclick', function(e){
+      if (e.target && e.target._element) {
+        var $el = $('#model-preview');
+        var offsetX = e.target.left + ((e.target.width / 2) - ($el.width() / 2)) + 13.5;
+        var offsetY = e.target.top + ((e.target.height / 2) - ($el.height() / 2)) + 13.5;
+        $el.show();
+        $el.css('left', offsetX);
+        $el.css('top', offsetY);
+      }
+     
+    }.bind(this));
+
     this.attributes.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
+     $('#model-preview').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.

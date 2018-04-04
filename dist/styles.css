@@ -41,16 +41,12 @@
   top: 15px;
   display: none;
 }
-#model-preview-container {
-  display: block;
-  bottom: 75px;
-  left: 75px;
-}
-#model-preview-container #model-preview {
+#model-preview {
+  position: absolute;
   width: 600px;
   height: 400px;
 }
-#model-preview-container canvas {
+#model-preview canvas {
   background: linear-gradient(-90deg, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(-90deg, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px), linear-gradient(-90deg, #aaa 1px, transparent 1px), linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px), linear-gradient(#aaa 1px, transparent 1px), #f2f2f2;
   background-size: 4px 4px, 4px 4px, 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px;
 }
