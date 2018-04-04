@@ -3,6 +3,7 @@ import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseView from './BaseView.js';
 import defaultMenu from '../../templates/toolbar/default.pug';
+import addImageItem from '../../templates/toolbar/add-image__item.pug';
 import addShapes from '../../templates/toolbar/add-shapes.pug';
 
 /**
@@ -33,7 +34,7 @@ export default class MainCanvasView extends BaseView {
 
     $('.floating.overlay').draggable();
 
-    $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
+    $('#add-image').on('click', 'a.item.image', function(e){
       var src = $(e.target).attr('src');
       var callback = function(svg) {
         var callback = function() {
@@ -50,6 +51,28 @@ export default class MainCanvasView extends BaseView {
     $(window).on('resize', () => {
       app.models.mainCanvas.updateCanvasSize();
     });
+
+    $('#hideAddImage')
+      .on('click', function() {
+        $('#btnAddImage').find('i.icon').toggleClass('disabled');
+        $('#add-image')
+          .animate({
+           left: '-' + $('#add-image').width() + 'px'
+          });
+      });
+    $('#btnUploadImage')
+      .on('click', function(e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        $('#image_input').click();
+      });
+    $('#image_input')
+      .on('change', function(e) {
+        window.URL = window.URL || window.webkitURL || window.mozURL;
+        var url = URL.createObjectURL(e.currentTarget.files[0]);
+        $(addImageItem({ url: url }))
+          .insertBefore('#add-image .ui.menu .item:last-child');
+      });
   }
 
   setupDefaultMenu() {
@@ -59,9 +82,23 @@ export default class MainCanvasView extends BaseView {
         position: 'right center'
       })
       .on('click', function(){
-        $('.ui.special.modal')
-          .modal({ centered: false })
-          .modal('show');
+        $(this).find('i.icon').toggleClass('disabled');
+        if ($(this).find('i.icon').hasClass('disabled')) {
+          $('#add-image')
+            .css('left', '0px')
+            .show()
+            .animate({
+              left: '-' + $('#add-image').width() + 'px'
+            });
+        }
+        else {
+          $('#add-image')
+            .css('left', '-' + $('#add-image').width() + 'px')
+            .show()
+            .animate({
+              left: '0px'
+            });
+        }
       });
 
     $('#btnAddShape')
@@ -72,6 +109,19 @@ export default class MainCanvasView extends BaseView {
       .on('click', function(){
         $('#toolbar').html(addShapes());
         this.setupAddShapesMenu();
+      }.bind(this));
+
+    // TODO: https://codepen.io/shershen08/pen/JGepQv
+    $('#btnAddText')
+      .popup({
+        title: 'Add Text',
+        position: 'right center'
+      })
+      .on('click', function(){
+        var textBox = new fabric.Textbox("Sample Text", {
+          fontFamily: 'Arial'
+        });
+        this.model.addToCenter(textBox);
       }.bind(this));
 
     // Track which overlays we hid so we don't override other settings.

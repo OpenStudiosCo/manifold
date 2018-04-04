@@ -276,7 +276,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   })({});
 
   function activeObjectContext(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  pug_html = pug_html + "\u003Cdiv class=\"active-object-context floating overlay toggleable\"\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"active-object-context floating overlay\"\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"ui mini menu labeled icon pointing\"\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnDeleteActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"trash alternate icon\"\u003E\u003C\u002Fi\u003E";
@@ -287,7 +287,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"object ungroup icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "Ungroup (1)\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnFillActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"tint icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "Fill\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
@@ -716,17 +716,19 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   pug_html = pug_html + "Add\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"image icon inverted\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ci class=\"image icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Ci class=\"corner plus icon green disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddShape\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"chart pie icon inverted\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddText\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"font icon inverted\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
   pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "Overlays\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "Tools\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleFill\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large tint icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleVector\"\u003E";
@@ -737,10 +739,21 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   pug_html = pug_html + "\u003Ci class=\"icons large\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"cog icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Ci class=\"corner snowflake outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
+  pug_html = pug_html + "\u003Ch6\u003E";
+  pug_html = pug_html + "View\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggle3DPreview\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"icons large\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"expand icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Ci class=\"corner snowflake outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
+  function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  var locals_for_with = (locals || {});(function (url) {
+  pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
+  pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
+  }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   function addShapes(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnBack\"\u003E";
@@ -786,7 +799,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
 
       $('.floating.overlay').draggable();
 
-      $('.ui.fullscreen.special.modal.transition').on('click', 'a.image', function(e){
+      $('#add-image').on('click', 'a.item.image', function(e){
         var src = $(e.target).attr('src');
         var callback = function(svg) {
           var callback = function() {
@@ -803,6 +816,28 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
       $(window).on('resize', function () {
         app.models.mainCanvas.updateCanvasSize();
       });
+
+      $('#hideAddImage')
+        .on('click', function() {
+          $('#btnAddImage').find('i.icon').toggleClass('disabled');
+          $('#add-image')
+            .animate({
+             left: '-' + $('#add-image').width() + 'px'
+            });
+        });
+      $('#btnUploadImage')
+        .on('click', function(e) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          $('#image_input').click();
+        });
+      $('#image_input')
+        .on('change', function(e) {
+          window.URL = window.URL || window.webkitURL || window.mozURL;
+          var url = URL.createObjectURL(e.currentTarget.files[0]);
+          $(addImageItem({ url: url }))
+            .insertBefore('#add-image .ui.menu .item:last-child');
+        });
     }
 
     if ( BaseView$$1 ) MainCanvasView.__proto__ = BaseView$$1;
@@ -816,9 +851,23 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
           position: 'right center'
         })
         .on('click', function(){
-          $('.ui.special.modal')
-            .modal({ centered: false })
-            .modal('show');
+          $(this).find('i.icon').toggleClass('disabled');
+          if ($(this).find('i.icon').hasClass('disabled')) {
+            $('#add-image')
+              .css('left', '0px')
+              .show()
+              .animate({
+                left: '-' + $('#add-image').width() + 'px'
+              });
+          }
+          else {
+            $('#add-image')
+              .css('left', '-' + $('#add-image').width() + 'px')
+              .show()
+              .animate({
+                left: '0px'
+              });
+          }
         });
 
       $('#btnAddShape')
@@ -829,6 +878,19 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
         .on('click', function(){
           $('#toolbar').html(addShapes());
           this.setupAddShapesMenu();
+        }.bind(this));
+
+      // TODO: https://codepen.io/shershen08/pen/JGepQv
+      $('#btnAddText')
+        .popup({
+          title: 'Add Text',
+          position: 'right center'
+        })
+        .on('click', function(){
+          var textBox = new fabric.Textbox("Sample Text", {
+            fontFamily: 'Arial'
+          });
+          this.model.addToCenter(textBox);
         }.bind(this));
 
       // Track which overlays we hid so we don't override other settings.
