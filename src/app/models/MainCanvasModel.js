@@ -49,6 +49,7 @@ export default class MainCanvasModel extends BaseModel {
       }
     });
 
+    // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
       $('.active-object-context').remove();
       var $menu = $(activeObjectContext());
@@ -58,8 +59,19 @@ export default class MainCanvasModel extends BaseModel {
       $menu.css('left', offsetX);
       $menu.css('top', offsetY);
 
+      // Set the menu to be draggable
       $('.floating.overlay').draggable();
-    };
+
+      // Events
+      $('#btnDeleteActive').click(function(e) {
+        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        for (var i = 0; i < selectedObjects.length; i++) {
+          this.attributes.canvas.remove(selectedObjects[i]);  
+        }
+        this.attributes.canvas.discardActiveObject();
+        $('.active-object-context').remove();
+      }.bind(this));
+    }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
     this.attributes.canvas.on('selection:created', selectionCallback);
@@ -69,6 +81,7 @@ export default class MainCanvasModel extends BaseModel {
       $('.active-object-context').remove();
     });
 
+    // TODO: Don't follow if user moved the toolbar.
     this.attributes.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));

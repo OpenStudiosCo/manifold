@@ -278,7 +278,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
   function activeObjectContext(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Cdiv class=\"active-object-context floating overlay toggleable\"\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"ui mini menu labeled icon pointing\"\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnDeleteActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"trash alternate icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "Delete\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
@@ -495,6 +495,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
         }
       });
 
+      // Create the active object context menu when selecting an object.
       var selectionCallback = function(e) {
         $('.active-object-context').remove();
         var $menu = $(activeObjectContext());
@@ -504,8 +505,21 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
         $menu.css('left', offsetX);
         $menu.css('top', offsetY);
 
+        // Set the menu to be draggable
         $('.floating.overlay').draggable();
-      };
+
+        // Events
+        $('#btnDeleteActive').click(function(e) {
+          var this$1 = this;
+
+          var selectedObjects = this.attributes.canvas.getActiveObjects();
+          for (var i = 0; i < selectedObjects.length; i++) {
+            this$1.attributes.canvas.remove(selectedObjects[i]);  
+          }
+          this.attributes.canvas.discardActiveObject();
+          $('.active-object-context').remove();
+        }.bind(this));
+      }.bind(this);
 
       // Separated for Fabric's On not supporting multiple.
       this.attributes.canvas.on('selection:created', selectionCallback);
@@ -515,6 +529,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
         $('.active-object-context').remove();
       });
 
+      // TODO: Don't follow if user moved the toolbar.
       this.attributes.canvas.on('object:moving', function(e) {
         var $menu = $('.active-object-context');
         var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
