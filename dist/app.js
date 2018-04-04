@@ -528,8 +528,8 @@ var ManifoldApplication = (function (Backbone,$,Potrace,fabric,THREE,_) {
       this.attributes.canvas.on('mouse:dblclick', function(e){
         if (e.target && e.target._element) {
           var $el = $('#model-preview');
-          var offsetX = e.target.left + ((e.target.width / 2) - ($el.width() / 2)) + 13.5;
-          var offsetY = e.target.top + ((e.target.height / 2) - ($el.height() / 2)) + 13.5;
+          var offsetX = e.target.left + ((e.target.width / 2) - ($el.width() / 2));
+          var offsetY = e.target.top + ((e.target.height / 2) - ($el.height() / 2));
           $el.show();
           $el.css('left', offsetX);
           $el.css('top', offsetY);
