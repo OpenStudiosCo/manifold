@@ -958,8 +958,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
   pug_html = pug_html + "\u003Ch6\u003E";
   pug_html = pug_html + "Tools\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleFill\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large tint icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleVector\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large paper plane outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleLayers\"\u003E";
@@ -1127,15 +1125,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
             $('.floating.overlay:visible').hide();
           }
           $(this).find('i.icon').toggleClass('slash');
-        });
-      $('#btnToggleFill')
-        .popup({
-          title: 'Toggle Fill',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $(this).find('i.icon').toggleClass('disabled');
-          $('#fill-tool').toggle();
         });
       $('#btnToggleVector')
         .popup({
