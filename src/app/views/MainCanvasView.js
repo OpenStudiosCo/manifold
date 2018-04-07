@@ -140,15 +140,6 @@ export default class MainCanvasView extends BaseView {
         }
         $(this).find('i.icon').toggleClass('slash');
       });
-    $('#btnToggleFill')
-      .popup({
-        title: 'Toggle Fill',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $(this).find('i.icon').toggleClass('disabled');
-        $('#fill-tool').toggle();
-      });
     $('#btnToggleVector')
       .popup({
         title: 'Toggle Vector',
