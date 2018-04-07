@@ -4,6 +4,8 @@ import BaseModel from './BaseModel.js';
 import activeObjectContext from '../../templates/toolbar/active-object-context.pug';
 import ColourPickerModel from './main-canvas/ColourPickerModel.js';
 import PotraceModel from './main-canvas/PotraceModel.js';
+import ThreeCanvasModel from '../models/ThreeCanvasModel.js';
+import ThreeCanvasView from '../views/ThreeCanvasView.js';
 
 /**
   * Raster To SVG model.
@@ -51,6 +53,7 @@ export default class MainCanvasModel extends BaseModel {
 
     // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
+      $('.model-preview').hide();
       $('.active-object-context').remove();
       var $menu = $(activeObjectContext());
       $('#container').append($menu);
@@ -62,11 +65,55 @@ export default class MainCanvasModel extends BaseModel {
       // Set the menu to be draggable
       $('.floating.overlay').draggable();
 
+      // Set relevant buttons to active
+      if (!e.target._element && !e.target.text && !e.target._objects) {
+        $('#btnMake3D').removeClass('disabled');
+        $('#btnFillActive').removeClass('disabled');
+        this.colourPickerModel.lookupAndSetColour(e.target.fill);
+      }
+
       // Events
+      $('#btnFillActive').click(function(e){
+        $(this).toggleClass('active');
+        $('#fill-tool').toggle();
+      });
       $('#btnDeleteActive').click(function(e) {
         var selectedObjects = this.attributes.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
           this.attributes.canvas.remove(selectedObjects[i]);  
+        }
+        this.attributes.canvas.discardActiveObject();
+        $('.active-object-context').remove();
+      }.bind(this));
+      $('#btnMake3D:not(.disabled)').click(function(e) {
+        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        var convertibleObjects = [];
+        for (var i = 0; i < selectedObjects.length; i++) {
+          if (selectedObjects[i].toSVG) {
+
+            var svgElements = selectedObjects[i].toSVG();
+
+            var create3DObject = function(threeCanvas) {
+              var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
+              threeD.left = selectedObjects[i].left;
+              threeD.top = selectedObjects[i].top;
+              this.attributes.canvas.add(threeD);
+            }.bind(this);
+            app.models.threeCanvas.push(new ThreeCanvasModel());
+            app.views.threeCanvas.push(
+              new ThreeCanvasView({ 
+                model: app.models.threeCanvas[app.models.threeCanvas.length-1],
+                svg: svgElements,
+                width: selectedObjects[i].width * selectedObjects[i].scaleX,
+                height: selectedObjects[i].height * selectedObjects[i].scaleY
+              })
+            );
+            create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
+            this.attributes.canvas.remove(selectedObjects[i]);
+          }
+          else {
+            console.log('not convertible!');
+          }
         }
         this.attributes.canvas.discardActiveObject();
         $('.active-object-context').remove();
@@ -79,9 +126,11 @@ export default class MainCanvasModel extends BaseModel {
 
     this.attributes.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
-        var $el = $('#model-preview');
-        var offsetX = e.target.left + ((e.target.width / 2) - ($el.width() / 2));
-        var offsetY = e.target.top + ((e.target.height / 2) - ($el.height() / 2));
+        var $el = $(e.target._element).parent();
+        var scaledWidth = e.target.width * e.target.scaleX;
+        var scaledHeight = e.target.height * e.target.scaleY;
+        var offsetX = e.target.left + ((scaledWidth / 2) - ($el.width() / 2));
+        var offsetY = e.target.top + ((scaledHeight / 2) - ($el.height() / 2));
         $el.show();
         $el.css('left', offsetX);
         $el.css('top', offsetY);
@@ -91,7 +140,8 @@ export default class MainCanvasModel extends BaseModel {
 
     this.attributes.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
-     $('#model-preview').hide();
+     $('.model-preview').hide();
+     $('#fill-tool').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.
@@ -99,8 +149,37 @@ export default class MainCanvasModel extends BaseModel {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
+      var toolbarWidth = $('#toolbar').sidebar('is visible') ? $('#toolbar').width(): 0;
+      if (offsetX < toolbarWidth) {
+        offsetX = 0;
+      }
+      if (offsetX > this.attributes.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = this.attributes.canvas.width - $menu.width(); 
+      }
+      if (offsetY < 0) {
+        offsetY = 0;
+      }
       $menu.css('left', offsetX);
       $menu.css('top', offsetY);
+    }.bind(this));
+
+    // Resize 3D canvas if it's that type of element.
+    this.attributes.canvas.on('object:scaling', function(e) {
+      if (e.target._element) {
+        var $container = $(e.target._element).parent();
+        if ($container.hasClass('model-preview')) {
+          var scaledWidth = e.target.width * e.target.scaleX;
+          var scaledHeight = e.target.height * e.target.scaleY;
+          $container.css('width', scaledWidth);
+          $container.css('height', scaledHeight);
+          
+          var id = $container.attr('id').replace('model-preview-','');
+          app.models.threeCanvas[id].attributes.width = scaledWidth;
+          app.models.threeCanvas[id].attributes.height = scaledHeight;
+          app.models.threeCanvas[id].resize();
+          e.target._resetWidthHeight();
+        }
+      }
     });
   }
 

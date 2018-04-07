@@ -24,13 +24,13 @@
       </div><a class="item" id="btnAddImage"><i class="large icons"><i class="image icon inverted disabled"></i><i class="corner plus icon green disabled"></i></i></a><a class="item" id="btnAddShape"><i class="large icons"><i class="chart pie icon inverted"></i><i class="corner plus icon green"></i></i></a><a class="item" id="btnAddText"><i class="large icons"><i class="font icon inverted"></i><i class="corner plus icon green"></i></i></a>
       <div class="ui horizontal divider fitted inverted">
         <h6>Tools</h6>
-      </div><a class="item" id="btnToggleFill"><i class="large tint icon inverted disabled"></i></a><a class="item" id="btnToggleVector"><i class="large paper plane outline icon inverted disabled"></i></a><a class="item" id="btnToggleLayers"><i class="large align justify icon inverted disabled"></i></a><a class="item" id="btnToggle3DOptions"><i class="icons large"><i class="cog icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a>
+      </div><a class="item" id="btnToggleVector"><i class="large paper plane outline icon inverted disabled"></i></a><a class="item" id="btnToggleLayers"><i class="large align justify icon inverted disabled"></i></a><a class="item" id="btnToggle3DOptions"><i class="icons large"><i class="cog icon inverted disabled"></i><i class="corner snowflake outline icon inverted disabled"></i></i></a>
     </div>
     <div class="pusher" id="container">
       <div class="ui fluid image small" id="logo" onclick="app.views.mainCanvas.toggleToolbar();"><a href="#" title="Toggle Toolbar"><img src="/assets/manifold.svg"></a></div>
       <canvas id="main-canvas"></canvas>
       <div id="add-image">
-        <div class="ui menu labeled"><a class="item button active" id="hideAddImage"><i class="arrow alternate circle left icon large"></i></a><a class="item image"><img class="ui fluid small image" id="original-image" src="/assets/shapes.png"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo.jpg"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo2.jpg"></a><a class="item button" id="btnUploadImage"><i class="add icon"></i></a></div>
+        <div class="ui menu labeled"><a class="item button active" id="hideAddImage"><i class="arrow alternate circle left icon large"></i></a><a class="item image" id="original-image"><img class="ui fluid small image" src="/assets/shapes.png"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo.jpg"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo2.jpg"></a><a class="item button" id="btnUploadImage"><i class="add icon"></i></a></div>
         <input id="image_input" type="file" accept="image/*">
       </div>
       <div class="floating overlay" id="fill-tool" style="display: none">
@@ -193,14 +193,13 @@
           </div>
         </div>
       </div>
-      <div id="model-preview" style="box-shadow: inset 0 0 5px #ccc;"></div>
     </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>
   <script src="./vendor/jquery-ui.min.js"></script>
   <script src="./vendor/path-data-polyfill.js"></script>
   <script src="./vendor/Tween.js"></script>
-  <script src="./vendor/three.91.js"></script>
+  <script src="./vendor/three.js"></script>
   <script src="./vendor/semantic.2.3.1.js"></script>
   <script src="./vendor/dat.gui.min.js"></script>
   <script src="./vendor/underscore.js"></script>

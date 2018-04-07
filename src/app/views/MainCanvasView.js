@@ -2,6 +2,7 @@ import _ from '_';
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseView from './BaseView.js';
+import ThreeCanvasView from './ThreeCanvasView.js';
 import defaultMenu from '../../templates/toolbar/default.pug';
 import addImageItem from '../../templates/toolbar/add-image__item.pug';
 import addShapes from '../../templates/toolbar/add-shapes.pug';
@@ -16,17 +17,6 @@ export default class MainCanvasView extends BaseView {
       el: '#main-canvas',
       model: options.model
     });
-
-    // Initial image
-    var callback = function(svg) {
-      // this.model.loadSVG(svg, callback);
-      app.views.threeCanvas.createScene(svg);
-      var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0]);
-      threeD.left = 0;
-      threeD.top = 0;
-      this.model.addToCenter(threeD);
-    }.bind(this);
-    this.model.potrace.createSVG($('#original-image').attr('src'), callback);
 
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
@@ -149,15 +139,6 @@ export default class MainCanvasView extends BaseView {
           $('.floating.overlay:visible').hide();
         }
         $(this).find('i.icon').toggleClass('slash');
-      });
-    $('#btnToggleFill')
-      .popup({
-        title: 'Toggle Fill',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $(this).find('i.icon').toggleClass('disabled');
-        $('#fill-tool').toggle();
       });
     $('#btnToggleVector')
       .popup({
