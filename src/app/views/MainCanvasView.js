@@ -2,6 +2,7 @@ import _ from '_';
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseView from './BaseView.js';
+import ThreeCanvasView from './ThreeCanvasView.js';
 import defaultMenu from '../../templates/toolbar/default.pug';
 import addImageItem from '../../templates/toolbar/add-image__item.pug';
 import addShapes from '../../templates/toolbar/add-shapes.pug';
@@ -17,16 +18,8 @@ export default class MainCanvasView extends BaseView {
       model: options.model
     });
 
-    // Initial image
-    var callback = function(svg) {
-      // this.model.loadSVG(svg, callback);
-      app.views.threeCanvas.createScene(svg);
-      var threeD = new fabric.Image($(app.views.threeCanvas.el).find('canvas')[0]);
-      threeD.left = 0;
-      threeD.top = 0;
-      this.model.addToCenter(threeD);
-    }.bind(this);
-    this.model.potrace.createSVG($('#original-image').attr('src'), callback);
+    var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
+    this.model.addToCenter(circle);
 
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 

@@ -5,7 +5,6 @@ import MainCanvasModel from './app/models/MainCanvasModel.js';
 import ThreeCanvasModel from './app/models/ThreeCanvasModel.js';
 // Views
 import MainCanvasView from './app/views/MainCanvasView.js';
-import ThreeCanvasView from './app/views/ThreeCanvasView.js';
 
 /**
  * Manifold Browser Application
@@ -14,11 +13,11 @@ export default class App {
   constructor() {
     this.models = {
       mainCanvas: new MainCanvasModel(),
-      threeCanvas: new ThreeCanvasModel()
+      threeCanvas: []
     };
     this.views = {
       mainCanvas: new MainCanvasView({ model: this.models.mainCanvas }),
-      threeCanvas: new ThreeCanvasView({ model: this.models.threeCanvas })      
+      threeCanvas: []
     };
   }
 }

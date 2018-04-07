@@ -29,7 +29,7 @@ export default class ThreeCanvasModel extends BaseModel {
   constructor(options) {
     super(options);
     this.attributes.scene = new THREE.Scene();
-    this.attributes.camera = new THREE.PerspectiveCamera( 50, this.attributes.width / this.attributes.height, 1, 100000 );
+    this.attributes.camera = new THREE.PerspectiveCamera( 75, this.attributes.width / this.attributes.height, 1, 100000 );
     this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
     this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
@@ -71,8 +71,6 @@ export default class ThreeCanvasModel extends BaseModel {
     this.attributes.scene.children = [];
     this.attributes.mesh = null;
     this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-   
-    // this.addHelpers();
   }
 
   animate() {
@@ -84,19 +82,28 @@ export default class ThreeCanvasModel extends BaseModel {
     this.attributes.controls.update();
     this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
 
-    this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+    //this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
     
-    var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
-    if ( intersects.length > 0 ) {
-      if (this.attributes.highlighter) {
-        this.attributes.scene.remove( this.attributes.highlighter );
-      }
-      this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
-      this.attributes.scene.add( this.attributes.highlighter );
-    }
+    // var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
+    // if ( intersects.length > 0 ) {
+    //   if (this.attributes.highlighter) {
+    //     this.attributes.scene.remove( this.attributes.highlighter );
+    //   }
+    //   this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
+    //   this.attributes.scene.add( this.attributes.highlighter );
+    // }
 
     if (app.models.mainCanvas) {
       app.models.mainCanvas.attributes.canvas.renderAll();      
     }
+  }
+
+  resize() {
+    this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
+    this.attributes.camera.updateProjectionMatrix();
+
+    this.attributes.camera.position.setZ( (this.attributes.width / this.attributes.height) * 42.5 );
+
+    this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
   }
 }

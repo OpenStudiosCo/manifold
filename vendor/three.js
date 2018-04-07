@@ -185,7 +185,7 @@
 
 	} );
 
-	var REVISION = '91';
+	var REVISION = '92dev';
 	var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
 	var CullFaceNone = 0;
 	var CullFaceBack = 1;
@@ -343,7 +343,7 @@
 
 			for ( var i = 0; i < 256; i ++ ) {
 
-				lut[ i ] = ( i < 16 ? '0' : '' ) + ( i ).toString( 16 ).toUpperCase();
+				lut[ i ] = ( i < 16 ? '0' : '' ) + ( i ).toString( 16 );
 
 			}
 
@@ -353,10 +353,13 @@
 				var d1 = Math.random() * 0xffffffff | 0;
 				var d2 = Math.random() * 0xffffffff | 0;
 				var d3 = Math.random() * 0xffffffff | 0;
-				return lut[ d0 & 0xff ] + lut[ d0 >> 8 & 0xff ] + lut[ d0 >> 16 & 0xff ] + lut[ d0 >> 24 & 0xff ] + '-' +
+				var uuid = lut[ d0 & 0xff ] + lut[ d0 >> 8 & 0xff ] + lut[ d0 >> 16 & 0xff ] + lut[ d0 >> 24 & 0xff ] + '-' +
 					lut[ d1 & 0xff ] + lut[ d1 >> 8 & 0xff ] + '-' + lut[ d1 >> 16 & 0x0f | 0x40 ] + lut[ d1 >> 24 & 0xff ] + '-' +
 					lut[ d2 & 0x3f | 0x80 ] + lut[ d2 >> 8 & 0xff ] + '-' + lut[ d2 >> 16 & 0xff ] + lut[ d2 >> 24 & 0xff ] +
 					lut[ d3 & 0xff ] + lut[ d3 >> 8 & 0xff ] + lut[ d3 >> 16 & 0xff ] + lut[ d3 >> 24 & 0xff ];
+
+				// .toUpperCase() here flattens concatenated strings to save heap memory space.
+				return uuid.toUpperCase();
 
 			};
 
@@ -6019,7 +6022,7 @@
 
 	var normal_fragment_maps = "#ifdef USE_NORMALMAP\n\tnormal = perturbNormal2Arb( -vViewPosition, normal );\n#elif defined( USE_BUMPMAP )\n\tnormal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );\n#endif\n";
 
-	var normalmap_pars_fragment = "#ifdef USE_NORMALMAP\n\tuniform sampler2D normalMap;\n\tuniform vec2 normalScale;\n\tvec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {\n\t\tvec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n\t\tvec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n\t\tvec2 st0 = dFdx( vUv.st );\n\t\tvec2 st1 = dFdy( vUv.st );\n\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\n\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\n\t\tvec3 N = normalize( surf_norm );\n\t\tvec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n\t\tmapN.xy = normalScale * mapN.xy;\n\t\tmat3 tsn = mat3( S, T, N );\n\t\treturn normalize( tsn * mapN );\n\t}\n#endif\n";
+	var normalmap_pars_fragment = "#ifdef USE_NORMALMAP\n\tuniform sampler2D normalMap;\n\tuniform vec2 normalScale;\n\tvec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {\n\t\tvec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n\t\tvec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n\t\tvec2 st0 = dFdx( vUv.st );\n\t\tvec2 st1 = dFdy( vUv.st );\n\t\tfloat scale = sign( st1.t * st0.s - st0.t * st1.s );\t\tvec3 S = normalize( ( q0 * st1.t - q1 * st0.t ) * scale );\n\t\tvec3 T = normalize( ( - q0 * st1.s + q1 * st0.s ) * scale );\n\t\tvec3 N = normalize( surf_norm );\n\t\tvec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n\t\tmapN.xy = normalScale * mapN.xy;\n\t\tmat3 tsn = mat3( S, T, N );\n\t\treturn normalize( tsn * mapN );\n\t}\n#endif\n";
 
 	var packing = "vec3 packNormalToRGB( const in vec3 normal ) {\n\treturn normalize( normal ) * 0.5 + 0.5;\n}\nvec3 unpackRGBToNormal( const in vec3 rgb ) {\n\treturn 2.0 * rgb.xyz - 1.0;\n}\nconst float PackUpscale = 256. / 255.;const float UnpackDownscale = 255. / 256.;\nconst vec3 PackFactors = vec3( 256. * 256. * 256., 256. * 256.,  256. );\nconst vec4 UnpackFactors = UnpackDownscale / vec4( PackFactors, 1. );\nconst float ShiftRight8 = 1. / 256.;\nvec4 packDepthToRGBA( const in float v ) {\n\tvec4 r = vec4( fract( v * PackFactors ), v );\n\tr.yzw -= r.xyz * ShiftRight8;\treturn r * PackUpscale;\n}\nfloat unpackRGBAToDepth( const in vec4 v ) {\n\treturn dot( v, UnpackFactors );\n}\nfloat viewZToOrthographicDepth( const in float viewZ, const in float near, const in float far ) {\n\treturn ( viewZ + near ) / ( near - far );\n}\nfloat orthographicDepthToViewZ( const in float linearClipZ, const in float near, const in float far ) {\n\treturn linearClipZ * ( near - far ) - near;\n}\nfloat viewZToPerspectiveDepth( const in float viewZ, const in float near, const in float far ) {\n\treturn (( near + viewZ ) * far ) / (( far - near ) * viewZ );\n}\nfloat perspectiveDepthToViewZ( const in float invClipZ, const in float near, const in float far ) {\n\treturn ( near * far ) / ( ( far - near ) * invClipZ - far );\n}\n";
 
@@ -13014,7 +13017,7 @@
 
 		this.uniforms = UniformsUtils.clone( source.uniforms );
 
-		this.defines = source.defines;
+		this.defines = Object.assign( {}, source.defines );
 
 		this.wireframe = source.wireframe;
 		this.wireframeLinewidth = source.wireframeLinewidth;
@@ -14304,12 +14307,7 @@
 
 							intersection = checkBufferGeometryIntersection( this, raycaster, ray, position, uv, a, b, c );
 
-							if ( intersection ) {
-
-								intersection.index = a; // triangle number in positions buffer semantics
-								intersects.push( intersection );
-
-							}
+							if ( intersection ) intersects.push( intersection );
 
 						}
 
@@ -14901,10 +14899,6 @@
 
 					case 'WEBGL_compressed_texture_pvrtc':
 						extension = gl.getExtension( 'WEBGL_compressed_texture_pvrtc' ) || gl.getExtension( 'WEBKIT_WEBGL_compressed_texture_pvrtc' );
-						break;
-
-					case 'WEBGL_compressed_texture_etc1':
-						extension = gl.getExtension( 'WEBGL_compressed_texture_etc1' );
 						break;
 
 					default:
@@ -15994,8 +15988,7 @@
 		for ( var i = 0; i < n; ++ i ) {
 
 			var info = gl.getActiveUniform( program, i ),
-				path = info.name,
-				addr = gl.getUniformLocation( program, path );
+				addr = gl.getUniformLocation( program, info.name );
 
 			parseUniform( info, addr, this );
 
@@ -19024,13 +19017,13 @@
 
 		if ( glVersion.indexOf( 'WebGL' ) !== - 1 ) {
 
-		   version = parseFloat( /^WebGL\ ([0-9])/.exec( glVersion )[ 1 ] );
-		   lineWidthAvailable = ( version >= 1.0 );
+			version = parseFloat( /^WebGL\ ([0-9])/.exec( glVersion )[ 1 ] );
+			lineWidthAvailable = ( version >= 1.0 );
 
 		} else if ( glVersion.indexOf( 'OpenGL ES' ) !== - 1 ) {
 
-		   version = parseFloat( /^OpenGL\ ES\ ([0-9])/.exec( glVersion )[ 1 ] );
-		   lineWidthAvailable = ( version >= 2.0 );
+			version = parseFloat( /^OpenGL\ ES\ ([0-9])/.exec( glVersion )[ 1 ] );
+			lineWidthAvailable = ( version >= 2.0 );
 
 		}
 
@@ -19730,7 +19723,9 @@
 			_gl.generateMipmap( target );
 
 			var textureProperties = properties.get( texture );
-			textureProperties.__maxMipLevel = Math.log2( Math.max( width, height ) );
+
+			// Note: Math.log( x ) * Math.LOG2E used instead of Math.log2( x ) which is not supported by IE11
+			textureProperties.__maxMipLevel = Math.log( Math.max( width, height ) ) * Math.LOG2E;
 
 		}
 
@@ -21944,7 +21939,7 @@
 
 		};
 
-		function setupVertexAttributes( material, program, geometry, startIndex ) {
+		function setupVertexAttributes( material, program, geometry ) {
 
 			if ( geometry && geometry.isInstancedBufferGeometry ) {
 
@@ -21956,8 +21951,6 @@
 				}
 
 			}
-
-			if ( startIndex === undefined ) startIndex = 0;
 
 			state.initAttributes();
 
@@ -22013,7 +22006,7 @@
 							}
 
 							_gl.bindBuffer( _gl.ARRAY_BUFFER, buffer );
-							_gl.vertexAttribPointer( programAttribute, size, type, normalized, stride * bytesPerElement, ( startIndex * stride + offset ) * bytesPerElement );
+							_gl.vertexAttribPointer( programAttribute, size, type, normalized, stride * bytesPerElement, offset * bytesPerElement );
 
 						} else {
 
@@ -22034,7 +22027,7 @@
 							}
 
 							_gl.bindBuffer( _gl.ARRAY_BUFFER, buffer );
-							_gl.vertexAttribPointer( programAttribute, size, type, normalized, 0, startIndex * size * bytesPerElement );
+							_gl.vertexAttribPointer( programAttribute, size, type, normalized, 0, 0 );
 
 						}
 
@@ -24616,7 +24609,7 @@
 
 						}
 
-						geometry.addAttribute( 'lineDistance', new THREE.Float32BufferAttribute( lineDistances, 1 ) );
+						geometry.addAttribute( 'lineDistance', new Float32BufferAttribute( lineDistances, 1 ) );
 
 					} else {
 
@@ -24849,7 +24842,7 @@
 
 						}
 
-						geometry.addAttribute( 'lineDistance', new THREE.Float32BufferAttribute( lineDistances, 1 ) );
+						geometry.addAttribute( 'lineDistance', new Float32BufferAttribute( lineDistances, 1 ) );
 
 					} else {
 
@@ -27568,7 +27561,6 @@
 	 *  bevelSegments: <int>, // number of bevel layers
 	 *
 	 *  extrudePath: <THREE.Curve> // curve to extrude shape along
-	 *  frames: <Object> // containing arrays of tangents, normals, binormals
 	 *
 	 *  UVGenerator: <Object> // object that provides UV generator functions
 	 *
@@ -27706,7 +27698,7 @@
 
 			// TODO1 - have a .isClosed in spline?
 
-			splineTube = options.frames !== undefined ? options.frames : extrudePath.computeFrenetFrames( steps, false );
+			splineTube = extrudePath.computeFrenetFrames( steps, false );
 
 			// console.log(splineTube, 'splineTube', splineTube.normals.length, 'steps', steps, 'extrudePts', extrudePts.length);
 
@@ -36163,13 +36155,11 @@
 
 		extractUrlBase: function ( url ) {
 
-			var parts = url.split( '/' );
+			var index = url.lastIndexOf( '/' );
 
-			if ( parts.length === 1 ) return './';
+			if ( index === - 1 ) return './';
 
-			parts.pop();
-
-			return parts.join( '/' ) + '/';
+			return url.substr( 0, index + 1 );
 
 		}
 
@@ -37038,9 +37028,9 @@
 
 							var geometryShapes = [];
 
-							for ( var i = 0, l = data.shapes.length; i < l; i ++ ) {
+							for ( var j = 0, jl = data.shapes.length; j < jl; j ++ ) {
 
-								var shape = shapes[ data.shapes[ i ] ];
+								var shape = shapes[ data.shapes[ j ] ];
 
 								geometryShapes.push( shape );
 
@@ -37678,6 +37668,8 @@
 	function ShapePath() {
 
 		this.type = 'ShapePath';
+
+		this.color = new Color();
 
 		this.subPaths = [];
 		this.currentPath = null;
@@ -38477,7 +38469,7 @@
 
 		setMasterVolume: function ( value ) {
 
-			this.gain.gain.value = value;
+			this.gain.gain.setTargetAtTime( value, this.context.currentTime, 0.01 );
 
 		},
 
@@ -38820,7 +38812,7 @@
 
 		setVolume: function ( value ) {
 
-			this.gain.gain.value = value;
+			this.gain.gain.setTargetAtTime( value, this.context.currentTime, 0.01 );
 
 			return this;
 
