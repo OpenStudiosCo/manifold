@@ -937,11 +937,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   function defaultMenu(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
   pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "View\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
-  pug_html = pug_html + "\u003Ch6\u003E";
   pug_html = pug_html + "Add\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
@@ -957,7 +952,9 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
   pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "Tools\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "Demo\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleVector\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"large paper plane outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleLayers\"\u003E";
@@ -1010,8 +1007,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         var src = $(e.target).attr('src');
         var callback = function(svg) {
           var callback = function() {
-            $('.ui.special.modal')
-              .modal('hide');
+            $('#hideAddImage').click();
           };
           app.models.mainCanvas.loadSVG(svg, callback);
         };

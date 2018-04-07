@@ -28,8 +28,7 @@ export default class MainCanvasView extends BaseView {
       var src = $(e.target).attr('src');
       var callback = function(svg) {
         var callback = function() {
-          $('.ui.special.modal')
-            .modal('hide');
+          $('#hideAddImage').click();
         };
         app.models.mainCanvas.loadSVG(svg, callback);
       };
