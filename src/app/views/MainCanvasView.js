@@ -18,9 +18,6 @@ export default class MainCanvasView extends BaseView {
       model: options.model
     });
 
-    var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
-    this.model.addToCenter(circle);
-
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
     this.setupDefaultMenu();

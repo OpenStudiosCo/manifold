@@ -296,7 +296,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"paper plane outline icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "Vector\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnMake3D\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnMake3D\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"snowflake outline icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "3D\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
@@ -354,22 +354,51 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       return settings;
     };
 
-    ColourPickerModel.prototype.pickColour = function pickColour (event) {
-      // http://www.javascripter.net/faq/rgbtohex.htm
-      function rgbToHex(R,G,B) {
-       return toHex(R)+toHex(G)+toHex(B); 
-      }
+    ColourPickerModel.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
+      var cvs, ctx;
+      cvs = document.createElement('canvas');
+      cvs.height = 1;
+      cvs.width = 1;
+      ctx = cvs.getContext('2d');
+      ctx.fillStyle = colour;
+      ctx.fillRect(0, 0, 1, 1);
+      var c = ctx.getImageData(0, 0, 1, 1).data;
+      console.log(c);
+      this.setColour(c[0], c[1], c[2]);
+    };
 
-      function toHex(m) {
-        var n = parseInt(m,10);
-        if (isNaN(n)) {
-         return "00";
-        }
-        n = Math.max(0,Math.min(n,255));
+    ColourPickerModel.prototype.setColour = function setColour (R,G,B) {
+      var rgb = R + ', ' + G + ', ' + B;
+      // convert RGB to HEX
+      var hex = this.rgbToHex(R,G,B);
+      // making the color the value of the input
+      $('input#rgb').val(rgb);
+      $('input#hex').val('#' + hex);
+      $('#colour-picker-preview').css('background-color', '#' + hex);
+
+      if (app.models.mainCanvas.attributes.canvas) {
         
-        return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
+        app.models.mainCanvas.attributes.canvas.getActiveObject().set("fill", '#' + hex);
+        app.models.mainCanvas.attributes.canvas.renderAll();
       }
+    };
 
+    // http://www.javascripter.net/faq/rgbtohex.htm
+    ColourPickerModel.prototype.rgbToHex = function rgbToHex (R,G,B) {
+     return this.toHex(R)+this.toHex(G)+this.toHex(B); 
+    };
+
+    ColourPickerModel.prototype.toHex = function toHex (m) {
+      var n = parseInt(m,10);
+      if (isNaN(n)) {
+       return "00";
+      }
+      n = Math.max(0,Math.min(n,255));
+      
+      return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
+    };
+
+    ColourPickerModel.prototype.pickColour = function pickColour (event) {
       // getting user coordinates
       var x = event.offsetX;
       var y = event.offsetY;
@@ -378,13 +407,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       var R = img_data[0];
       var G = img_data[1];
       var B = img_data[2];
-      var rgb = R + ', ' + G + ', ' + B;
-      // convert RGB to HEX
-      var hex = rgbToHex(R,G,B);
-      // making the color the value of the input
-      $('input#rgb').val(rgb);
-      $('input#hex').val('#' + hex);
-      $('#colour-picker-preview').css('background-color', '#' + hex);
+      this.setColour(R, G, B);
     };
 
     return ColourPickerModel;
@@ -455,7 +478,8 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     function ThreeCanvasModel(options) {
       BaseModel$$1.call(this, options);
       this.attributes.scene = new THREE.Scene();
-      this.attributes.camera = new THREE.PerspectiveCamera( 75, this.attributes.width / this.attributes.height, 1, 100000 );
+      var aspect = this.attributes.width / this.attributes.height;
+      this.attributes.camera = new THREE.PerspectiveCamera( 50, aspect, 1, 100000 );
       this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
       this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
@@ -552,7 +576,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
       this.attributes.camera.updateProjectionMatrix();
 
-      this.attributes.camera.position.setZ( (this.attributes.width / this.attributes.height) * 42.5 );
+      this.attributes.camera.position.setZ((this.attributes.width/ this.attributes.height) * this.attributes.extrudeAmount * 8);
 
       this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
     };
@@ -617,26 +641,25 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       
       this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
       this.model.clearScene();
-      this.model.attributes.camera.position.set( 0, 0, (this.model.attributes.width / this.model.attributes.height) * 42.5 );
-      this.model.attributes.camera.lookAt( 0, 0, 0 );
+      
       this.$el.append( this.model.attributes.renderer.domElement );
 
        // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
       var loader = new THREE.SVGLoader();
       var paths = loader.parse(svg);
+      var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
+      var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
       var svgExtruded = this.extrudeSVG({
         paths: paths,
         amount: this.model.attributes.extrudeAmount,
-        center: { x: this.model.attributes.width /2, y: this.model.attributes.height /2 }
+        center: { x: offsetX, y: offsetY }
       });
       var box = new THREE.Box3().setFromObject( svgExtruded );
       var boundingBoxSize = box.max.sub( box.min );
-      var width = boundingBoxSize.x;
-      var height = -boundingBoxSize.y;
-      svgExtruded.position.setX((width / 2));
-      svgExtruded.position.setY((height / 2));
       this.model.attributes.mesh = svgExtruded;
       this.model.attributes.scene.add( this.model.attributes.mesh );
+      this.model.attributes.camera.lookAt(0,0,0);
+      this.model.attributes.camera.position.set(0 ,0 , (this.model.attributes.width/ this.model.attributes.height) * this.model.attributes.extrudeAmount * 8);
 
       // Start the animation loop.
       this.model.animate();
@@ -649,7 +672,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       var center = svgObject.center;
 
       var group = new THREE.Group();
-      group.scale.multiplyScalar( 0.25 );
       for ( var i = 0; i < paths.length; i ++ ) {
         var path = paths[ i ];
         var shapes = path.toShapes( true );
@@ -667,8 +689,8 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
           var mesh = new THREE.Mesh( shape3d, material );
           mesh.rotation.x = Math.PI;
           mesh.translateZ( - amount - 1 );
-          mesh.translateX( - center.x );
-          mesh.translateY( - center.y );
+          mesh.translateX( - center.x);
+          mesh.translateY( - center.y);
 
           group.add( mesh );
         }
@@ -742,7 +764,18 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         // Set the menu to be draggable
         $('.floating.overlay').draggable();
 
+        // Set relevant buttons to active
+        if (!e.target._element && !e.target.text && !e.target._objects) {
+          $('#btnMake3D').removeClass('disabled');
+          $('#btnFillActive').removeClass('disabled');
+          this.colourPickerModel.lookupAndSetColour(e.target.fill);
+        }
+
         // Events
+        $('#btnFillActive').click(function(e){
+          $(this).toggleClass('active');
+          $('#fill-tool').toggle();
+        });
         $('#btnDeleteActive').click(function(e) {
           var this$1 = this;
 
@@ -753,11 +786,10 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
           this.attributes.canvas.discardActiveObject();
           $('.active-object-context').remove();
         }.bind(this));
-        $('#btnMake3D').click(function(e) {
+        $('#btnMake3D:not(.disabled)').click(function(e) {
           var this$1 = this;
 
           var selectedObjects = this.attributes.canvas.getActiveObjects();
-          var convertibleObjects = [];
           for (var i = 0; i < selectedObjects.length; i++) {
             if (selectedObjects[i].toSVG) {
 
@@ -767,15 +799,15 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
                 var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
                 threeD.left = selectedObjects[i].left;
                 threeD.top = selectedObjects[i].top;
-                convertibleObjects.push(threeD);
+                this.attributes.canvas.add(threeD);
               }.bind(this$1);
               app.models.threeCanvas.push(new ThreeCanvasModel());
               app.views.threeCanvas.push(
                 new ThreeCanvasView({ 
                   model: app.models.threeCanvas[app.models.threeCanvas.length-1],
                   svg: svgElements,
-                  width: selectedObjects[i].width,
-                  height: selectedObjects[i].height
+                  width: selectedObjects[i].width * selectedObjects[i].scaleX,
+                  height: selectedObjects[i].height * selectedObjects[i].scaleY
                 })
               );
               create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
@@ -785,17 +817,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
               console.log('not convertible!');
             }
           }
-          // Create a group so we add to center accurately.
-          var group = new fabric.Group(convertibleObjects);
-          this.addToCenter(group);
-          // Ungroup.
-          var items = group._objects;
-          group._restoreObjectsState();
-          this.attributes.canvas.remove(group);
-          for (var i = 0; i < items.length; i++) {
-            this$1.attributes.canvas.add(items[i]);
-          }
-          this.attributes.canvas.renderAll();
           this.attributes.canvas.discardActiveObject();
           $('.active-object-context').remove();
         }.bind(this));
@@ -822,6 +843,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       this.attributes.canvas.on('selection:cleared', function(){
         $('.active-object-context').remove();
        $('.model-preview').hide();
+       $('#fill-tool').hide();
       });
 
       // TODO: Don't follow if user moved the toolbar.
@@ -979,9 +1001,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         el: '#main-canvas',
         model: options.model
       });
-
-      var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
-      this.model.addToCenter(circle);
 
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 

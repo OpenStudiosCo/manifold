@@ -65,7 +65,18 @@ export default class MainCanvasModel extends BaseModel {
       // Set the menu to be draggable
       $('.floating.overlay').draggable();
 
+      // Set relevant buttons to active
+      if (!e.target._element && !e.target.text && !e.target._objects) {
+        $('#btnMake3D').removeClass('disabled');
+        $('#btnFillActive').removeClass('disabled');
+        this.colourPickerModel.lookupAndSetColour(e.target.fill);
+      }
+
       // Events
+      $('#btnFillActive').click(function(e){
+        $(this).toggleClass('active');
+        $('#fill-tool').toggle();
+      });
       $('#btnDeleteActive').click(function(e) {
         var selectedObjects = this.attributes.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
@@ -74,7 +85,7 @@ export default class MainCanvasModel extends BaseModel {
         this.attributes.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
-      $('#btnMake3D').click(function(e) {
+      $('#btnMake3D:not(.disabled)').click(function(e) {
         var selectedObjects = this.attributes.canvas.getActiveObjects();
         var convertibleObjects = [];
         for (var i = 0; i < selectedObjects.length; i++) {
@@ -86,15 +97,15 @@ export default class MainCanvasModel extends BaseModel {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              convertibleObjects.push(threeD);
+              this.attributes.canvas.add(threeD);
             }.bind(this);
             app.models.threeCanvas.push(new ThreeCanvasModel());
             app.views.threeCanvas.push(
               new ThreeCanvasView({ 
                 model: app.models.threeCanvas[app.models.threeCanvas.length-1],
                 svg: svgElements,
-                width: selectedObjects[i].width,
-                height: selectedObjects[i].height
+                width: selectedObjects[i].width * selectedObjects[i].scaleX,
+                height: selectedObjects[i].height * selectedObjects[i].scaleY
               })
             );
             create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
@@ -104,17 +115,6 @@ export default class MainCanvasModel extends BaseModel {
             console.log('not convertible!');
           }
         }
-        // Create a group so we add to center accurately.
-        var group = new fabric.Group(convertibleObjects);
-        this.addToCenter(group);
-        // Ungroup.
-        var items = group._objects;
-        group._restoreObjectsState();
-        this.attributes.canvas.remove(group);
-        for (var i = 0; i < items.length; i++) {
-          this.attributes.canvas.add(items[i]);
-        }
-        this.attributes.canvas.renderAll();
         this.attributes.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
@@ -141,6 +141,7 @@ export default class MainCanvasModel extends BaseModel {
     this.attributes.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
      $('.model-preview').hide();
+     $('#fill-tool').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.
