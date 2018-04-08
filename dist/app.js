@@ -280,25 +280,32 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   pug_html = pug_html + "\u003Cdiv class=\"ui mini menu labeled icon pointing\"\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnDeleteActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"trash alternate icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Delete\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Delete\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnGroupActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"object group icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Group (1)\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"object ungroup icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Ungroup (1)\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Group (1)\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnMergeActive\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"object group outline icon\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Merge\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnFillActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"tint icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Fill\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Fill\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"pencil alternate icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Stroke\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Stroke\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"paper plane outline icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "Vector\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Vector\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnMake3D\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"snowflake outline icon\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "3D\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "3D\u003C\u002Fspan\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
     * Colour picker model for the main canvas.
@@ -363,7 +370,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       ctx.fillStyle = colour;
       ctx.fillRect(0, 0, 1, 1);
       var c = ctx.getImageData(0, 0, 1, 1).data;
-      console.log(c);
       this.setColour(c[0], c[1], c[2]);
     };
 
@@ -377,7 +383,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       $('#colour-picker-preview').css('background-color', '#' + hex);
 
       if (app.models.mainCanvas.attributes.canvas) {
-        
+        $('#btnFillActive .icon').css('color', '#' + hex);
         app.models.mainCanvas.attributes.canvas.getActiveObject().set("fill", '#' + hex);
         app.models.mainCanvas.attributes.canvas.renderAll();
       }
@@ -468,6 +474,55 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     };
 
     return PotraceModel;
+  }(BaseModel));
+
+  /**
+    * Shape Finder model.
+    * 
+    * Flatten an array of SVG elements into a single shape path.
+    * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
+    */
+
+  var ShapeFinderModel = (function (BaseModel$$1) {
+    function ShapeFinderModel () {
+      BaseModel$$1.apply(this, arguments);
+    }
+
+    if ( BaseModel$$1 ) ShapeFinderModel.__proto__ = BaseModel$$1;
+    ShapeFinderModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    ShapeFinderModel.prototype.constructor = ShapeFinderModel;
+
+    ShapeFinderModel.prototype.flatten = function flatten (svgData) {
+      var svg = {
+        header: 'data:image/svg+xml',
+        content: '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + svgData + '</svg>'
+      };
+      var canvas = document.createElement('canvas');
+      var image = new Image();
+      var context = canvas.getContext('2d');
+      image.onload = function() {
+        context.drawImage(image, 0, 0);
+        var horizontalScan = [];
+        for (var yPos = 0; yPos < canvas.height; yPos++) {
+          var horizontalScanRaw = context.getImageData(0, yPos, canvas.width, 1);
+          context.fillStyle = 'blue';
+          for (var i = 0; i < horizontalScanRaw.data.length; i+=3) {
+            if (horizontalScanRaw.data[i] > 0) {
+              context.fillRect((i / 4) % canvas.width, yPos, 1, 1);
+              horizontalScan.push((i / 4) % canvas.width);
+            }
+          }
+        }
+        console.log(horizontalScan);  
+      };
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      image.src = svg.header + ',' + svg.content;
+      $('#container').append(canvas);
+
+    };
+
+    return ShapeFinderModel;
   }(BaseModel));
 
   /**
@@ -711,6 +766,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       BaseModel$$1.call(this);
       this.colourPickerModel = new ColourPickerModel();
       this.potrace = new PotraceModel();
+      this.shapeFinder = new ShapeFinderModel();
       this.attributes.canvas = new fabric.Canvas('main-canvas');
       this.updateCanvasSize();
       this.setupEvents();
@@ -764,15 +820,48 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         // Set the menu to be draggable
         $('.floating.overlay').draggable();
 
-        // Set relevant buttons to active
+        // Not 3D, not text, not group
         if (!e.target._element && !e.target.text && !e.target._objects) {
           $('#btnMake3D').removeClass('disabled');
+        }
+        // Not 3D, not group
+        if (!e.target._element && !e.target._objects) {
           $('#btnFillActive').removeClass('disabled');
+          $('#btnFillActive .icon').css('color', e.target.fill);
           this.colourPickerModel.lookupAndSetColour(e.target.fill);
+        }
+        // Is group.
+        if (e.target._objects) {
+
+          $('#btnGroupActive').removeClass('disabled');
+          if (e.target.type == 'activeSelection') {
+            $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
+          }
+          else {
+            $('#btnGroupActive span').html('Ungroup (' + e.target._objects.length + ')');
+          }
         }
 
         // Events
-        $('#btnFillActive').click(function(e){
+        // $('#btnMergeActive').click(function(e) {
+        //   var activeObject = this.attributes.canvas.getActiveObject();
+        //   this.shapeFinder.flatten(activeObject.toSVG());
+        // }.bind(this));
+
+        $('#btnGroupActive').click(function(e) {
+          var activeObject = this.attributes.canvas.getActiveObject();
+          if (activeObject.type != 'group') {
+            activeObject.toGroup();
+          }
+          else {
+            activeObject.toActiveSelection();
+          }
+          
+          this.attributes.canvas.discardActiveObject();
+          this.attributes.canvas.requestRenderAll();
+        }.bind(this));
+        
+        $('#btnFillActive:not(.disabled)').click(function(e){
           $(this).toggleClass('active');
           $('#fill-tool').toggle();
         });
@@ -934,57 +1023,11 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     return MainCanvasModel;
   }(BaseModel));
 
-  function defaultMenu(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
-  pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "Add\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddImage\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"image icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddShape\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"chart pie icon inverted\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddText\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large icons\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"font icon inverted\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner plus icon green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
-  pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "Demo\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleOverlays\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large eye icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleVector\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large paper plane outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggleLayers\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large align justify icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnToggle3DOptions\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"icons large\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"cog icon inverted disabled\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"corner snowflake outline icon inverted disabled\"\u003E\u003C\u002Fi\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
-
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   var locals_for_with = (locals || {});(function (url) {
   pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
   pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
-
-  function addShapes(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnBack\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"large arrow left icon inverted\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"menu\"\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"ui horizontal divider fitted inverted\"\u003E";
-  pug_html = pug_html + "\u003Ch6\u003E";
-  pug_html = pug_html + "Shapes\u003C\u002Fh6\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddCircle\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"circle icon large green\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddSquare\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"square icon large red\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnAddTriangle\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"play icon large blue counterclockwise rotated\"\u003E";
-  pug_html = pug_html + " \u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
     * MainCanvas view.
@@ -997,6 +1040,17 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         model: options.model
       });
 
+
+      var circle = new fabric.Circle({ radius: 100, fill: 'green' });
+      this.model.addToCenter(circle);
+      circle.left -= 75;
+      var rect = new fabric.Rect({
+        fill: 'red',
+        width: 200,
+        height: 200
+      });
+      this.model.addToCenter(rect);
+      rect.left += 75;
       this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
       this.setupDefaultMenu();
@@ -1054,7 +1108,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       });
       $('#btnAddImage')
         .popup({
-          title: 'Add Image',
+          title: 'Trace Image',
           position: 'right center'
         })
         .on('click', function(){
@@ -1077,20 +1131,10 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
           }
         });
 
-      $('#btnAddShape')
-        .popup({
-          title: 'Add Shape',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $('#toolbar').html(addShapes());
-          this.setupAddShapesMenu();
-        }.bind(this));
-
       // TODO: https://codepen.io/shershen08/pen/JGepQv
       $('#btnAddText')
         .popup({
-          title: 'Add Text',
+          title: 'Text',
           position: 'right center'
         })
         .on('click', function(){
@@ -1149,18 +1193,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
           $(this).find('i.icon').toggleClass('disabled');
           $('#threeD-tool').toggle();
         });
-    };
-
-    MainCanvasView.prototype.setupAddShapesMenu = function setupAddShapesMenu () {
-      $('#btnBack')
-        .popup({
-          title: 'Back',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $('#toolbar').html(defaultMenu());
-          this.setupDefaultMenu();
-        }.bind(this));
       $('#btnAddCircle')
         .popup({
           title: 'Circle',

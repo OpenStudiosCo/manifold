@@ -60,7 +60,6 @@ export default class ColourPickerModel extends BaseModel {
     ctx.fillStyle = colour;
     ctx.fillRect(0, 0, 1, 1);
     var c = ctx.getImageData(0, 0, 1, 1).data;
-    console.log(c);
     this.setColour(c[0], c[1], c[2]);
   }
 
@@ -74,7 +73,7 @@ export default class ColourPickerModel extends BaseModel {
     $('#colour-picker-preview').css('background-color', '#' + hex);
 
     if (app.models.mainCanvas.attributes.canvas) {
-      
+      $('#btnFillActive .icon').css('color', '#' + hex);
       app.models.mainCanvas.attributes.canvas.getActiveObject().set("fill", '#' + hex);
       app.models.mainCanvas.attributes.canvas.renderAll();
     }

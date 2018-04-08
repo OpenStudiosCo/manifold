@@ -5,7 +5,6 @@ import BaseView from './BaseView.js';
 import ThreeCanvasView from './ThreeCanvasView.js';
 import defaultMenu from '../../templates/toolbar/default.pug';
 import addImageItem from '../../templates/toolbar/add-image__item.pug';
-import addShapes from '../../templates/toolbar/add-shapes.pug';
 
 /**
   * MainCanvas view.
@@ -18,6 +17,17 @@ export default class MainCanvasView extends BaseView {
       model: options.model
     });
 
+
+    var circle = new fabric.Circle({ radius: 100, fill: 'green' });
+    this.model.addToCenter(circle);
+    circle.left -= 75;
+    var rect = new fabric.Rect({
+      fill: 'red',
+      width: 200,
+      height: 200
+    });
+    this.model.addToCenter(rect);
+    rect.left += 75;
     this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
     this.setupDefaultMenu();
@@ -71,7 +81,7 @@ export default class MainCanvasView extends BaseView {
     });
     $('#btnAddImage')
       .popup({
-        title: 'Add Image',
+        title: 'Trace Image',
         position: 'right center'
       })
       .on('click', function(){
@@ -94,20 +104,10 @@ export default class MainCanvasView extends BaseView {
         }
       });
 
-    $('#btnAddShape')
-      .popup({
-        title: 'Add Shape',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#toolbar').html(addShapes());
-        this.setupAddShapesMenu();
-      }.bind(this));
-
     // TODO: https://codepen.io/shershen08/pen/JGepQv
     $('#btnAddText')
       .popup({
-        title: 'Add Text',
+        title: 'Text',
         position: 'right center'
       })
       .on('click', function(){
@@ -166,18 +166,6 @@ export default class MainCanvasView extends BaseView {
         $(this).find('i.icon').toggleClass('disabled');
         $('#threeD-tool').toggle();
       });
-  }
-
-  setupAddShapesMenu() {
-    $('#btnBack')
-      .popup({
-        title: 'Back',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#toolbar').html(defaultMenu());
-        this.setupDefaultMenu();
-      }.bind(this));
     $('#btnAddCircle')
       .popup({
         title: 'Circle',

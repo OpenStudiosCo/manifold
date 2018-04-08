@@ -4,6 +4,7 @@ import BaseModel from './BaseModel.js';
 import activeObjectContext from '../../templates/toolbar/active-object-context.pug';
 import ColourPickerModel from './main-canvas/ColourPickerModel.js';
 import PotraceModel from './main-canvas/PotraceModel.js';
+import ShapeFinderModel from './main-canvas/ShapeFinderModel.js';
 import ThreeCanvasModel from '../models/ThreeCanvasModel.js';
 import ThreeCanvasView from '../views/ThreeCanvasView.js';
 
@@ -25,6 +26,7 @@ export default class MainCanvasModel extends BaseModel {
     super();
     this.colourPickerModel = new ColourPickerModel();
     this.potrace = new PotraceModel();
+    this.shapeFinder = new ShapeFinderModel();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
     this.updateCanvasSize();
     this.setupEvents();
@@ -65,15 +67,48 @@ export default class MainCanvasModel extends BaseModel {
       // Set the menu to be draggable
       $('.floating.overlay').draggable();
 
-      // Set relevant buttons to active
+      // Not 3D, not text, not group
       if (!e.target._element && !e.target.text && !e.target._objects) {
         $('#btnMake3D').removeClass('disabled');
+      }
+      // Not 3D, not group
+      if (!e.target._element && !e.target._objects) {
         $('#btnFillActive').removeClass('disabled');
+        $('#btnFillActive .icon').css('color', e.target.fill);
         this.colourPickerModel.lookupAndSetColour(e.target.fill);
+      }
+      // Is group.
+      if (e.target._objects) {
+
+        $('#btnGroupActive').removeClass('disabled');
+        if (e.target.type == 'activeSelection') {
+          $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
+        }
+        else {
+          $('#btnGroupActive span').html('Ungroup (' + e.target._objects.length + ')');
+        }
       }
 
       // Events
-      $('#btnFillActive').click(function(e){
+      // $('#btnMergeActive').click(function(e) {
+      //   var activeObject = this.attributes.canvas.getActiveObject();
+      //   this.shapeFinder.flatten(activeObject.toSVG());
+      // }.bind(this));
+
+      $('#btnGroupActive').click(function(e) {
+        var activeObject = this.attributes.canvas.getActiveObject();
+        if (activeObject.type != 'group') {
+          activeObject.toGroup();
+        }
+        else {
+          activeObject.toActiveSelection();
+        }
+        
+        this.attributes.canvas.discardActiveObject();
+        this.attributes.canvas.requestRenderAll();
+      }.bind(this));
+      
+      $('#btnFillActive:not(.disabled)').click(function(e){
         $(this).toggleClass('active');
         $('#fill-tool').toggle();
       });
