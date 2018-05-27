@@ -1,9 +1,10 @@
-var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
+var ManifoldApplication = (function (Backbone,$,Potrace,Path,THREE,fabric,_) {
   'use strict';
 
   Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
+  Path = Path && Path.hasOwnProperty('default') ? Path['default'] : Path;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
@@ -479,8 +480,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
   /**
     * Shape Finder model.
     * 
-    * Flatten an array of SVG elements into a single shape path.
-    * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
+    * Integrates Paper JS Boolean operations.
     */
 
   var ShapeFinderModel = (function (BaseModel$$1) {
@@ -519,7 +519,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
       canvas.width = window.innerWidth;
       image.src = svg.header + ',' + svg.content;
       $('#container').append(canvas);
-
+      console.log(Path);
     };
 
     return ShapeFinderModel;
@@ -832,7 +832,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         }
         // Is group.
         if (e.target._objects) {
-
+          $('#btnMergeActive').removeClass('disabled');
           $('#btnGroupActive').removeClass('disabled');
           if (e.target.type == 'activeSelection') {
             $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
@@ -843,10 +843,10 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         }
 
         // Events
-        // $('#btnMergeActive').click(function(e) {
-        //   var activeObject = this.attributes.canvas.getActiveObject();
-        //   this.shapeFinder.flatten(activeObject.toSVG());
-        // }.bind(this));
+        $('#btnMergeActive').click(function(e) {
+          var activeObject = this.attributes.canvas.getActiveObject();
+          this.shapeFinder.flatten(activeObject.toSVG());
+        }.bind(this));
 
         $('#btnGroupActive').click(function(e) {
           var activeObject = this.attributes.canvas.getActiveObject();
@@ -883,7 +883,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
             if (selectedObjects[i].toSVG) {
 
               var svgElements = selectedObjects[i].toSVG();
-
+              var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + svgElements + '</svg>';
               var create3DObject = function(threeCanvas) {
                 var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
                 threeD.left = selectedObjects[i].left;
@@ -894,7 +894,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
               app.views.threeCanvas.push(
                 new ThreeCanvasView({ 
                   model: app.models.threeCanvas[app.models.threeCanvas.length-1],
-                  svg: svgElements,
+                  svg: svg,
                   width: selectedObjects[i].width * selectedObjects[i].scaleX,
                   height: selectedObjects[i].height * selectedObjects[i].scaleY
                 })
@@ -1278,5 +1278,5 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
 
   return App;
 
-}(Backbone,jQuery,Potrace,THREE,fabric,_));
+}(Backbone,jQuery,Potrace,paper,THREE,fabric,_));
 //# sourceMappingURL=app.js.map

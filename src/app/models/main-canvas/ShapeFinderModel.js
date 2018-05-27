@@ -1,11 +1,11 @@
+import Path from 'paper';
 import $ from 'jQuery';
 import BaseModel from '../BaseModel.js';
 
 /**
   * Shape Finder model.
   * 
-  * Flatten an array of SVG elements into a single shape path.
-  * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
+  * Integrates Paper JS Boolean operations.
   */
 
 export default class ShapeFinderModel extends BaseModel {
@@ -36,6 +36,6 @@ export default class ShapeFinderModel extends BaseModel {
     canvas.width = window.innerWidth;
     image.src = svg.header + ',' + svg.content;
     $('#container').append(canvas);
-
+    console.log(Path);
   }
 }

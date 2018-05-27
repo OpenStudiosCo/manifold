@@ -79,7 +79,7 @@ export default class MainCanvasModel extends BaseModel {
       }
       // Is group.
       if (e.target._objects) {
-
+        $('#btnMergeActive').removeClass('disabled');
         $('#btnGroupActive').removeClass('disabled');
         if (e.target.type == 'activeSelection') {
           $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
@@ -90,10 +90,10 @@ export default class MainCanvasModel extends BaseModel {
       }
 
       // Events
-      // $('#btnMergeActive').click(function(e) {
-      //   var activeObject = this.attributes.canvas.getActiveObject();
-      //   this.shapeFinder.flatten(activeObject.toSVG());
-      // }.bind(this));
+      $('#btnMergeActive').click(function(e) {
+        var activeObject = this.attributes.canvas.getActiveObject();
+        this.shapeFinder.flatten(activeObject.toSVG());
+      }.bind(this));
 
       $('#btnGroupActive').click(function(e) {
         var activeObject = this.attributes.canvas.getActiveObject();
@@ -127,7 +127,7 @@ export default class MainCanvasModel extends BaseModel {
           if (selectedObjects[i].toSVG) {
 
             var svgElements = selectedObjects[i].toSVG();
-
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + svgElements + '</svg>';
             var create3DObject = function(threeCanvas) {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
@@ -138,7 +138,7 @@ export default class MainCanvasModel extends BaseModel {
             app.views.threeCanvas.push(
               new ThreeCanvasView({ 
                 model: app.models.threeCanvas[app.models.threeCanvas.length-1],
-                svg: svgElements,
+                svg: svg,
                 width: selectedObjects[i].width * selectedObjects[i].scaleX,
                 height: selectedObjects[i].height * selectedObjects[i].scaleY
               })
