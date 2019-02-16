@@ -1,18 +1,18 @@
-var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
+var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
   'use strict';
 
-  Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
+  Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
-  fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
 
   /**
     * Base model.
     */
 
-  var BaseModel = (function (superclass) {
+  var BaseModel = /*@__PURE__*/(function (superclass) {
     function BaseModel () {
       superclass.apply(this, arguments);
     }if ( superclass ) BaseModel.__proto__ = superclass;
@@ -24,7 +24,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     return BaseModel;
   }(Backbone.Model));
 
-  var pug = (function(exports){
+  var pug = (function(exports) {
 
     var pug_has_own_property = Object.prototype.hasOwnProperty;
 
@@ -312,7 +312,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
     */
 
-  var ColourPickerModel = (function (BaseModel$$1) {
+  var ColourPickerModel = /*@__PURE__*/(function (BaseModel$$1) {
     function ColourPickerModel() {
       BaseModel$$1.call(this);
 
@@ -423,7 +423,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Potrace model for the main canvas.
     */
 
-  var PotraceModel = (function (BaseModel$$1) {
+  var PotraceModel = /*@__PURE__*/(function (BaseModel$$1) {
     function PotraceModel () {
       BaseModel$$1.apply(this, arguments);
     }
@@ -483,7 +483,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
     */
 
-  var ShapeFinderModel = (function (BaseModel$$1) {
+  var ShapeFinderModel = /*@__PURE__*/(function (BaseModel$$1) {
     function ShapeFinderModel () {
       BaseModel$$1.apply(this, arguments);
     }
@@ -529,7 +529,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Three Canvas model.
     */
 
-  var ThreeCanvasModel = (function (BaseModel$$1) {
+  var ThreeCanvasModel = /*@__PURE__*/(function (BaseModel$$1) {
     function ThreeCanvasModel(options) {
       BaseModel$$1.call(this, options);
       this.attributes.scene = new THREE.Scene();
@@ -643,7 +643,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Base view.
     */
 
-  var BaseView = (function (superclass) {
+  var BaseView = /*@__PURE__*/(function (superclass) {
     function BaseView () {
       superclass.apply(this, arguments);
     }if ( superclass ) BaseView.__proto__ = superclass;
@@ -668,7 +668,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
 
   var models = 0;
 
-  var ThreeCanvasView = (function (BaseView$$1) {
+  var ThreeCanvasView = /*@__PURE__*/(function (BaseView$$1) {
     function ThreeCanvasView(options) {
       $('#container').append(modelPreview({id: 'model-preview-' + models}));
       BaseView$$1.call(this, {
@@ -761,7 +761,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * Raster To SVG model.
     */
 
-  var MainCanvasModel = (function (BaseModel$$1) {
+  var MainCanvasModel = /*@__PURE__*/(function (BaseModel$$1) {
     function MainCanvasModel() {
       BaseModel$$1.call(this);
       this.colourPickerModel = new ColourPickerModel();
@@ -866,18 +866,14 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
           $('#fill-tool').toggle();
         });
         $('#btnDeleteActive').click(function(e) {
-          var this$1 = this;
-
           var selectedObjects = this.attributes.canvas.getActiveObjects();
           for (var i = 0; i < selectedObjects.length; i++) {
-            this$1.attributes.canvas.remove(selectedObjects[i]);  
+            this.attributes.canvas.remove(selectedObjects[i]);  
           }
           this.attributes.canvas.discardActiveObject();
           $('.active-object-context').remove();
         }.bind(this));
         $('#btnMake3D:not(.disabled)').click(function(e) {
-          var this$1 = this;
-
           var selectedObjects = this.attributes.canvas.getActiveObjects();
           for (var i = 0; i < selectedObjects.length; i++) {
             if (selectedObjects[i].toSVG) {
@@ -889,7 +885,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
                 threeD.left = selectedObjects[i].left;
                 threeD.top = selectedObjects[i].top;
                 this.attributes.canvas.add(threeD);
-              }.bind(this$1);
+              }.bind(this);
               app.models.threeCanvas.push(new ThreeCanvasModel());
               app.views.threeCanvas.push(
                 new ThreeCanvasView({ 
@@ -900,7 +896,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
                 })
               );
               create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
-              this$1.attributes.canvas.remove(selectedObjects[i]);
+              this.attributes.canvas.remove(selectedObjects[i]);
             }
             else {
               console.log('not convertible!');
@@ -977,8 +973,6 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     // Loads an SVG string and splits up objects so they're loaded in the right position.
     MainCanvasModel.prototype.loadSVG = function loadSVG (svg, callback) {
       fabric.loadSVGFromString(svg, function(objects){
-        var this$1 = this;
-
         // Create a group so we add to center accurately.
         var group = new fabric.Group(objects);
         this.addToCenter(group);
@@ -988,7 +982,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
         group._restoreObjectsState();
         this.attributes.canvas.remove(group);
         for (var i = 0; i < items.length; i++) {
-          this$1.attributes.canvas.add(items[i]);
+          this.attributes.canvas.add(items[i]);
         }
         this.attributes.canvas.renderAll();
         if (callback) {
@@ -1033,7 +1027,7 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
     * MainCanvas view.
     */
 
-  var MainCanvasView = (function (BaseView$$1) {
+  var MainCanvasView = /*@__PURE__*/(function (BaseView$$1) {
     function MainCanvasView(options) {
       BaseView$$1.call(this, {
         el: '#main-canvas',
@@ -1278,5 +1272,5 @@ var ManifoldApplication = (function (Backbone,$,Potrace,THREE,fabric,_) {
 
   return App;
 
-}(Backbone,jQuery,Potrace,THREE,fabric,_));
+}(jQuery, fabric, Backbone, Potrace, THREE, _));
 //# sourceMappingURL=app.js.map

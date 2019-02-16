@@ -32,6 +32,8 @@
   },
   "devDependencies": {
     "autoprefixer-stylus": "^0.14.0",
+    "chokidar": "^2.1.1",
+    "cross-spawn": "^6.0.5",
     "eslint": "^4.19.1",
     "imagetracerjs": "^1.2.5",
     "jquery": "^3.3.1",
