@@ -52,8 +52,8 @@ export default class ThreeCanvasView extends BaseView {
     var boundingBoxSize = box.max.sub( box.min );
     this.model.attributes.mesh = svgExtruded;
     this.model.attributes.scene.add( this.model.attributes.mesh );
-    this.model.attributes.camera.position.set(-100 ,100 , -this.model.attributes.extrudeAmount * 2);
-    this.model.attributes.camera.lookAt(0,0,0);
+    var ratio = this.model.attributes.width / this.model.attributes.height;
+    this.model.attributes.camera.position.set(ratio * 93 , ratio * -83 , 8 * this.model.attributes.extrudeAmount);
     // Start the animation loop.
     this.model.animate();
   }
