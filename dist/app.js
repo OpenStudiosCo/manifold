@@ -714,8 +714,10 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       var boundingBoxSize = box.max.sub( box.min );
       this.model.attributes.mesh = svgExtruded;
       this.model.attributes.scene.add( this.model.attributes.mesh );
-      var ratio = this.model.attributes.width / this.model.attributes.height;
-      this.model.attributes.camera.position.set(ratio * 93 , ratio * -83 , 8 * this.model.attributes.extrudeAmount);
+      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 6);
+      this.model.attributes.controls.target =  new THREE.Vector3(
+          box.min.x + 100, box.min.y + 100 , box.min.z * 3
+      );
       // Start the animation loop.
       this.model.animate();
     };
@@ -886,7 +888,12 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
 
               var svg_end = '</svg>';
 
-              var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+              // Hack for matrix transform;
+              //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+
+              var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
+
+              console.log(svgElements);
 
               var create3DObject = function(threeCanvas) {
                 var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);

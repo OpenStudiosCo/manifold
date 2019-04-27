@@ -134,7 +134,12 @@ export default class MainCanvasModel extends BaseModel {
 
             var svg_end = '</svg>';
 
-            var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+            // Hack for matrix transform;
+            //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+
+            var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
+
+            console.log(svgElements);
 
             var create3DObject = function(threeCanvas) {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
