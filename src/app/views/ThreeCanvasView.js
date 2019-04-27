@@ -40,7 +40,7 @@ export default class ThreeCanvasView extends BaseView {
 
      // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
     var loader = new THREE.SVGLoader();
-    var paths = loader.parse(svg);
+    var paths = loader.parse(svg).paths;
     var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
     var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
     var svgExtruded = this.extrudeSVG({

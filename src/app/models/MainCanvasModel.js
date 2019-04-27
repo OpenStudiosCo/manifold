@@ -126,7 +126,14 @@ export default class MainCanvasModel extends BaseModel {
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
 
-            var svgElements = selectedObjects[i].toSVG();
+            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg" width="';
+            svg_start += this.attributes.canvas.width + '" height="';
+            svg_start += this.attributes.canvas.height + '" style="fill: ';
+            svg_start += selectedObjects[i].fill + '">';
+
+            var svg_end = '</svg>';
+
+            var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
             var create3DObject = function(threeCanvas) {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);

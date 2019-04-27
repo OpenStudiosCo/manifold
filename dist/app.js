@@ -312,9 +312,9 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
     */
 
-  var ColourPickerModel = /*@__PURE__*/(function (BaseModel$$1) {
+  var ColourPickerModel = /*@__PURE__*/(function (BaseModel) {
     function ColourPickerModel() {
-      BaseModel$$1.call(this);
+      BaseModel.call(this);
 
       var el = document.getElementById('colour-picker');
       if (!el) {
@@ -348,8 +348,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
        
     }
 
-    if ( BaseModel$$1 ) ColourPickerModel.__proto__ = BaseModel$$1;
-    ColourPickerModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    if ( BaseModel ) ColourPickerModel.__proto__ = BaseModel;
+    ColourPickerModel.prototype = Object.create( BaseModel && BaseModel.prototype );
     ColourPickerModel.prototype.constructor = ColourPickerModel;
 
     ColourPickerModel.prototype.defaults = function defaults () {
@@ -423,13 +423,13 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * Potrace model for the main canvas.
     */
 
-  var PotraceModel = /*@__PURE__*/(function (BaseModel$$1) {
+  var PotraceModel = /*@__PURE__*/(function (BaseModel) {
     function PotraceModel () {
-      BaseModel$$1.apply(this, arguments);
+      BaseModel.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) PotraceModel.__proto__ = BaseModel$$1;
-    PotraceModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    if ( BaseModel ) PotraceModel.__proto__ = BaseModel;
+    PotraceModel.prototype = Object.create( BaseModel && BaseModel.prototype );
     PotraceModel.prototype.constructor = PotraceModel;
 
     PotraceModel.prototype.defaults = function defaults () {
@@ -483,13 +483,13 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
     */
 
-  var ShapeFinderModel = /*@__PURE__*/(function (BaseModel$$1) {
+  var ShapeFinderModel = /*@__PURE__*/(function (BaseModel) {
     function ShapeFinderModel () {
-      BaseModel$$1.apply(this, arguments);
+      BaseModel.apply(this, arguments);
     }
 
-    if ( BaseModel$$1 ) ShapeFinderModel.__proto__ = BaseModel$$1;
-    ShapeFinderModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    if ( BaseModel ) ShapeFinderModel.__proto__ = BaseModel;
+    ShapeFinderModel.prototype = Object.create( BaseModel && BaseModel.prototype );
     ShapeFinderModel.prototype.constructor = ShapeFinderModel;
 
     ShapeFinderModel.prototype.flatten = function flatten (svgData) {
@@ -529,9 +529,9 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * Three Canvas model.
     */
 
-  var ThreeCanvasModel = /*@__PURE__*/(function (BaseModel$$1) {
+  var ThreeCanvasModel = /*@__PURE__*/(function (BaseModel) {
     function ThreeCanvasModel(options) {
-      BaseModel$$1.call(this, options);
+      BaseModel.call(this, options);
       this.attributes.scene = new THREE.Scene();
       var aspect = this.attributes.width / this.attributes.height;
       this.attributes.camera = new THREE.PerspectiveCamera( 50, aspect, 1, 100000 );
@@ -542,8 +542,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       this.attributes.mouse = new THREE.Vector2();
     }
 
-    if ( BaseModel$$1 ) ThreeCanvasModel.__proto__ = BaseModel$$1;
-    ThreeCanvasModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    if ( BaseModel ) ThreeCanvasModel.__proto__ = BaseModel;
+    ThreeCanvasModel.prototype = Object.create( BaseModel && BaseModel.prototype );
     ThreeCanvasModel.prototype.constructor = ThreeCanvasModel;
 
     // Scene helpers.
@@ -668,10 +668,10 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
 
   var models = 0;
 
-  var ThreeCanvasView = /*@__PURE__*/(function (BaseView$$1) {
+  var ThreeCanvasView = /*@__PURE__*/(function (BaseView) {
     function ThreeCanvasView(options) {
       $('#container').append(modelPreview({id: 'model-preview-' + models}));
-      BaseView$$1.call(this, {
+      BaseView.call(this, {
         el: '#model-preview-' + models,
         model: options.model
       });
@@ -688,8 +688,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       models++;
     }
 
-    if ( BaseView$$1 ) ThreeCanvasView.__proto__ = BaseView$$1;
-    ThreeCanvasView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+    if ( BaseView ) ThreeCanvasView.__proto__ = BaseView;
+    ThreeCanvasView.prototype = Object.create( BaseView && BaseView.prototype );
     ThreeCanvasView.prototype.constructor = ThreeCanvasView;
 
     ThreeCanvasView.prototype.createScene = function createScene (svg) {
@@ -701,7 +701,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
 
        // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
       var loader = new THREE.SVGLoader();
-      var paths = loader.parse(svg);
+      var paths = loader.parse(svg).paths;
       var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
       var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
       var svgExtruded = this.extrudeSVG({
@@ -761,9 +761,9 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * Raster To SVG model.
     */
 
-  var MainCanvasModel = /*@__PURE__*/(function (BaseModel$$1) {
+  var MainCanvasModel = /*@__PURE__*/(function (BaseModel) {
     function MainCanvasModel() {
-      BaseModel$$1.call(this);
+      BaseModel.call(this);
       this.colourPickerModel = new ColourPickerModel();
       this.potrace = new PotraceModel();
       this.shapeFinder = new ShapeFinderModel();
@@ -772,8 +772,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       this.setupEvents();
     }
 
-    if ( BaseModel$$1 ) MainCanvasModel.__proto__ = BaseModel$$1;
-    MainCanvasModel.prototype = Object.create( BaseModel$$1 && BaseModel$$1.prototype );
+    if ( BaseModel ) MainCanvasModel.__proto__ = BaseModel;
+    MainCanvasModel.prototype = Object.create( BaseModel && BaseModel.prototype );
     MainCanvasModel.prototype.constructor = MainCanvasModel;
 
     MainCanvasModel.prototype.defaults = function defaults () {
@@ -878,7 +878,14 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
           for (var i = 0; i < selectedObjects.length; i++) {
             if (selectedObjects[i].toSVG) {
 
-              var svgElements = selectedObjects[i].toSVG();
+              var svg_start = '<svg xmlns="http://www.w3.org/2000/svg" width="';
+              svg_start += this.attributes.canvas.width + '" height="';
+              svg_start += this.attributes.canvas.height + '" style="fill: ';
+              svg_start += selectedObjects[i].fill + '">';
+
+              var svg_end = '</svg>';
+
+              var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
               var create3DObject = function(threeCanvas) {
                 var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
@@ -1027,9 +1034,9 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * MainCanvas view.
     */
 
-  var MainCanvasView = /*@__PURE__*/(function (BaseView$$1) {
+  var MainCanvasView = /*@__PURE__*/(function (BaseView) {
     function MainCanvasView(options) {
-      BaseView$$1.call(this, {
+      BaseView.call(this, {
         el: '#main-canvas',
         model: options.model
       });
@@ -1091,8 +1098,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
         });
     }
 
-    if ( BaseView$$1 ) MainCanvasView.__proto__ = BaseView$$1;
-    MainCanvasView.prototype = Object.create( BaseView$$1 && BaseView$$1.prototype );
+    if ( BaseView ) MainCanvasView.__proto__ = BaseView;
+    MainCanvasView.prototype = Object.create( BaseView && BaseView.prototype );
     MainCanvasView.prototype.constructor = MainCanvasView;
 
     MainCanvasView.prototype.setupDefaultMenu = function setupDefaultMenu () {

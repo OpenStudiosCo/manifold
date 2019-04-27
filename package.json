@@ -7,7 +7,6 @@
     "url": "https://github.com/paulbrzeski/manifold"
   },
   "scripts": {
-    "build": "pug src/pages -P -o . -b . && stylus -u autoprefixer-stylus src/styles -o dist && rollup -c",
     "css": "stylus -u autoprefixer-stylus src/styles -o dist -w",
     "pug": "pug src/pages -P -o . -b . -w",
     "rollup": "rollup -c -w",
