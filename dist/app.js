@@ -534,9 +534,10 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       BaseModel.call(this, options);
       this.attributes.scene = new THREE.Scene();
       var aspect = this.attributes.width / this.attributes.height;
-      this.attributes.camera = new THREE.PerspectiveCamera( 50, aspect, 1, 100000 );
+      this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );
       this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
+      this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
       this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
       this.attributes.raycaster = new THREE.Raycaster();
       this.attributes.mouse = new THREE.Vector2();
@@ -713,9 +714,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       var boundingBoxSize = box.max.sub( box.min );
       this.model.attributes.mesh = svgExtruded;
       this.model.attributes.scene.add( this.model.attributes.mesh );
+      this.model.attributes.camera.position.set(-100 ,100 , -this.model.attributes.extrudeAmount * 2);
       this.model.attributes.camera.lookAt(0,0,0);
-      this.model.attributes.camera.position.set(0 ,0 , (this.model.attributes.width/ this.model.attributes.height) * this.model.attributes.extrudeAmount * 8);
-
       // Start the animation loop.
       this.model.animate();
     };
@@ -737,7 +737,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
           } );
           var simpleShape = shapes[ j ];
           var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            amount: amount ,
+            depth: amount ,
             bevelEnabled: false
           } );
 
@@ -877,15 +877,17 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
           var selectedObjects = this.attributes.canvas.getActiveObjects();
           for (var i = 0; i < selectedObjects.length; i++) {
             if (selectedObjects[i].toSVG) {
+              var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
+              var obj_height = selectedObjects[i].height * selectedObjects[i].scaleY;
 
-              var svg_start = '<svg xmlns="http://www.w3.org/2000/svg" width="';
-              svg_start += this.attributes.canvas.width + '" height="';
-              svg_start += this.attributes.canvas.height + '" style="fill: ';
+              var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';//' viewbox="0 0 ';
+              svg_start += ' style="fill: ';
               svg_start += selectedObjects[i].fill + '">';
 
               var svg_end = '</svg>';
 
-              var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
+              var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+              console.log(svgElements);
 
               var create3DObject = function(threeCanvas) {
                 var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
@@ -893,13 +895,16 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
                 threeD.top = selectedObjects[i].top;
                 this.attributes.canvas.add(threeD);
               }.bind(this);
-              app.models.threeCanvas.push(new ThreeCanvasModel());
+              app.models.threeCanvas.push(new ThreeCanvasModel({
+                height: obj_height,
+                width: obj_width
+              }));
               app.views.threeCanvas.push(
                 new ThreeCanvasView({ 
                   model: app.models.threeCanvas[app.models.threeCanvas.length-1],
                   svg: svgElements,
-                  width: selectedObjects[i].width * selectedObjects[i].scaleX,
-                  height: selectedObjects[i].height * selectedObjects[i].scaleY
+                  width: obj_width,
+                  height: obj_height
                 })
               );
               create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);

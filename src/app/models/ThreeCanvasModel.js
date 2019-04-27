@@ -30,9 +30,10 @@ export default class ThreeCanvasModel extends BaseModel {
     super(options);
     this.attributes.scene = new THREE.Scene();
     var aspect = this.attributes.width / this.attributes.height;
-    this.attributes.camera = new THREE.PerspectiveCamera( 50, aspect, 1, 100000 );
+    this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );
     this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
+    this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
     this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
     this.attributes.raycaster = new THREE.Raycaster();
     this.attributes.mouse = new THREE.Vector2();
