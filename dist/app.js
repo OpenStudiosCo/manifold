@@ -657,7 +657,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
   }(Backbone.View));
 
   function modelPreview(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  var locals_for_with = (locals || {});(function (id) {
+  ;var locals_for_with = (locals || {});(function (id) {
   pug_html = pug_html + "\u003Cdiv" + (" class=\"model-preview\""+" style=\"box-shadow: inset 0 0 5px #ccc;\""+pug.attr("id", id, true, true)) + "\u003E\u003C\u002Fdiv\u003E";
   }.call(this,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
@@ -1036,7 +1036,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
   }(BaseModel));
 
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  var locals_for_with = (locals || {});(function (url) {
+  ;var locals_for_with = (locals || {});(function (url) {
   pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
   pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
