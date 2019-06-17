@@ -1,28 +1,17 @@
-var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
+var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
   'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
-  Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] : Backbone;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
-  _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
 
   /**
-    * Base model.
+    * Base Integration class.
     */
 
-  var BaseModel = /*@__PURE__*/(function (superclass) {
-    function BaseModel () {
-      superclass.apply(this, arguments);
-    }if ( superclass ) BaseModel.__proto__ = superclass;
-    BaseModel.prototype = Object.create( superclass && superclass.prototype );
-    BaseModel.prototype.constructor = BaseModel;
-
-    
-
-    return BaseModel;
-  }(Backbone.Model));
+  var BaseIntegration = function BaseIntegration () {};
 
   var pug = (function(exports) {
 
@@ -308,27 +297,31 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
   pug_html = pug_html + "3D\u003C\u002Fspan\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
+    * Base Controls class.
+    */
+
+  var BaseControls = function BaseControls () {};
+
+  /**
     * Colour picker model for the main canvas.
     * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
     */
 
-  var ColourPickerModel = /*@__PURE__*/(function (BaseModel) {
-    function ColourPickerModel() {
-      BaseModel.call(this);
-
+  var ColourPickerControls = /*@__PURE__*/(function (BaseControls) {
+    function ColourPickerControls() {
       var el = document.getElementById('colour-picker');
       if (!el) {
         return;
       }
 
-      this.attributes.canvas = el.getContext('2d');
+      this.canvas = el.getContext('2d');
       // create an image object and get it’s source
       var img = new Image();
       img.onload = function(){
-        this.attributes.canvas.drawImage(img,0,0);
+        this.canvas.drawImage(img,0,0);
       }.bind(this);
       img.src = '/assets/spectrum.jpg';
-      this.attributes.canvas.scale(0.49, 0.4);
+      this.canvas.scale(0.49, 0.4);
 
       $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
 
@@ -348,20 +341,11 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
        
     }
 
-    if ( BaseModel ) ColourPickerModel.__proto__ = BaseModel;
-    ColourPickerModel.prototype = Object.create( BaseModel && BaseModel.prototype );
-    ColourPickerModel.prototype.constructor = ColourPickerModel;
+    if ( BaseControls ) ColourPickerControls.__proto__ = BaseControls;
+    ColourPickerControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    ColourPickerControls.prototype.constructor = ColourPickerControls;
 
-    ColourPickerModel.prototype.defaults = function defaults () {
-      var settings = {
-        color: '#FFFFFF',
-        canvas: null
-      };
-
-      return settings;
-    };
-
-    ColourPickerModel.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
+    ColourPickerControls.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
       var cvs, ctx;
       cvs = document.createElement('canvas');
       cvs.height = 1;
@@ -373,7 +357,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       this.setColour(c[0], c[1], c[2]);
     };
 
-    ColourPickerModel.prototype.setColour = function setColour (R,G,B) {
+    ColourPickerControls.prototype.setColour = function setColour (R,G,B) {
       var rgb = R + ', ' + G + ', ' + B;
       // convert RGB to HEX
       var hex = this.rgbToHex(R,G,B);
@@ -384,17 +368,17 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
 
       if (app.models.mainCanvas.attributes.canvas) {
         $('#btnFillActive .icon').css('color', '#' + hex);
-        app.models.mainCanvas.attributes.canvas.getActiveObject().set("fill", '#' + hex);
-        app.models.mainCanvas.attributes.canvas.renderAll();
+        app.models.mainCanvas.canvas.getActiveObject().set("fill", '#' + hex);
+        app.models.mainCanvas.canvas.renderAll();
       }
     };
 
     // http://www.javascripter.net/faq/rgbtohex.htm
-    ColourPickerModel.prototype.rgbToHex = function rgbToHex (R,G,B) {
+    ColourPickerControls.prototype.rgbToHex = function rgbToHex (R,G,B) {
      return this.toHex(R)+this.toHex(G)+this.toHex(B); 
     };
 
-    ColourPickerModel.prototype.toHex = function toHex (m) {
+    ColourPickerControls.prototype.toHex = function toHex (m) {
       var n = parseInt(m,10);
       if (isNaN(n)) {
        return "00";
@@ -404,35 +388,35 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
     };
 
-    ColourPickerModel.prototype.pickColour = function pickColour (event) {
+    ColourPickerControls.prototype.pickColour = function pickColour (event) {
       // getting user coordinates
       var x = event.offsetX;
       var y = event.offsetY;
       // getting image data and RGB values
-      var img_data = this.attributes.canvas.getImageData(x, y, 1, 1).data;
+      var img_data = this.canvas.getImageData(x, y, 1, 1).data;
       var R = img_data[0];
       var G = img_data[1];
       var B = img_data[2];
       this.setColour(R, G, B);
     };
 
-    return ColourPickerModel;
-  }(BaseModel));
+    return ColourPickerControls;
+  }(BaseControls));
 
   /**
     * Potrace model for the main canvas.
     */
 
-  var PotraceModel = /*@__PURE__*/(function (BaseModel) {
-    function PotraceModel () {
-      BaseModel.apply(this, arguments);
+  var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function PotraceIntegration () {
+      BaseIntegration.apply(this, arguments);
     }
 
-    if ( BaseModel ) PotraceModel.__proto__ = BaseModel;
-    PotraceModel.prototype = Object.create( BaseModel && BaseModel.prototype );
-    PotraceModel.prototype.constructor = PotraceModel;
+    if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
+    PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    PotraceIntegration.prototype.constructor = PotraceIntegration;
 
-    PotraceModel.prototype.defaults = function defaults () {
+    PotraceIntegration.prototype.defaults = function defaults () {
       var settings = {
         alphamax: 1,
         optcurve: false,
@@ -444,7 +428,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       return settings;
     };
 
-    PotraceModel.prototype.createSVG = function createSVG (src, callback) {
+    PotraceIntegration.prototype.createSVG = function createSVG (src, callback) {
       // Create an SVG from data and settings, draw to screen.
       Potrace.clear();
       Potrace.loadImageFromSrc(src);
@@ -473,567 +457,269 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       });
     };
 
-    return PotraceModel;
-  }(BaseModel));
-
-  /**
-    * Shape Finder model.
-    * 
-    * Flatten an array of SVG elements into a single shape path.
-    * Credit - https://github.com/bennyn/html5-demos/blob/master/quick-hacks/draw-svg-string-on-canvas.html
-    */
-
-  var ShapeFinderModel = /*@__PURE__*/(function (BaseModel) {
-    function ShapeFinderModel () {
-      BaseModel.apply(this, arguments);
-    }
-
-    if ( BaseModel ) ShapeFinderModel.__proto__ = BaseModel;
-    ShapeFinderModel.prototype = Object.create( BaseModel && BaseModel.prototype );
-    ShapeFinderModel.prototype.constructor = ShapeFinderModel;
-
-    ShapeFinderModel.prototype.flatten = function flatten (svgData) {
-      var svg = {
-        header: 'data:image/svg+xml',
-        content: '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + svgData + '</svg>'
-      };
-      var canvas = document.createElement('canvas');
-      var image = new Image();
-      var context = canvas.getContext('2d');
-      image.onload = function() {
-        context.drawImage(image, 0, 0);
-        var horizontalScan = [];
-        for (var yPos = 0; yPos < canvas.height; yPos++) {
-          var horizontalScanRaw = context.getImageData(0, yPos, canvas.width, 1);
-          context.fillStyle = 'blue';
-          for (var i = 0; i < horizontalScanRaw.data.length; i+=3) {
-            if (horizontalScanRaw.data[i] > 0) {
-              context.fillRect((i / 4) % canvas.width, yPos, 1, 1);
-              horizontalScan.push((i / 4) % canvas.width);
-            }
-          }
-        }
-        console.log(horizontalScan);  
-      };
-      canvas.height = window.innerHeight;
-      canvas.width = window.innerWidth;
-      image.src = svg.header + ',' + svg.content;
-      $('#container').append(canvas);
-
-    };
-
-    return ShapeFinderModel;
-  }(BaseModel));
-
-  /**
-    * Three Canvas model.
-    */
-
-  var ThreeCanvasModel = /*@__PURE__*/(function (BaseModel) {
-    function ThreeCanvasModel(options) {
-      BaseModel.call(this, options);
-      this.attributes.scene = new THREE.Scene();
-      var aspect = this.attributes.width / this.attributes.height;
-      this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );
-      this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
-      this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
-      this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
-      this.attributes.raycaster = new THREE.Raycaster();
-      this.attributes.mouse = new THREE.Vector2();
-    }
-
-    if ( BaseModel ) ThreeCanvasModel.__proto__ = BaseModel;
-    ThreeCanvasModel.prototype = Object.create( BaseModel && BaseModel.prototype );
-    ThreeCanvasModel.prototype.constructor = ThreeCanvasModel;
-
-    // Scene helpers.
-    ThreeCanvasModel.prototype.defaults = function defaults () {
-      var attributes = {
-        animationId: null,
-        renderer: null,
-        scene: null,
-        width: 400,
-        height: 400,
-        camera: null,
-        controls: null,
-        mesh: null,
-        raycaster: null,
-        highlighter: null,
-        mouse: null,
-        extrudeAmount: 40,
-        helpers: []
-      };
-      
-      return attributes;
-    };
-
-    ThreeCanvasModel.prototype.addHelpers = function addHelpers () {
-      var size = 2000;
-      var divisions = 100;
-      var gridColour = new THREE.Color(0xEFEFEF);
-
-      var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-      gridHelper.position.setX(-712.5);
-      gridHelper.position.setZ(-500);
-      gridHelper.rotateX(Math.PI / 2);
-      gridHelper.rotateZ(-Math.PI / 4);
-      this.attributes.helpers.push(gridHelper);
-      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
-
-      var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
-      gridHelper2.position.setX(712.5);
-      gridHelper2.position.setZ(-500);
-      gridHelper2.rotateX(Math.PI / 2);
-      gridHelper2.rotateZ(Math.PI / 4);
-      this.attributes.helpers.push(gridHelper2);
-      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
-
-      var axesHelper = new THREE.AxesHelper( 500 );
-      axesHelper.rotateY(-Math.PI / 4);
-      axesHelper.position.set(0, -100, -350);
-      this.attributes.helpers.push(axesHelper);
-      this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
-    };
-
-    ThreeCanvasModel.prototype.clearScene = function clearScene () {
-      cancelAnimationFrame( this.attributes.animationId );
-      this.attributes.scene.children = [];
-      this.attributes.mesh = null;
-      this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-    };
-
-    ThreeCanvasModel.prototype.animate = function animate () {
-      this.attributes.animationId = requestAnimationFrame( this.animate.bind(this) );
-      this.render.bind(this)();
-    };
-
-    ThreeCanvasModel.prototype.render = function render () {
-      this.attributes.controls.update();
-      this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
-
-      //this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
-      
-      // var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
-      // if ( intersects.length > 0 ) {
-      //   if (this.attributes.highlighter) {
-      //     this.attributes.scene.remove( this.attributes.highlighter );
-      //   }
-      //   this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
-      //   this.attributes.scene.add( this.attributes.highlighter );
-      // }
-
-      if (app.models.mainCanvas) {
-        app.models.mainCanvas.attributes.canvas.renderAll();      
-      }
-    };
-
-    ThreeCanvasModel.prototype.resize = function resize () {
-      this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
-      this.attributes.camera.updateProjectionMatrix();
-
-      this.attributes.camera.position.setZ((this.attributes.width/ this.attributes.height) * this.attributes.extrudeAmount * 8);
-
-      this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
-    };
-
-    return ThreeCanvasModel;
-  }(BaseModel));
-
-  /**
-    * Base view.
-    */
-
-  var BaseView = /*@__PURE__*/(function (superclass) {
-    function BaseView () {
-      superclass.apply(this, arguments);
-    }if ( superclass ) BaseView.__proto__ = superclass;
-    BaseView.prototype = Object.create( superclass && superclass.prototype );
-    BaseView.prototype.constructor = BaseView;
-
-    
-
-    return BaseView;
-  }(Backbone.View));
-
-  function modelPreview(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (id) {
-  pug_html = pug_html + "\u003Cdiv" + (" class=\"model-preview\""+" style=\"box-shadow: inset 0 0 5px #ccc;\""+pug.attr("id", id, true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-  }.call(this,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
-
-  /**
-    * Three Canvas view.
-    *
-    * Manages a THREE.JS canvas view.
-    */
-
-  var models = 0;
-
-  var ThreeCanvasView = /*@__PURE__*/(function (BaseView) {
-    function ThreeCanvasView(options) {
-      $('#container').append(modelPreview({id: 'model-preview-' + models}));
-      BaseView.call(this, {
-        el: '#model-preview-' + models,
-        model: options.model
-      });
-      this.$el.css('width', options.width);
-      this.$el.css('height', options.height);
-      this.model.attributes.width = options.width;
-      this.model.attributes.height = options.height;
-      this.$el.on( 'mousemove', function(event) {
-        this.model.attributes.mouse.x = (( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 ) - 1;
-        this.model.attributes.mouse.y = - (( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 ) + 1;
-      }.bind(this));
-
-      this.createScene(options.svg);
-      models++;
-    }
-
-    if ( BaseView ) ThreeCanvasView.__proto__ = BaseView;
-    ThreeCanvasView.prototype = Object.create( BaseView && BaseView.prototype );
-    ThreeCanvasView.prototype.constructor = ThreeCanvasView;
-
-    ThreeCanvasView.prototype.createScene = function createScene (svg) {
-      
-      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
-      this.model.clearScene();
-      
-      this.$el.append( this.model.attributes.renderer.domElement );
-
-       // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
-      var loader = new THREE.SVGLoader();
-      var paths = loader.parse(svg).paths;
-      var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
-      var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
-      var svgExtruded = this.extrudeSVG({
-        paths: paths,
-        amount: this.model.attributes.extrudeAmount,
-        center: { x: offsetX, y: offsetY }
-      });
-      var box = new THREE.Box3().setFromObject( svgExtruded );
-      var boundingBoxSize = box.max.sub( box.min );
-      this.model.attributes.mesh = svgExtruded;
-      this.model.attributes.scene.add( this.model.attributes.mesh );
-      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 6);
-      this.model.attributes.controls.target =  new THREE.Vector3(
-          box.min.x + 100, box.min.y + 100 , box.min.z * 3
-      );
-      // Start the animation loop.
-      this.model.animate();
-    };
-
-    // Populate a 3D group from an SVG using SVGLoader
-    ThreeCanvasView.prototype.extrudeSVG = function extrudeSVG (svgObject) {
-      var paths = svgObject.paths;
-      var amount = svgObject.amount;
-      var center = svgObject.center;
-
-      var group = new THREE.Group();
-      for ( var i = 0; i < paths.length; i ++ ) {
-        var path = paths[ i ];
-        var shapes = path.toShapes( true );
-        for ( var j = 0; j < shapes.length; j ++ ) {
-          var color = new THREE.Color(Math.random() * 0xffffff);
-          var material = new THREE.MeshBasicMaterial( {
-            color: path.color ? path.color : color
-          } );
-          var simpleShape = shapes[ j ];
-          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            depth: amount ,
-            bevelEnabled: false
-          } );
-
-          var mesh = new THREE.Mesh( shape3d, material );
-          mesh.rotation.x = Math.PI;
-          mesh.translateZ( - amount - 1 );
-          mesh.translateX( - center.x);
-          mesh.translateY( - center.y);
-
-          group.add( mesh );
-        }
-      }
-
-      return group;
-    };
-
-    return ThreeCanvasView;
-  }(BaseView));
+    return PotraceIntegration;
+  }(BaseIntegration));
 
   /**
     * Raster To SVG model.
     */
 
-  var MainCanvasModel = /*@__PURE__*/(function (BaseModel) {
-    function MainCanvasModel() {
-      BaseModel.call(this);
-      this.colourPickerModel = new ColourPickerModel();
-      this.potrace = new PotraceModel();
-      this.shapeFinder = new ShapeFinderModel();
-      this.attributes.canvas = new fabric.Canvas('main-canvas');
-      this.updateCanvasSize();
-      this.setupEvents();
-    }
+  var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
+    this.colourPickerModel = new ColourPickerControls();
+    this.potrace = new PotraceIntegration();
+    this.attributes.canvas = new fabric.Canvas('main-canvas');
+    this.updateCanvasSize();
+    this.setupEvents();
+  };
 
-    if ( BaseModel ) MainCanvasModel.__proto__ = BaseModel;
-    MainCanvasModel.prototype = Object.create( BaseModel && BaseModel.prototype );
-    MainCanvasModel.prototype.constructor = MainCanvasModel;
-
-    MainCanvasModel.prototype.defaults = function defaults () {
-      var attributes = {
-        canvas: null,
-        transitioning: false
-      };
-      
-      return attributes;
+  FabricJSIntegrationExtras.prototype.defaults = function defaults () {
+    var attributes = {
+      canvas: null,
+      transitioning: false
     };
+      
+    return attributes;
+  };
 
-    MainCanvasModel.prototype.setupEvents = function setupEvents () {
-      // Credit - https://stackoverflow.com/a/24238960
-      this.attributes.canvas.on('object:moving', function (e) {
-        var obj = e.target;
-         // if object is too big ignore
-        if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
-            return;
-        }        
-        obj.setCoords();        
-        // top-left  corner
-        if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
-            obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
-            obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+  FabricJSIntegrationExtras.prototype.setupEvents = function setupEvents () {
+    // Credit - https://stackoverflow.com/a/24238960
+    this.attributes.canvas.on('object:moving', function (e) {
+      var obj = e.target;
+       // if object is too big ignore
+      if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
+          return;
+      }        
+      obj.setCoords();        
+      // top-leftcorner
+      if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
+          obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+          obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+      }
+      // bot-right corner
+      if (obj.getBoundingRect().top+obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width > obj.canvas.width){
+          obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+          obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+      }
+    });
+
+    // Create the active object context menu when selecting an object.
+    var selectionCallback = function(e) {
+      $('.model-preview').hide();
+      $('.active-object-context').remove();
+      var $menu = $(activeObjectContext());
+      $('#container').append($menu);
+      var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
+      var offsetY = e.target.top - ($menu.height()) - 50;
+      $menu.css('left', offsetX);
+      $menu.css('top', offsetY);
+
+      // Set the menu to be draggable
+      $('.floating.overlay').draggable();
+
+      // Not 3D, not text, not group
+      if (!e.target._element && !e.target.text && !e.target._objects) {
+        $('#btnMake3D').removeClass('disabled');
+      }
+      // Not 3D, not group
+      if (!e.target._element && !e.target._objects) {
+        $('#btnFillActive').removeClass('disabled');
+        $('#btnFillActive .icon').css('color', e.target.fill);
+        this.colourPickerModel.lookupAndSetColour(e.target.fill);
+      }
+      // Is group.
+      if (e.target._objects) {
+
+        $('#btnGroupActive').removeClass('disabled');
+        if (e.target.type == 'activeSelection') {
+          $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
         }
-        // bot-right corner
-        if (obj.getBoundingRect().top+obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width > obj.canvas.width){
-            obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
-            obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+        else {
+          $('#btnGroupActive span').html('Ungroup (' + e.target._objects.length + ')');
         }
-      });
+      }
 
-      // Create the active object context menu when selecting an object.
-      var selectionCallback = function(e) {
-        $('.model-preview').hide();
-        $('.active-object-context').remove();
-        var $menu = $(activeObjectContext());
-        $('#container').append($menu);
-        var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
-        var offsetY = e.target.top - ($menu.height()) - 50;
-        $menu.css('left', offsetX);
-        $menu.css('top', offsetY);
-
-        // Set the menu to be draggable
-        $('.floating.overlay').draggable();
-
-        // Not 3D, not text, not group
-        if (!e.target._element && !e.target.text && !e.target._objects) {
-          $('#btnMake3D').removeClass('disabled');
+      // Events
+      $('#btnGroupActive').click(function(e) {
+        var activeObject = this.attributes.canvas.getActiveObject();
+        if (activeObject.type != 'group') {
+          activeObject.toGroup();
         }
-        // Not 3D, not group
-        if (!e.target._element && !e.target._objects) {
-          $('#btnFillActive').removeClass('disabled');
-          $('#btnFillActive .icon').css('color', e.target.fill);
-          this.colourPickerModel.lookupAndSetColour(e.target.fill);
+        else {
+          activeObject.toActiveSelection();
         }
-        // Is group.
-        if (e.target._objects) {
-
-          $('#btnGroupActive').removeClass('disabled');
-          if (e.target.type == 'activeSelection') {
-            $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
-          }
-          else {
-            $('#btnGroupActive span').html('Ungroup (' + e.target._objects.length + ')');
-          }
-        }
-
-        // Events
-        // $('#btnMergeActive').click(function(e) {
-        //   var activeObject = this.attributes.canvas.getActiveObject();
-        //   this.shapeFinder.flatten(activeObject.toSVG());
-        // }.bind(this));
-
-        $('#btnGroupActive').click(function(e) {
-          var activeObject = this.attributes.canvas.getActiveObject();
-          if (activeObject.type != 'group') {
-            activeObject.toGroup();
-          }
-          else {
-            activeObject.toActiveSelection();
-          }
           
-          this.attributes.canvas.discardActiveObject();
-          this.attributes.canvas.requestRenderAll();
-        }.bind(this));
+        this.attributes.canvas.discardActiveObject();
+        this.attributes.canvas.requestRenderAll();
+      }.bind(this));
         
-        $('#btnFillActive:not(.disabled)').click(function(e){
-          $(this).toggleClass('active');
-          $('#fill-tool').toggle();
-        });
-        $('#btnDeleteActive').click(function(e) {
-          var selectedObjects = this.attributes.canvas.getActiveObjects();
-          for (var i = 0; i < selectedObjects.length; i++) {
-            this.attributes.canvas.remove(selectedObjects[i]);  
+      $('#btnFillActive:not(.disabled)').click(function(e){
+        $(this).toggleClass('active');
+        $('#fill-tool').toggle();
+      });
+      $('#btnDeleteActive').click(function(e) {
+        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        for (var i = 0; i < selectedObjects.length; i++) {
+          this.attributes.canvas.remove(selectedObjects[i]);  
+        }
+        this.attributes.canvas.discardActiveObject();
+        $('.active-object-context').remove();
+      }.bind(this));
+      $('#btnMake3D:not(.disabled)').click(function(e) {
+        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        for (var i = 0; i < selectedObjects.length; i++) {
+          if (selectedObjects[i].toSVG) {
+            var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
+            var obj_height = selectedObjects[i].height * selectedObjects[i].scaleY;
+
+            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';//' viewbox="0 0 ';
+            svg_start += ' style="fill: ';
+            svg_start += selectedObjects[i].fill + '">';
+
+            var svg_end = '</svg>';
+
+            // Hack for matrix transform;
+            //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+
+            var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
+
+            console.log(svgElements);
+
+            var create3DObject = function(threeCanvas) {
+              var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
+              threeD.left = selectedObjects[i].left;
+              threeD.top = selectedObjects[i].top;
+              this.attributes.canvas.add(threeD);
+            }.bind(this);
+            app.models.threeCanvas.push(new ThreeCanvasModel({
+              height: obj_height,
+              width: obj_width
+            }));
+            app.views.threeCanvas.push(
+              new ThreeCanvasView({ 
+                model: app.models.threeCanvas[app.models.threeCanvas.length-1],
+                svg: svgElements,
+                width: obj_width,
+                height: obj_height
+              })
+            );
+            create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
+            this.attributes.canvas.remove(selectedObjects[i]);
           }
-          this.attributes.canvas.discardActiveObject();
-          $('.active-object-context').remove();
-        }.bind(this));
-        $('#btnMake3D:not(.disabled)').click(function(e) {
-          var selectedObjects = this.attributes.canvas.getActiveObjects();
-          for (var i = 0; i < selectedObjects.length; i++) {
-            if (selectedObjects[i].toSVG) {
-              var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
-              var obj_height = selectedObjects[i].height * selectedObjects[i].scaleY;
-
-              var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';//' viewbox="0 0 ';
-              svg_start += ' style="fill: ';
-              svg_start += selectedObjects[i].fill + '">';
-
-              var svg_end = '</svg>';
-
-              // Hack for matrix transform;
-              //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
-
-              var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
-
-              console.log(svgElements);
-
-              var create3DObject = function(threeCanvas) {
-                var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
-                threeD.left = selectedObjects[i].left;
-                threeD.top = selectedObjects[i].top;
-                this.attributes.canvas.add(threeD);
-              }.bind(this);
-              app.models.threeCanvas.push(new ThreeCanvasModel({
-                height: obj_height,
-                width: obj_width
-              }));
-              app.views.threeCanvas.push(
-                new ThreeCanvasView({ 
-                  model: app.models.threeCanvas[app.models.threeCanvas.length-1],
-                  svg: svgElements,
-                  width: obj_width,
-                  height: obj_height
-                })
-              );
-              create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
-              this.attributes.canvas.remove(selectedObjects[i]);
-            }
-            else {
-              console.log('not convertible!');
-            }
+          else {
+            console.log('not convertible!');
           }
-          this.attributes.canvas.discardActiveObject();
-          $('.active-object-context').remove();
-        }.bind(this));
-      }.bind(this);
+        }
+        this.attributes.canvas.discardActiveObject();
+        $('.active-object-context').remove();
+      }.bind(this));
+    }.bind(this);
 
-      // Separated for Fabric's On not supporting multiple.
-      this.attributes.canvas.on('selection:created', selectionCallback);
-      this.attributes.canvas.on('selection:updated', selectionCallback);
+    // Separated for Fabric's On not supporting multiple.
+    this.attributes.canvas.on('selection:created', selectionCallback);
+    this.attributes.canvas.on('selection:updated', selectionCallback);
 
-      this.attributes.canvas.on('mouse:dblclick', function(e){
-        if (e.target && e.target._element) {
-          var $el = $(e.target._element).parent();
+    this.attributes.canvas.on('mouse:dblclick', function(e){
+      if (e.target && e.target._element) {
+        var $el = $(e.target._element).parent();
+        var scaledWidth = e.target.width * e.target.scaleX;
+        var scaledHeight = e.target.height * e.target.scaleY;
+        var offsetX = e.target.left + ((scaledWidth / 2) - ($el.width() / 2));
+        var offsetY = e.target.top + ((scaledHeight / 2) - ($el.height() / 2));
+        $el.show();
+        $el.css('left', offsetX);
+        $el.css('top', offsetY);
+      }
+       
+    }.bind(this));
+
+    this.attributes.canvas.on('selection:cleared', function(){
+      $('.active-object-context').remove();
+     $('.model-preview').hide();
+     $('#fill-tool').hide();
+    });
+
+    // TODO: Don't follow if user moved the toolbar.
+    this.attributes.canvas.on('object:moving', function(e) {
+      var $menu = $('.active-object-context');
+      var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
+      var offsetY = e.target.top - ($menu.height()) - 50;
+      var toolbarWidth = $('#toolbar').sidebar('is visible') ? $('#toolbar').width(): 0;
+      if (offsetX < toolbarWidth) {
+        offsetX = 0;
+      }
+      if (offsetX > this.attributes.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = this.attributes.canvas.width - $menu.width(); 
+      }
+      if (offsetY < 0) {
+        offsetY = 0;
+      }
+      $menu.css('left', offsetX);
+      $menu.css('top', offsetY);
+    }.bind(this));
+
+    // Resize 3D canvas if it's that type of element.
+    this.attributes.canvas.on('object:scaling', function(e) {
+      if (e.target._element) {
+        var $container = $(e.target._element).parent();
+        if ($container.hasClass('model-preview')) {
           var scaledWidth = e.target.width * e.target.scaleX;
           var scaledHeight = e.target.height * e.target.scaleY;
-          var offsetX = e.target.left + ((scaledWidth / 2) - ($el.width() / 2));
-          var offsetY = e.target.top + ((scaledHeight / 2) - ($el.height() / 2));
-          $el.show();
-          $el.css('left', offsetX);
-          $el.css('top', offsetY);
-        }
-       
-      }.bind(this));
-
-      this.attributes.canvas.on('selection:cleared', function(){
-        $('.active-object-context').remove();
-       $('.model-preview').hide();
-       $('#fill-tool').hide();
-      });
-
-      // TODO: Don't follow if user moved the toolbar.
-      this.attributes.canvas.on('object:moving', function(e) {
-        var $menu = $('.active-object-context');
-        var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
-        var offsetY = e.target.top - ($menu.height()) - 50;
-        var toolbarWidth = $('#toolbar').sidebar('is visible') ? $('#toolbar').width(): 0;
-        if (offsetX < toolbarWidth) {
-          offsetX = 0;
-        }
-        if (offsetX > this.attributes.canvas.width - toolbarWidth - $menu.width()) {
-          offsetX = this.attributes.canvas.width - $menu.width(); 
-        }
-        if (offsetY < 0) {
-          offsetY = 0;
-        }
-        $menu.css('left', offsetX);
-        $menu.css('top', offsetY);
-      }.bind(this));
-
-      // Resize 3D canvas if it's that type of element.
-      this.attributes.canvas.on('object:scaling', function(e) {
-        if (e.target._element) {
-          var $container = $(e.target._element).parent();
-          if ($container.hasClass('model-preview')) {
-            var scaledWidth = e.target.width * e.target.scaleX;
-            var scaledHeight = e.target.height * e.target.scaleY;
-            $container.css('width', scaledWidth);
-            $container.css('height', scaledHeight);
+          $container.css('width', scaledWidth);
+          $container.css('height', scaledHeight);
             
-            var id = $container.attr('id').replace('model-preview-','');
-            app.models.threeCanvas[id].attributes.width = scaledWidth;
-            app.models.threeCanvas[id].attributes.height = scaledHeight;
-            app.models.threeCanvas[id].resize();
-            e.target._resetWidthHeight();
-          }
+          var id = $container.attr('id').replace('model-preview-','');
+          app.models.threeCanvas[id].attributes.width = scaledWidth;
+          app.models.threeCanvas[id].attributes.height = scaledHeight;
+          app.models.threeCanvas[id].resize();
+          e.target._resetWidthHeight();
         }
-      });
-    };
-
-    // Loads an SVG string and splits up objects so they're loaded in the right position.
-    MainCanvasModel.prototype.loadSVG = function loadSVG (svg, callback) {
-      fabric.loadSVGFromString(svg, function(objects){
-        // Create a group so we add to center accurately.
-        var group = new fabric.Group(objects);
-        this.addToCenter(group);
-
-        // Ungroup.
-        var items = group._objects;
-        group._restoreObjectsState();
-        this.attributes.canvas.remove(group);
-        for (var i = 0; i < items.length; i++) {
-          this.attributes.canvas.add(items[i]);
-        }
-        this.attributes.canvas.renderAll();
-        if (callback) {
-          callback(items);
-        }
-      }.bind(this));
-    };
-
-    MainCanvasModel.prototype.updateCanvasSize = function updateCanvasSize () {
-      var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-      if ($("#toolbar").sidebar('is visible')) {
-        width -= $('#toolbar').width();  
       }
-      var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      this.attributes.canvas.setHeight( height );
-      this.attributes.canvas.setWidth( width );
-    };
+    });
+  };
 
-    // Add an object to the center of the canvas.
-    MainCanvasModel.prototype.addToCenter = function addToCenter (object) {
-      var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-      if ($("#toolbar").sidebar('is visible')) {
-        canvasWidth -= $('#toolbar').width();  
+  // Loads an SVG string and splits up objects so they're loaded in the right position.
+  FabricJSIntegrationExtras.prototype.loadSVG = function loadSVG (svg, callback) {
+    fabric.loadSVGFromString(svg, function(objects){
+      // Create a group so we add to center accurately.
+      var group = new fabric.Group(objects);
+      this.addToCenter(group);
+
+      // Ungroup.
+      var items = group._objects;
+      group._restoreObjectsState();
+      this.attributes.canvas.remove(group);
+      for (var i = 0; i < items.length; i++) {
+        this.attributes.canvas.add(items[i]);
       }
-      var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      
-      object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
-      
-      this.attributes.canvas.add(object);
-    };
+      this.attributes.canvas.renderAll();
+      if (callback) {
+        callback(items);
+      }
+    }.bind(this));
+  };
 
-    return MainCanvasModel;
-  }(BaseModel));
+  FabricJSIntegrationExtras.prototype.updateCanvasSize = function updateCanvasSize () {
+    var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    if ($("#toolbar").sidebar('is visible')) {
+      width -= $('#toolbar').width();  
+    }
+    var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    this.attributes.canvas.setHeight( height );
+    this.attributes.canvas.setWidth( width );
+  };
+
+  // Add an object to the center of the canvas.
+  FabricJSIntegrationExtras.prototype.addToCenter = function addToCenter (object) {
+    var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    if ($("#toolbar").sidebar('is visible')) {
+      canvasWidth -= $('#toolbar').width();  
+    }
+    var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      
+    object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
+      
+    this.attributes.canvas.add(object);
+  };
 
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (url) {
@@ -1045,11 +731,11 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
     * MainCanvas view.
     */
 
-  var MainCanvasView = /*@__PURE__*/(function (BaseView) {
-    function MainCanvasView(options) {
-      BaseView.call(this, {
+  var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function FabricJSIntegration(options) {
+      BaseIntegration.call(this, {
         el: '#main-canvas',
-        model: options.model
+        model: new FabricJSIntegrationExtras()
       });
 
 
@@ -1109,11 +795,11 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
         });
     }
 
-    if ( BaseView ) MainCanvasView.__proto__ = BaseView;
-    MainCanvasView.prototype = Object.create( BaseView && BaseView.prototype );
-    MainCanvasView.prototype.constructor = MainCanvasView;
+    if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
+    FabricJSIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    FabricJSIntegration.prototype.constructor = FabricJSIntegration;
 
-    MainCanvasView.prototype.setupDefaultMenu = function setupDefaultMenu () {
+    FabricJSIntegration.prototype.setupDefaultMenu = function setupDefaultMenu () {
       // Define slideout position based on corresponding menu item.
       $('#add-image').css('top', function(){
         return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
@@ -1240,7 +926,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
         }.bind(this));
     };
 
-    MainCanvasView.prototype.toggleToolbar = function toggleToolbar () {
+    FabricJSIntegration.prototype.toggleToolbar = function toggleToolbar () {
       if (!this.model.attributes.transitioning) {
         $("#toolbar")
           .sidebar({
@@ -1263,8 +949,8 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
       }
     };
 
-    return MainCanvasView;
-  }(BaseView));
+    return FabricJSIntegration;
+  }(BaseIntegration));
 
   // External libs
 
@@ -1272,14 +958,7 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
    * Manifold Browser Application
    */
   var App = function App() {
-    this.models = {
-      mainCanvas: new MainCanvasModel(),
-      threeCanvas: []
-    };
-    this.views = {
-      mainCanvas: new MainCanvasView({ model: this.models.mainCanvas }),
-      threeCanvas: []
-    };
+    FabricJSIntegration();
   };
 
   // Startup using jQuery.ready()
@@ -1290,5 +969,5 @@ var ManifoldApplication = (function ($, fabric, Backbone, Potrace, THREE, _) {
 
   return App;
 
-}(jQuery, fabric, Backbone, Potrace, THREE, _));
+}(jQuery, _, fabric, Potrace, THREE));
 //# sourceMappingURL=app.js.map

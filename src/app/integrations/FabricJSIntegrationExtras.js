@@ -1,18 +1,15 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
-import BaseModel from './BaseModel.js';
 import activeObjectContext from '../../templates/toolbar/active-object-context.pug';
-import ColourPickerModel from './main-canvas/ColourPickerModel.js';
-import PotraceModel from './main-canvas/PotraceModel.js';
-import ShapeFinderModel from './main-canvas/ShapeFinderModel.js';
-import ThreeCanvasModel from '../models/ThreeCanvasModel.js';
-import ThreeCanvasView from '../views/ThreeCanvasView.js';
+import ColourPickerControls from '../ui/controls/ColourPickerControls.js';
+import PotraceIntegration from './PotraceIntegration.js';
+import ThreeJSIntegration from './ThreeJSIntegration.js';
 
 /**
   * Raster To SVG model.
   */
 
-export default class MainCanvasModel extends BaseModel {
+export default class FabricJSIntegrationExtras {
   defaults() {
     var attributes = {
       canvas: null,
@@ -23,10 +20,8 @@ export default class MainCanvasModel extends BaseModel {
   }
 
   constructor() {
-    super();
-    this.colourPickerModel = new ColourPickerModel();
-    this.potrace = new PotraceModel();
-    this.shapeFinder = new ShapeFinderModel();
+    this.colourPickerModel = new ColourPickerControls();
+    this.potrace = new PotraceIntegration();
     this.attributes.canvas = new fabric.Canvas('main-canvas');
     this.updateCanvasSize();
     this.setupEvents();
@@ -90,11 +85,6 @@ export default class MainCanvasModel extends BaseModel {
       }
 
       // Events
-      // $('#btnMergeActive').click(function(e) {
-      //   var activeObject = this.attributes.canvas.getActiveObject();
-      //   this.shapeFinder.flatten(activeObject.toSVG());
-      // }.bind(this));
-
       $('#btnGroupActive').click(function(e) {
         var activeObject = this.attributes.canvas.getActiveObject();
         if (activeObject.type != 'group') {

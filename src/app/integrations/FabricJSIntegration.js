@@ -1,8 +1,9 @@
 import _ from '_';
 import $ from 'jQuery';
 import fabric from 'fabric';
-import BaseView from './BaseView.js';
-import ThreeCanvasView from './ThreeCanvasView.js';
+import BaseIntegration from './BaseIntegration.js';
+import FabricJSIntegrationExtras from './FabricJSIntegrationExtras.js';
+import ThreeJSIntegration from './ThreeJSIntegration.js';
 import defaultMenu from '../../templates/toolbar/default.pug';
 import addImageItem from '../../templates/toolbar/add-image__item.pug';
 
@@ -10,11 +11,11 @@ import addImageItem from '../../templates/toolbar/add-image__item.pug';
   * MainCanvas view.
   */
 
-export default class MainCanvasView extends BaseView {
+export default class FabricJSIntegration extends BaseIntegration {
   constructor(options) {
     super({
       el: '#main-canvas',
-      model: options.model
+      model: new FabricJSIntegrationExtras()
     });
 
 

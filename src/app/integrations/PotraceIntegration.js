@@ -1,12 +1,12 @@
 import $ from 'jQuery';
 import Potrace from 'Potrace';
-import BaseModel from '../BaseModel.js';
+import BaseIntegration from './BaseIntegration.js';
 
 /**
   * Potrace model for the main canvas.
   */
 
-export default class PotraceModel extends BaseModel {
+export default class PotraceIntegration extends BaseIntegration {
   defaults() {
     var settings = {
       alphamax: 1,

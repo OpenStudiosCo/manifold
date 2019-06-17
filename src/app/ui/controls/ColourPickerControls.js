@@ -1,37 +1,26 @@
 import $ from 'jQuery';
-import BaseModel from '../BaseModel.js';
+import BaseControls from './BaseControls.js';
 
 /**
   * Colour picker model for the main canvas.
   * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
   */
 
-export default class ColourPickerModel extends BaseModel {
-  defaults() {
-    var settings = {
-      color: '#FFFFFF',
-      canvas: null
-    };
-
-    return settings;
-  }
-
+export default class ColourPickerControls extends BaseControls {
   constructor() {
-    super();
-
     var el = document.getElementById('colour-picker');
     if (!el) {
       return;
     }
 
-    this.attributes.canvas = el.getContext('2d');
+    this.canvas = el.getContext('2d');
     // create an image object and get it’s source
     var img = new Image();
     img.onload = function(){
-      this.attributes.canvas.drawImage(img,0,0);
+      this.canvas.drawImage(img,0,0);
     }.bind(this);
     img.src = '/assets/spectrum.jpg';
-    this.attributes.canvas.scale(0.49, 0.4);
+    this.canvas.scale(0.49, 0.4);
 
     $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
 
@@ -74,8 +63,8 @@ export default class ColourPickerModel extends BaseModel {
 
     if (app.models.mainCanvas.attributes.canvas) {
       $('#btnFillActive .icon').css('color', '#' + hex);
-      app.models.mainCanvas.attributes.canvas.getActiveObject().set("fill", '#' + hex);
-      app.models.mainCanvas.attributes.canvas.renderAll();
+      app.models.mainCanvas.canvas.getActiveObject().set("fill", '#' + hex);
+      app.models.mainCanvas.canvas.renderAll();
     }
   }
 
@@ -99,7 +88,7 @@ export default class ColourPickerModel extends BaseModel {
     var x = event.offsetX;
     var y = event.offsetY;
     // getting image data and RGB values
-    var img_data = this.attributes.canvas.getImageData(x, y, 1, 1).data;
+    var img_data = this.canvas.getImageData(x, y, 1, 1).data;
     var R = img_data[0];
     var G = img_data[1];
     var B = img_data[2];
