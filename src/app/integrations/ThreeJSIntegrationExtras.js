@@ -1,4 +1,3 @@
-import BaseModel from './BaseModel.js';
 import THREE from 'THREE';
 
 /**
@@ -27,7 +26,6 @@ export default class ThreeJSIntegrationExtras {
   }
 
   constructor(options) {
-    super(options);
     this.attributes.scene = new THREE.Scene();
     var aspect = this.attributes.width / this.attributes.height;
     this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );

@@ -22,14 +22,14 @@ export default class FabricJSIntegrationExtras {
   constructor() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
-    this.attributes.canvas = new fabric.Canvas('main-canvas');
+    this.canvas = new fabric.Canvas('main-canvas');
     this.updateCanvasSize();
     this.setupEvents();
   }
 
   setupEvents() {
     // Credit - https://stackoverflow.com/a/24238960
-    this.attributes.canvas.on('object:moving', function (e) {
+    this.canvas.on('object:moving', function (e) {
       var obj = e.target;
        // if object is too big ignore
       if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
@@ -86,7 +86,7 @@ export default class FabricJSIntegrationExtras {
 
       // Events
       $('#btnGroupActive').click(function(e) {
-        var activeObject = this.attributes.canvas.getActiveObject();
+        var activeObject = this.canvas.getActiveObject();
         if (activeObject.type != 'group') {
           activeObject.toGroup();
         }
@@ -94,8 +94,8 @@ export default class FabricJSIntegrationExtras {
           activeObject.toActiveSelection();
         }
         
-        this.attributes.canvas.discardActiveObject();
-        this.attributes.canvas.requestRenderAll();
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
       }.bind(this));
       
       $('#btnFillActive:not(.disabled)').click(function(e){
@@ -103,15 +103,15 @@ export default class FabricJSIntegrationExtras {
         $('#fill-tool').toggle();
       });
       $('#btnDeleteActive').click(function(e) {
-        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        var selectedObjects = this.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
-          this.attributes.canvas.remove(selectedObjects[i]);  
+          this.canvas.remove(selectedObjects[i]);  
         }
-        this.attributes.canvas.discardActiveObject();
+        this.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
       $('#btnMake3D:not(.disabled)').click(function(e) {
-        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        var selectedObjects = this.canvas.getActiveObjects();
         var convertibleObjects = [];
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
@@ -135,7 +135,7 @@ export default class FabricJSIntegrationExtras {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              this.attributes.canvas.add(threeD);
+              this.canvas.add(threeD);
             }.bind(this);
             app.models.threeCanvas.push(new ThreeCanvasModel({
               height: obj_height,
@@ -150,22 +150,22 @@ export default class FabricJSIntegrationExtras {
               })
             );
             create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
-            this.attributes.canvas.remove(selectedObjects[i]);
+            this.canvas.remove(selectedObjects[i]);
           }
           else {
             console.log('not convertible!');
           }
         }
-        this.attributes.canvas.discardActiveObject();
+        this.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
     }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
-    this.attributes.canvas.on('selection:created', selectionCallback);
-    this.attributes.canvas.on('selection:updated', selectionCallback);
+    this.canvas.on('selection:created', selectionCallback);
+    this.canvas.on('selection:updated', selectionCallback);
 
-    this.attributes.canvas.on('mouse:dblclick', function(e){
+    this.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -179,14 +179,14 @@ export default class FabricJSIntegrationExtras {
      
     }.bind(this));
 
-    this.attributes.canvas.on('selection:cleared', function(){
+    this.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
      $('.model-preview').hide();
      $('#fill-tool').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.
-    this.attributes.canvas.on('object:moving', function(e) {
+    this.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
@@ -194,8 +194,8 @@ export default class FabricJSIntegrationExtras {
       if (offsetX < toolbarWidth) {
         offsetX = 0;
       }
-      if (offsetX > this.attributes.canvas.width - toolbarWidth - $menu.width()) {
-        offsetX = this.attributes.canvas.width - $menu.width(); 
+      if (offsetX > this.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = this.canvas.width - $menu.width(); 
       }
       if (offsetY < 0) {
         offsetY = 0;
@@ -205,7 +205,7 @@ export default class FabricJSIntegrationExtras {
     }.bind(this));
 
     // Resize 3D canvas if it's that type of element.
-    this.attributes.canvas.on('object:scaling', function(e) {
+    this.canvas.on('object:scaling', function(e) {
       if (e.target._element) {
         var $container = $(e.target._element).parent();
         if ($container.hasClass('model-preview')) {
@@ -234,11 +234,11 @@ export default class FabricJSIntegrationExtras {
       // Ungroup.
       var items = group._objects;
       group._restoreObjectsState();
-      this.attributes.canvas.remove(group);
+      this.canvas.remove(group);
       for (var i = 0; i < items.length; i++) {
-        this.attributes.canvas.add(items[i]);
+        this.canvas.add(items[i]);
       }
-      this.attributes.canvas.renderAll();
+      this.canvas.renderAll();
       if (callback) {
         callback(items);
       }
@@ -251,8 +251,8 @@ export default class FabricJSIntegrationExtras {
       width -= $('#toolbar').width();  
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    this.attributes.canvas.setHeight( height );
-    this.attributes.canvas.setWidth( width );
+    this.canvas.setHeight( height );
+    this.canvas.setWidth( width );
   }
 
   // Add an object to the center of the canvas.
@@ -265,6 +265,6 @@ export default class FabricJSIntegrationExtras {
     
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
     
-    this.attributes.canvas.add(object);
+    this.canvas.add(object);
   }
 }

@@ -1,4 +1,3 @@
-import _ from '_';
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseIntegration from './BaseIntegration.js';
@@ -13,11 +12,8 @@ import addImageItem from '../../templates/toolbar/add-image__item.pug';
 
 export default class FabricJSIntegration extends BaseIntegration {
   constructor(options) {
-    super({
-      el: '#main-canvas',
-      model: new FabricJSIntegrationExtras()
-    });
-
+    this.el = '#main-canvas';
+    this.model = new FabricJSIntegrationExtras();
 
     var circle = new fabric.Circle({ radius: 100, fill: 'green' });
     this.model.addToCenter(circle);
@@ -29,7 +25,6 @@ export default class FabricJSIntegration extends BaseIntegration {
     });
     this.model.addToCenter(rect);
     rect.left += 75;
-    this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
     this.setupDefaultMenu();
 
@@ -41,15 +36,15 @@ export default class FabricJSIntegration extends BaseIntegration {
         var callback = function() {
           $('#hideAddImage').click();
         };
-        app.models.mainCanvas.loadSVG(svg, callback);
+        this.model.loadSVG(svg, callback);
       };
-      app.models.mainCanvas.potrace.createSVG(src, callback);
+      this.model.potrace.createSVG(src, callback);
     });
 
     $('.ui.dropdown').dropdown();
 
     $(window).on('resize', () => {
-      app.models.mainCanvas.updateCanvasSize();
+      this.model.updateCanvasSize();
     });
 
     $('#hideAddImage')
@@ -211,13 +206,13 @@ export default class FabricJSIntegration extends BaseIntegration {
           exclusive: false,
           closable: false,
           onChange: function() {
-            app.models.mainCanvas.attributes.transitioning = true;
+            this.model.attributes.transitioning = true;
           },
           onHide: function() {
-            app.models.mainCanvas.attributes.transitioning = false;
+            this.model.attributes.transitioning = false;
           },
           onShow: function() {
-            app.models.mainCanvas.attributes.transitioning = false;
+            this.model.attributes.transitioning = false;
           }
         })
         .sidebar("toggle");

@@ -8,7 +8,7 @@ import FabricJSIntegration from './app/integrations/FabricJSIntegration.js';
  */
 export default class App {
   constructor() {
-    FabricJSIntegration();
+    this.fabric = new FabricJSIntegration();
   }
 }
 

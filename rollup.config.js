@@ -3,7 +3,7 @@ import pug from 'rollup-plugin-pug';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  external: [ 'jQuery', '_', 'Backbone', 'dat', 'fabric', 'ImageTracer', 'Potrace', 'THREE', 'TWEEN' ],
+  external: [ 'jQuery', 'dat', 'fabric', 'ImageTracer', 'Potrace', 'THREE', 'TWEEN' ],
   input: 'src/app.js',
   output: {
     name: 'ManifoldApplication',
@@ -12,8 +12,6 @@ export default {
     sourcemap: true,
     globals: {
       jQuery: 'jQuery',
-      _: '_',
-      Backbone: 'Backbone',
       dat: 'dat',
       fabric: 'fabric',
       ImageTracer: 'ImageTracer',

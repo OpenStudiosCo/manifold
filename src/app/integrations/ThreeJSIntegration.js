@@ -1,6 +1,7 @@
 import $ from 'jQuery';
 import THREE from 'THREE';
 import BaseIntegration from './BaseIntegration.js';
+import ThreeJSIntegrationExtras from './ThreeJSIntegrationExtras.js';
 import modelPreview from '../../templates/toolbar/model-preview.pug';
 
 /**
@@ -16,7 +17,7 @@ export default class ThreeIntegration extends BaseIntegration {
     $('#container').append(modelPreview({id: 'model-preview-' + models}));
     super({
       el: '#model-preview-' + models,
-      model: options.model
+      model: ThreeJSIntegrationExtras()
     });
     this.$el.css('width', options.width);
     this.$el.css('height', options.height);

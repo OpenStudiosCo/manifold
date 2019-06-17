@@ -1,8 +1,7 @@
-var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
+var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
-  _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
   Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
@@ -467,7 +466,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
   var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
-    this.attributes.canvas = new fabric.Canvas('main-canvas');
+    this.canvas = new fabric.Canvas('main-canvas');
     this.updateCanvasSize();
     this.setupEvents();
   };
@@ -483,7 +482,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
 
   FabricJSIntegrationExtras.prototype.setupEvents = function setupEvents () {
     // Credit - https://stackoverflow.com/a/24238960
-    this.attributes.canvas.on('object:moving', function (e) {
+    this.canvas.on('object:moving', function (e) {
       var obj = e.target;
        // if object is too big ignore
       if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
@@ -540,7 +539,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
 
       // Events
       $('#btnGroupActive').click(function(e) {
-        var activeObject = this.attributes.canvas.getActiveObject();
+        var activeObject = this.canvas.getActiveObject();
         if (activeObject.type != 'group') {
           activeObject.toGroup();
         }
@@ -548,8 +547,8 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
           activeObject.toActiveSelection();
         }
           
-        this.attributes.canvas.discardActiveObject();
-        this.attributes.canvas.requestRenderAll();
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
       }.bind(this));
         
       $('#btnFillActive:not(.disabled)').click(function(e){
@@ -557,15 +556,15 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
         $('#fill-tool').toggle();
       });
       $('#btnDeleteActive').click(function(e) {
-        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        var selectedObjects = this.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
-          this.attributes.canvas.remove(selectedObjects[i]);  
+          this.canvas.remove(selectedObjects[i]);  
         }
-        this.attributes.canvas.discardActiveObject();
+        this.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
       $('#btnMake3D:not(.disabled)').click(function(e) {
-        var selectedObjects = this.attributes.canvas.getActiveObjects();
+        var selectedObjects = this.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
             var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
@@ -588,7 +587,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
               var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              this.attributes.canvas.add(threeD);
+              this.canvas.add(threeD);
             }.bind(this);
             app.models.threeCanvas.push(new ThreeCanvasModel({
               height: obj_height,
@@ -603,22 +602,22 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
               })
             );
             create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
-            this.attributes.canvas.remove(selectedObjects[i]);
+            this.canvas.remove(selectedObjects[i]);
           }
           else {
             console.log('not convertible!');
           }
         }
-        this.attributes.canvas.discardActiveObject();
+        this.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
     }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
-    this.attributes.canvas.on('selection:created', selectionCallback);
-    this.attributes.canvas.on('selection:updated', selectionCallback);
+    this.canvas.on('selection:created', selectionCallback);
+    this.canvas.on('selection:updated', selectionCallback);
 
-    this.attributes.canvas.on('mouse:dblclick', function(e){
+    this.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -632,14 +631,14 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
        
     }.bind(this));
 
-    this.attributes.canvas.on('selection:cleared', function(){
+    this.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
      $('.model-preview').hide();
      $('#fill-tool').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.
-    this.attributes.canvas.on('object:moving', function(e) {
+    this.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
@@ -647,8 +646,8 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
       if (offsetX < toolbarWidth) {
         offsetX = 0;
       }
-      if (offsetX > this.attributes.canvas.width - toolbarWidth - $menu.width()) {
-        offsetX = this.attributes.canvas.width - $menu.width(); 
+      if (offsetX > this.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = this.canvas.width - $menu.width(); 
       }
       if (offsetY < 0) {
         offsetY = 0;
@@ -658,7 +657,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
     }.bind(this));
 
     // Resize 3D canvas if it's that type of element.
-    this.attributes.canvas.on('object:scaling', function(e) {
+    this.canvas.on('object:scaling', function(e) {
       if (e.target._element) {
         var $container = $(e.target._element).parent();
         if ($container.hasClass('model-preview')) {
@@ -687,11 +686,11 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
       // Ungroup.
       var items = group._objects;
       group._restoreObjectsState();
-      this.attributes.canvas.remove(group);
+      this.canvas.remove(group);
       for (var i = 0; i < items.length; i++) {
-        this.attributes.canvas.add(items[i]);
+        this.canvas.add(items[i]);
       }
-      this.attributes.canvas.renderAll();
+      this.canvas.renderAll();
       if (callback) {
         callback(items);
       }
@@ -704,8 +703,8 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
       width -= $('#toolbar').width();  
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    this.attributes.canvas.setHeight( height );
-    this.attributes.canvas.setWidth( width );
+    this.canvas.setHeight( height );
+    this.canvas.setWidth( width );
   };
 
   // Add an object to the center of the canvas.
@@ -718,7 +717,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
       
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
-    this.attributes.canvas.add(object);
+    this.canvas.add(object);
   };
 
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
@@ -733,11 +732,10 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
 
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function FabricJSIntegration(options) {
-      BaseIntegration.call(this, {
-        el: '#main-canvas',
-        model: new FabricJSIntegrationExtras()
-      });
+      var this$1 = this;
 
+      this.el = '#main-canvas';
+      this.model = new FabricJSIntegrationExtras();
 
       var circle = new fabric.Circle({ radius: 100, fill: 'green' });
       this.model.addToCenter(circle);
@@ -749,7 +747,6 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
       });
       this.model.addToCenter(rect);
       rect.left += 75;
-      this.toggleToolbar = _.throttle(this.toggleToolbar, 1000);
 
       this.setupDefaultMenu();
 
@@ -761,15 +758,15 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
           var callback = function() {
             $('#hideAddImage').click();
           };
-          app.models.mainCanvas.loadSVG(svg, callback);
+          this.model.loadSVG(svg, callback);
         };
-        app.models.mainCanvas.potrace.createSVG(src, callback);
+        this.model.potrace.createSVG(src, callback);
       });
 
       $('.ui.dropdown').dropdown();
 
       $(window).on('resize', function () {
-        app.models.mainCanvas.updateCanvasSize();
+        this$1.model.updateCanvasSize();
       });
 
       $('#hideAddImage')
@@ -935,13 +932,13 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
             exclusive: false,
             closable: false,
             onChange: function() {
-              app.models.mainCanvas.attributes.transitioning = true;
+              this.model.attributes.transitioning = true;
             },
             onHide: function() {
-              app.models.mainCanvas.attributes.transitioning = false;
+              this.model.attributes.transitioning = false;
             },
             onShow: function() {
-              app.models.mainCanvas.attributes.transitioning = false;
+              this.model.attributes.transitioning = false;
             }
           })
           .sidebar("toggle");
@@ -958,7 +955,7 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
    * Manifold Browser Application
    */
   var App = function App() {
-    FabricJSIntegration();
+    this.fabric = new FabricJSIntegration();
   };
 
   // Startup using jQuery.ready()
@@ -969,5 +966,5 @@ var ManifoldApplication = (function ($, _, fabric, Potrace, THREE) {
 
   return App;
 
-}(jQuery, _, fabric, Potrace, THREE));
+}(jQuery, fabric, Potrace, THREE));
 //# sourceMappingURL=app.js.map
