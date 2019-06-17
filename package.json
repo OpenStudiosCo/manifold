@@ -24,22 +24,22 @@
   },
   "dependencies": {
     "axis": "^1.0.0",
-    "npm": "^6.8.0",
+    "npm": "^6.9.0",
     "prompt": "^1.0.0",
     "pug": "^2.0.3",
     "stylus": "^0.54.5"
   },
   "devDependencies": {
     "autoprefixer-stylus": "^0.14.0",
-    "chokidar": "^2.1.1",
+    "chokidar": "^2.1.6",
     "cross-spawn": "^6.0.5",
     "eslint": "^4.19.1",
     "imagetracerjs": "^1.2.5",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.1",
     "jstransformer-markdown": "^1.1.1",
     "pug-cli": "^1.0.0-alpha6",
     "rollup-plugin-buble": "^0.19.6",
-    "rollup-plugin-pug": "^1.1.0",
+    "rollup-plugin-pug": "^1.1.1",
     "rollup-plugin-uglify": "^3.0.0",
     "standard": "^11.0.1",
     "three": "^0.91.0"
