@@ -467,17 +467,12 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
-    this.updateCanvasSize();
-    this.setupEvents();
-  };
-
-  FabricJSIntegrationExtras.prototype.defaults = function defaults () {
-    var attributes = {
+    this.attributes = {
       canvas: null,
       transitioning: false
     };
-      
-    return attributes;
+    this.updateCanvasSize();
+    this.setupEvents();
   };
 
   FabricJSIntegrationExtras.prototype.setupEvents = function setupEvents () {
@@ -924,7 +919,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     };
 
     FabricJSIntegration.prototype.toggleToolbar = function toggleToolbar () {
-      if (!this.model.attributes.transitioning) {
+      if (!app.fabric.model.attributes.transitioning) {
         $("#toolbar")
           .sidebar({
             dimPage: false,
@@ -932,17 +927,17 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
             exclusive: false,
             closable: false,
             onChange: function() {
-              this.model.attributes.transitioning = true;
+              app.fabric.model.attributes.transitioning = true;
             },
             onHide: function() {
-              this.model.attributes.transitioning = false;
+              app.fabric.model.attributes.transitioning = false;
             },
             onShow: function() {
-              this.model.attributes.transitioning = false;
+              app.fabric.model.attributes.transitioning = false;
             }
           })
           .sidebar("toggle");
-        this.model.updateCanvasSize();
+        app.fabric.model.updateCanvasSize();
       }
     };
 

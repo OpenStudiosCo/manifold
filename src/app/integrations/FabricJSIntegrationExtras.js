@@ -10,19 +10,14 @@ import ThreeJSIntegration from './ThreeJSIntegration.js';
   */
 
 export default class FabricJSIntegrationExtras {
-  defaults() {
-    var attributes = {
-      canvas: null,
-      transitioning: false
-    };
-    
-    return attributes;
-  }
-
   constructor() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
+    this.attributes = {
+      canvas: null,
+      transitioning: false
+    };
     this.updateCanvasSize();
     this.setupEvents();
   }

@@ -198,7 +198,7 @@ export default class FabricJSIntegration extends BaseIntegration {
   }
 
   toggleToolbar() {
-    if (!this.model.attributes.transitioning) {
+    if (!app.fabric.model.attributes.transitioning) {
       $("#toolbar")
         .sidebar({
           dimPage: false,
@@ -206,17 +206,17 @@ export default class FabricJSIntegration extends BaseIntegration {
           exclusive: false,
           closable: false,
           onChange: function() {
-            this.model.attributes.transitioning = true;
+            app.fabric.model.attributes.transitioning = true;
           },
           onHide: function() {
-            this.model.attributes.transitioning = false;
+            app.fabric.model.attributes.transitioning = false;
           },
           onShow: function() {
-            this.model.attributes.transitioning = false;
+            app.fabric.model.attributes.transitioning = false;
           }
         })
         .sidebar("toggle");
-      this.model.updateCanvasSize();
+      app.fabric.model.updateCanvasSize();
     }
   }
 }
