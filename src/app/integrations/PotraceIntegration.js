@@ -7,16 +7,14 @@ import BaseIntegration from './BaseIntegration.js';
   */
 
 export default class PotraceIntegration extends BaseIntegration {
-  defaults() {
-    var settings = {
+  constructor() {
+    this.settings = {
       alphamax: 1,
       optcurve: false,
       opttolerance: 0.2,
       turdsize: 2,
       turnpolicy: "minority"
     };
-
-    return settings;
   }
 
   createSVG(src, callback) {

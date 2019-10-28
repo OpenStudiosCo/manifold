@@ -407,25 +407,19 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     */
 
   var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function PotraceIntegration () {
-      BaseIntegration.apply(this, arguments);
-    }
-
-    if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
-    PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
-    PotraceIntegration.prototype.constructor = PotraceIntegration;
-
-    PotraceIntegration.prototype.defaults = function defaults () {
-      var settings = {
+    function PotraceIntegration() {
+      this.settings = {
         alphamax: 1,
         optcurve: false,
         opttolerance: 0.2,
         turdsize: 2,
         turnpolicy: "minority"
       };
+    }
 
-      return settings;
-    };
+    if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
+    PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    PotraceIntegration.prototype.constructor = PotraceIntegration;
 
     PotraceIntegration.prototype.createSVG = function createSVG (src, callback) {
       // Create an SVG from data and settings, draw to screen.
@@ -753,9 +747,9 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
           var callback = function() {
             $('#hideAddImage').click();
           };
-          this.model.loadSVG(svg, callback);
+          app.fabric.model.loadSVG(svg, callback);
         };
-        this.model.potrace.createSVG(src, callback);
+        app.fabric.model.potrace.createSVG(src, callback);
       });
 
       $('.ui.dropdown').dropdown();

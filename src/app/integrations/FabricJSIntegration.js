@@ -36,9 +36,9 @@ export default class FabricJSIntegration extends BaseIntegration {
         var callback = function() {
           $('#hideAddImage').click();
         };
-        this.model.loadSVG(svg, callback);
+        app.fabric.model.loadSVG(svg, callback);
       };
-      this.model.potrace.createSVG(src, callback);
+      app.fabric.model.potrace.createSVG(src, callback);
     });
 
     $('.ui.dropdown').dropdown();
