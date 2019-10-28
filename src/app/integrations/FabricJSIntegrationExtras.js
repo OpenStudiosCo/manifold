@@ -13,6 +13,7 @@ export default class FabricJSIntegrationExtras {
   constructor() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
+    this.threejs = new ThreeJSIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
     this.attributes = {
       canvas: null,
@@ -210,9 +211,9 @@ export default class FabricJSIntegrationExtras {
           $container.css('height', scaledHeight);
           
           var id = $container.attr('id').replace('model-preview-','');
-          app.models.threeCanvas[id].attributes.width = scaledWidth;
-          app.models.threeCanvas[id].attributes.height = scaledHeight;
-          app.models.threeCanvas[id].resize();
+          app.fabric.model.threeCanvas[id].attributes.width = scaledWidth;
+          app.fabric.model.threeCanvas[id].attributes.height = scaledHeight;
+          app.fabric.model.threeCanvas[id].resize();
           e.target._resetWidthHeight();
         }
       }

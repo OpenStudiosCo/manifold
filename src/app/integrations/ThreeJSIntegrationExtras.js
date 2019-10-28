@@ -5,8 +5,8 @@ import THREE from 'THREE';
   */
 
 export default class ThreeJSIntegrationExtras {
-  defaults() {
-    var attributes = {
+  constructor(options) {
+    this.attributes = {
       animationId: null,
       renderer: null,
       scene: null,
@@ -21,11 +21,6 @@ export default class ThreeJSIntegrationExtras {
       extrudeAmount: 40,
       helpers: []
     };
-    
-    return attributes;
-  }
-
-  constructor(options) {
     this.attributes.scene = new THREE.Scene();
     var aspect = this.attributes.width / this.attributes.height;
     this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );

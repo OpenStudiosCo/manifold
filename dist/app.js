@@ -454,12 +454,217 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   }(BaseIntegration));
 
   /**
+    * Three Canvas model.
+    */
+
+  var ThreeJSIntegrationExtras = function ThreeJSIntegrationExtras(options) {
+    this.attributes = {
+      animationId: null,
+      renderer: null,
+      scene: null,
+      width: 400,
+      height: 400,
+      camera: null,
+      controls: null,
+      mesh: null,
+      raycaster: null,
+      highlighter: null,
+      mouse: null,
+      extrudeAmount: 40,
+      helpers: []
+    };
+    this.attributes.scene = new THREE.Scene();
+    var aspect = this.attributes.width / this.attributes.height;
+    this.attributes.camera = new THREE.PerspectiveCamera( 45, aspect, 1, 100000 );
+    this.attributes.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    this.attributes.renderer.setPixelRatio( window.devicePixelRatio );
+    this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
+    this.attributes.controls = new THREE.OrbitControls( this.attributes.camera, this.attributes.renderer.domElement );
+    this.attributes.raycaster = new THREE.Raycaster();
+    this.attributes.mouse = new THREE.Vector2();
+  };
+
+  // Scene helpers.
+  ThreeJSIntegrationExtras.prototype.addHelpers = function addHelpers () {
+    var size = 2000;
+    var divisions = 100;
+    var gridColour = new THREE.Color(0xEFEFEF);
+
+    var gridHelper = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+    gridHelper.position.setX(-712.5);
+    gridHelper.position.setZ(-500);
+    gridHelper.rotateX(Math.PI / 2);
+    gridHelper.rotateZ(-Math.PI / 4);
+    this.attributes.helpers.push(gridHelper);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
+
+    var gridHelper2 = new THREE.GridHelper( size, divisions, gridColour, gridColour );
+    gridHelper2.position.setX(712.5);
+    gridHelper2.position.setZ(-500);
+    gridHelper2.rotateX(Math.PI / 2);
+    gridHelper2.rotateZ(Math.PI / 4);
+    this.attributes.helpers.push(gridHelper2);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
+
+    var axesHelper = new THREE.AxesHelper( 500 );
+    axesHelper.rotateY(-Math.PI / 4);
+    axesHelper.position.set(0, -100, -350);
+    this.attributes.helpers.push(axesHelper);
+    this.attributes.scene.add( this.attributes.helpers[this.attributes.helpers.length-1] );
+  };
+
+  ThreeJSIntegrationExtras.prototype.clearScene = function clearScene () {
+    cancelAnimationFrame( this.attributes.animationId );
+    this.attributes.scene.children = [];
+    this.attributes.mesh = null;
+    this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
+  };
+
+  ThreeJSIntegrationExtras.prototype.animate = function animate () {
+    this.attributes.animationId = requestAnimationFrame( this.animate.bind(this) );
+    this.render.bind(this)();
+  };
+
+  ThreeJSIntegrationExtras.prototype.render = function render () {
+    this.attributes.controls.update();
+    this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
+
+    //this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+      
+    // var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
+    // if ( intersects.length > 0 ) {
+    // if (this.attributes.highlighter) {
+    //   this.attributes.scene.remove( this.attributes.highlighter );
+    // }
+    // this.attributes.highlighter = new THREE.BoxHelper( intersects[0].object, 0xffff00 );
+    // this.attributes.scene.add( this.attributes.highlighter );
+    // }
+
+    if (app.models.mainCanvas) {
+      app.models.mainCanvas.attributes.canvas.renderAll();      
+    }
+  };
+
+  ThreeJSIntegrationExtras.prototype.resize = function resize () {
+    this.attributes.camera.aspect = this.attributes.width / this.attributes.height;
+    this.attributes.camera.updateProjectionMatrix();
+
+    this.attributes.camera.position.setZ((this.attributes.width/ this.attributes.height) * this.attributes.extrudeAmount * 8);
+
+    this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
+  };
+
+  function modelPreview(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  ;var locals_for_with = (locals || {});(function (id) {
+  pug_html = pug_html + "\u003Cdiv" + (" class=\"model-preview\""+" style=\"box-shadow: inset 0 0 5px #ccc;\""+pug.attr("id", id, true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+  }.call(this,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
+  /**
+    * Three Canvas view.
+    *
+    * Manages a THREE.JS canvas view.
+    */
+
+  var models = 0;
+
+  var ThreeIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function ThreeIntegration(options) {
+      $('#container').append(modelPreview({id: 'model-preview-' + models}));
+      BaseIntegration.call(this, {
+        el: '#model-preview-' + models,
+        model: new ThreeJSIntegrationExtras()
+      });
+      this.$el.css('width', options.width);
+      this.$el.css('height', options.height);
+      this.model.attributes.width = options.width;
+      this.model.attributes.height = options.height;
+      this.$el.on( 'mousemove', function(event) {
+        this.model.attributes.mouse.x = (( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 ) - 1;
+        this.model.attributes.mouse.y = - (( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 ) + 1;
+      }.bind(this));
+
+      this.createScene(options.svg);
+      models++;
+    }
+
+    if ( BaseIntegration ) ThreeIntegration.__proto__ = BaseIntegration;
+    ThreeIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    ThreeIntegration.prototype.constructor = ThreeIntegration;
+
+    ThreeIntegration.prototype.createScene = function createScene (svg) {
+      
+      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
+      this.model.clearScene();
+      
+      this.$el.append( this.model.attributes.renderer.domElement );
+
+       // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
+      var loader = new THREE.SVGLoader();
+      var paths = loader.parse(svg).paths;
+      var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
+      var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
+      var svgExtruded = this.extrudeSVG({
+        paths: paths,
+        amount: this.model.attributes.extrudeAmount,
+        center: { x: offsetX, y: offsetY }
+      });
+      var box = new THREE.Box3().setFromObject( svgExtruded );
+      var boundingBoxSize = box.max.sub( box.min );
+      this.model.attributes.mesh = svgExtruded;
+      this.model.attributes.scene.add( this.model.attributes.mesh );
+      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 6);
+      this.model.attributes.controls.target =  new THREE.Vector3(
+          box.min.x + 100, box.min.y + 100 , box.min.z * 3
+      );
+      // Start the animation loop.
+      this.model.animate();
+    };
+
+    // Populate a 3D group from an SVG using SVGLoader
+    ThreeIntegration.prototype.extrudeSVG = function extrudeSVG (svgObject) {
+      var paths = svgObject.paths;
+      var amount = svgObject.amount;
+      var center = svgObject.center;
+
+      var group = new THREE.Group();
+      for ( var i = 0; i < paths.length; i ++ ) {
+        var path = paths[ i ];
+        var shapes = path.toShapes( true );
+        for ( var j = 0; j < shapes.length; j ++ ) {
+          var color = new THREE.Color(Math.random() * 0xffffff);
+          var material = new THREE.MeshBasicMaterial( {
+            color: path.color ? path.color : color
+          } );
+          var simpleShape = shapes[ j ];
+          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
+            depth: amount ,
+            bevelEnabled: false
+          } );
+
+          var mesh = new THREE.Mesh( shape3d, material );
+          mesh.rotation.x = Math.PI;
+          mesh.translateZ( - amount - 1 );
+          mesh.translateX( - center.x);
+          mesh.translateY( - center.y);
+
+          group.add( mesh );
+        }
+      }
+
+      return group;
+    };
+
+    return ThreeIntegration;
+  }(BaseIntegration));
+
+  /**
     * Raster To SVG model.
     */
 
   var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
+    this.threejs = new ThreeIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
     this.attributes = {
       canvas: null,
@@ -656,9 +861,9 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
           $container.css('height', scaledHeight);
             
           var id = $container.attr('id').replace('model-preview-','');
-          app.models.threeCanvas[id].attributes.width = scaledWidth;
-          app.models.threeCanvas[id].attributes.height = scaledHeight;
-          app.models.threeCanvas[id].resize();
+          app.fabric.model.threeCanvas[id].attributes.width = scaledWidth;
+          app.fabric.model.threeCanvas[id].attributes.height = scaledHeight;
+          app.fabric.model.threeCanvas[id].resize();
           e.target._resetWidthHeight();
         }
       }

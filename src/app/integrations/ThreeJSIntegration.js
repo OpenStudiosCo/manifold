@@ -17,7 +17,7 @@ export default class ThreeIntegration extends BaseIntegration {
     $('#container').append(modelPreview({id: 'model-preview-' + models}));
     super({
       el: '#model-preview-' + models,
-      model: ThreeJSIntegrationExtras()
+      model: new ThreeJSIntegrationExtras()
     });
     this.$el.css('width', options.width);
     this.$el.css('height', options.height);
