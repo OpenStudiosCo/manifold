@@ -61,10 +61,10 @@ export default class ColourPickerControls extends BaseControls {
     $('input#hex').val('#' + hex);
     $('#colour-picker-preview').css('background-color', '#' + hex);
 
-    if (app.models.mainCanvas.attributes.canvas) {
+    if (app.fabric.model.canvas) {
       $('#btnFillActive .icon').css('color', '#' + hex);
-      app.models.mainCanvas.canvas.getActiveObject().set("fill", '#' + hex);
-      app.models.mainCanvas.canvas.renderAll();
+      app.fabric.model.canvas.getActiveObject().set("fill", '#' + hex);
+      app.fabric.model.canvas.renderAll();
     }
   }
 
