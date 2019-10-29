@@ -540,8 +540,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     // this.attributes.scene.add( this.attributes.highlighter );
     // }
 
-    if (app.models.mainCanvas) {
-      app.models.mainCanvas.attributes.canvas.renderAll();      
+    if (app.fabric.model.canvas) {
+      app.fabric.model.canvas.renderAll();
     }
   };
 
@@ -570,10 +570,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   var ThreeIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function ThreeIntegration(options) {
       $('#container').append(modelPreview({id: 'model-preview-' + models}));
-      BaseIntegration.call(this, {
-        el: '#model-preview-' + models,
-        model: new ThreeJSIntegrationExtras()
-      });
+      this.$el = $('#model-preview-' + models);
+      this.model = options.model;
       this.$el.css('width', options.width);
       this.$el.css('height', options.height);
       this.model.attributes.width = options.width;
@@ -664,7 +662,6 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
-    this.threejs = new ThreeIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
     this.attributes = {
       canvas: null,
@@ -775,27 +772,25 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
 
             var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
-            console.log(svgElements);
-
             var create3DObject = function(threeCanvas) {
-              var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
+              var threeD = new fabric.Image(threeCanvas.$el.find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
               this.canvas.add(threeD);
             }.bind(this);
-            app.models.threeCanvas.push(new ThreeCanvasModel({
+            app.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
               width: obj_width
             }));
-            app.views.threeCanvas.push(
-              new ThreeCanvasView({ 
-                model: app.models.threeCanvas[app.models.threeCanvas.length-1],
+            app.ThreeCanvasView.push(
+              new ThreeIntegration({ 
+                model: app.ThreeCanvasModel[app.ThreeCanvasModel.length-1],
                 svg: svgElements,
                 width: obj_width,
                 height: obj_height
               })
             );
-            create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
+            create3DObject(app.ThreeCanvasView[app.ThreeCanvasView.length-1]);
             this.canvas.remove(selectedObjects[i]);
           }
           else {
@@ -861,9 +856,9 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
           $container.css('height', scaledHeight);
             
           var id = $container.attr('id').replace('model-preview-','');
-          app.fabric.model.threeCanvas[id].attributes.width = scaledWidth;
-          app.fabric.model.threeCanvas[id].attributes.height = scaledHeight;
-          app.fabric.model.threeCanvas[id].resize();
+          app.ThreeCanvasModel[id].attributes.width = scaledWidth;
+          app.ThreeCanvasModel[id].attributes.height = scaledHeight;
+          app.ThreeCanvasModel[id].resize();
           e.target._resetWidthHeight();
         }
       }
@@ -1150,6 +1145,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
    */
   var App = function App() {
     this.fabric = new FabricJSIntegration();
+    this.ThreeCanvasModel = [];
+    this.ThreeCanvasView = [];
   };
 
   // Startup using jQuery.ready()

@@ -4,6 +4,7 @@ import activeObjectContext from '../../templates/toolbar/active-object-context.p
 import ColourPickerControls from '../ui/controls/ColourPickerControls.js';
 import PotraceIntegration from './PotraceIntegration.js';
 import ThreeJSIntegration from './ThreeJSIntegration.js';
+import ThreeJSIntegrationExtras from './ThreeJSIntegrationExtras.js';
 
 /**
   * Raster To SVG model.
@@ -13,7 +14,6 @@ export default class FabricJSIntegrationExtras {
   constructor() {
     this.colourPickerModel = new ColourPickerControls();
     this.potrace = new PotraceIntegration();
-    this.threejs = new ThreeJSIntegration();
     this.canvas = new fabric.Canvas('main-canvas');
     this.attributes = {
       canvas: null,
@@ -125,27 +125,25 @@ export default class FabricJSIntegrationExtras {
 
             var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
-            console.log(svgElements);
-
             var create3DObject = function(threeCanvas) {
-              var threeD = new fabric.Image($(threeCanvas.el).find('canvas')[0]);
+              var threeD = new fabric.Image(threeCanvas.$el.find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
               this.canvas.add(threeD);
             }.bind(this);
-            app.models.threeCanvas.push(new ThreeCanvasModel({
+            app.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
               width: obj_width
             }));
-            app.views.threeCanvas.push(
-              new ThreeCanvasView({ 
-                model: app.models.threeCanvas[app.models.threeCanvas.length-1],
+            app.ThreeCanvasView.push(
+              new ThreeJSIntegration({ 
+                model: app.ThreeCanvasModel[app.ThreeCanvasModel.length-1],
                 svg: svgElements,
                 width: obj_width,
                 height: obj_height
               })
             );
-            create3DObject(app.views.threeCanvas[app.views.threeCanvas.length-1]);
+            create3DObject(app.ThreeCanvasView[app.ThreeCanvasView.length-1]);
             this.canvas.remove(selectedObjects[i]);
           }
           else {
@@ -211,9 +209,9 @@ export default class FabricJSIntegrationExtras {
           $container.css('height', scaledHeight);
           
           var id = $container.attr('id').replace('model-preview-','');
-          app.fabric.model.threeCanvas[id].attributes.width = scaledWidth;
-          app.fabric.model.threeCanvas[id].attributes.height = scaledHeight;
-          app.fabric.model.threeCanvas[id].resize();
+          app.ThreeCanvasModel[id].attributes.width = scaledWidth;
+          app.ThreeCanvasModel[id].attributes.height = scaledHeight;
+          app.ThreeCanvasModel[id].resize();
           e.target._resetWidthHeight();
         }
       }

@@ -9,6 +9,8 @@ import FabricJSIntegration from './app/integrations/FabricJSIntegration.js';
 export default class App {
   constructor() {
     this.fabric = new FabricJSIntegration();
+    this.ThreeCanvasModel = [];
+    this.ThreeCanvasView = [];
   }
 }
 

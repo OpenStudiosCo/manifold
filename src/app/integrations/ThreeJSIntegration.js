@@ -15,10 +15,8 @@ var models = 0;
 export default class ThreeIntegration extends BaseIntegration {
   constructor(options) {
     $('#container').append(modelPreview({id: 'model-preview-' + models}));
-    super({
-      el: '#model-preview-' + models,
-      model: new ThreeJSIntegrationExtras()
-    });
+    this.$el = $('#model-preview-' + models);
+    this.model = options.model;
     this.$el.css('width', options.width);
     this.$el.css('height', options.height);
     this.model.attributes.width = options.width;

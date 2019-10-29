@@ -88,8 +88,8 @@ export default class ThreeJSIntegrationExtras {
     //   this.attributes.scene.add( this.attributes.highlighter );
     // }
 
-    if (app.models.mainCanvas) {
-      app.models.mainCanvas.attributes.canvas.renderAll();      
+    if (app.fabric.model.canvas) {
+      app.fabric.model.canvas.renderAll();
     }
   }
 
