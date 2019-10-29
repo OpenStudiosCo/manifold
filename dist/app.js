@@ -1,16 +1,123 @@
-var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
+var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
   fabric = fabric && fabric.hasOwnProperty('default') ? fabric['default'] : fabric;
-  Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
   THREE = THREE && THREE.hasOwnProperty('default') ? THREE['default'] : THREE;
+  Potrace = Potrace && Potrace.hasOwnProperty('default') ? Potrace['default'] : Potrace;
 
   /**
     * Base Integration class.
     */
 
   var BaseIntegration = function BaseIntegration () {};
+
+  /**
+    * Base Controls class.
+    */
+
+  var BaseControls = function BaseControls () {};
+
+  /**
+    * Colour picker model for the main canvas.
+    * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
+    */
+
+  var ColourPickerControls = /*@__PURE__*/(function (BaseControls) {
+    function ColourPickerControls() {
+      var el = document.getElementById('colour-picker');
+      if (!el) {
+        return;
+      }
+
+      this.canvas = el.getContext('2d');
+      // create an image object and get it’s source
+      var img = new Image();
+      img.onload = function(){
+        this.canvas.drawImage(img,0,0);
+      }.bind(this);
+      img.src = '/assets/spectrum.jpg';
+      this.canvas.scale(0.49, 0.4);
+
+      $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
+
+      var mouseDown = false;
+      $('#colour-picker').on('mousedown', function(event){
+        mouseDown = true;
+        this.pickColour(event);
+      }.bind(this));
+      $('#colour-picker').on('mousemove', function(event){
+        if (mouseDown) {
+          this.pickColour(event);
+        }
+      }.bind(this));
+      $('#colour-picker').on('mouseup', function(){
+        mouseDown = false;
+      });
+       
+    }
+
+    if ( BaseControls ) ColourPickerControls.__proto__ = BaseControls;
+    ColourPickerControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    ColourPickerControls.prototype.constructor = ColourPickerControls;
+
+    ColourPickerControls.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
+      var cvs, ctx;
+      cvs = document.createElement('canvas');
+      cvs.height = 1;
+      cvs.width = 1;
+      ctx = cvs.getContext('2d');
+      ctx.fillStyle = colour;
+      ctx.fillRect(0, 0, 1, 1);
+      var c = ctx.getImageData(0, 0, 1, 1).data;
+      this.setColour(c[0], c[1], c[2]);
+    };
+
+    ColourPickerControls.prototype.setColour = function setColour (R,G,B) {
+      var rgb = R + ', ' + G + ', ' + B;
+      // convert RGB to HEX
+      var hex = this.rgbToHex(R,G,B);
+      // making the color the value of the input
+      $('input#rgb').val(rgb);
+      $('input#hex').val('#' + hex);
+      $('#colour-picker-preview').css('background-color', '#' + hex);
+
+      if (app.fabric.model.canvas) {
+        $('#btnFillActive .icon').css('color', '#' + hex);
+        app.fabric.model.canvas.getActiveObject().set("fill", '#' + hex);
+        app.fabric.model.canvas.renderAll();
+      }
+    };
+
+    // http://www.javascripter.net/faq/rgbtohex.htm
+    ColourPickerControls.prototype.rgbToHex = function rgbToHex (R,G,B) {
+     return this.toHex(R)+this.toHex(G)+this.toHex(B); 
+    };
+
+    ColourPickerControls.prototype.toHex = function toHex (m) {
+      var n = parseInt(m,10);
+      if (isNaN(n)) {
+       return "00";
+      }
+      n = Math.max(0,Math.min(n,255));
+      
+      return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
+    };
+
+    ColourPickerControls.prototype.pickColour = function pickColour (event) {
+      // getting user coordinates
+      var x = event.offsetX;
+      var y = event.offsetY;
+      // getting image data and RGB values
+      var img_data = this.canvas.getImageData(x, y, 1, 1).data;
+      var R = img_data[0];
+      var G = img_data[1];
+      var B = img_data[2];
+      this.setColour(R, G, B);
+    };
+
+    return ColourPickerControls;
+  }(BaseControls));
 
   var pug = (function(exports) {
 
@@ -296,164 +403,6 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   pug_html = pug_html + "3D\u003C\u002Fspan\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   /**
-    * Base Controls class.
-    */
-
-  var BaseControls = function BaseControls () {};
-
-  /**
-    * Colour picker model for the main canvas.
-    * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
-    */
-
-  var ColourPickerControls = /*@__PURE__*/(function (BaseControls) {
-    function ColourPickerControls() {
-      var el = document.getElementById('colour-picker');
-      if (!el) {
-        return;
-      }
-
-      this.canvas = el.getContext('2d');
-      // create an image object and get it’s source
-      var img = new Image();
-      img.onload = function(){
-        this.canvas.drawImage(img,0,0);
-      }.bind(this);
-      img.src = '/assets/spectrum.jpg';
-      this.canvas.scale(0.49, 0.4);
-
-      $('#fill-tool').draggable({ cancel: "#colour-picker, #colour-picker-preview input" });
-
-      var mouseDown = false;
-      $('#colour-picker').on('mousedown', function(event){
-        mouseDown = true;
-        this.pickColour(event);
-      }.bind(this));
-      $('#colour-picker').on('mousemove', function(event){
-        if (mouseDown) {
-          this.pickColour(event);
-        }
-      }.bind(this));
-      $('#colour-picker').on('mouseup', function(){
-        mouseDown = false;
-      });
-       
-    }
-
-    if ( BaseControls ) ColourPickerControls.__proto__ = BaseControls;
-    ColourPickerControls.prototype = Object.create( BaseControls && BaseControls.prototype );
-    ColourPickerControls.prototype.constructor = ColourPickerControls;
-
-    ColourPickerControls.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
-      var cvs, ctx;
-      cvs = document.createElement('canvas');
-      cvs.height = 1;
-      cvs.width = 1;
-      ctx = cvs.getContext('2d');
-      ctx.fillStyle = colour;
-      ctx.fillRect(0, 0, 1, 1);
-      var c = ctx.getImageData(0, 0, 1, 1).data;
-      this.setColour(c[0], c[1], c[2]);
-    };
-
-    ColourPickerControls.prototype.setColour = function setColour (R,G,B) {
-      var rgb = R + ', ' + G + ', ' + B;
-      // convert RGB to HEX
-      var hex = this.rgbToHex(R,G,B);
-      // making the color the value of the input
-      $('input#rgb').val(rgb);
-      $('input#hex').val('#' + hex);
-      $('#colour-picker-preview').css('background-color', '#' + hex);
-
-      if (app.fabric.model.canvas) {
-        $('#btnFillActive .icon').css('color', '#' + hex);
-        app.fabric.model.canvas.getActiveObject().set("fill", '#' + hex);
-        app.fabric.model.canvas.renderAll();
-      }
-    };
-
-    // http://www.javascripter.net/faq/rgbtohex.htm
-    ColourPickerControls.prototype.rgbToHex = function rgbToHex (R,G,B) {
-     return this.toHex(R)+this.toHex(G)+this.toHex(B); 
-    };
-
-    ColourPickerControls.prototype.toHex = function toHex (m) {
-      var n = parseInt(m,10);
-      if (isNaN(n)) {
-       return "00";
-      }
-      n = Math.max(0,Math.min(n,255));
-      
-      return "0123456789ABCDEF".charAt((n-(n%16))/16) + "0123456789ABCDEF".charAt(n%16);
-    };
-
-    ColourPickerControls.prototype.pickColour = function pickColour (event) {
-      // getting user coordinates
-      var x = event.offsetX;
-      var y = event.offsetY;
-      // getting image data and RGB values
-      var img_data = this.canvas.getImageData(x, y, 1, 1).data;
-      var R = img_data[0];
-      var G = img_data[1];
-      var B = img_data[2];
-      this.setColour(R, G, B);
-    };
-
-    return ColourPickerControls;
-  }(BaseControls));
-
-  /**
-    * Potrace model for the main canvas.
-    */
-
-  var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function PotraceIntegration() {
-      this.settings = {
-        alphamax: 1,
-        optcurve: false,
-        opttolerance: 0.2,
-        turdsize: 2,
-        turnpolicy: "minority"
-      };
-    }
-
-    if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
-    PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
-    PotraceIntegration.prototype.constructor = PotraceIntegration;
-
-    PotraceIntegration.prototype.createSVG = function createSVG (src, callback) {
-      // Create an SVG from data and settings, draw to screen.
-      Potrace.clear();
-      Potrace.loadImageFromSrc(src);
-      Potrace.process(function() {
-        var svg = Potrace.getSVG(1);
-        var randomColor = function () { return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6); };
-        var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
-        // normalize should be used to get back absolute segments
-        var pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce(function (acc, seg) {
-          var pathData = seg.type === 'M' ? [] : acc.pop();
-          seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
-          pathData.push(seg);
-          acc.push(pathData); 
-          
-          return acc;
-        }, []);
-
-        pathsDatas.forEach(function(d) {
-          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          path.setPathData(d);
-          path.setAttribute('fill', randomColor());
-          newSVG.appendChild(path);
-        });
-
-        callback(newSVG.outerHTML);
-      });
-    };
-
-    return PotraceIntegration;
-  }(BaseIntegration));
-
-  /**
     * Three Canvas model.
     */
 
@@ -655,25 +604,11 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     return ThreeIntegration;
   }(BaseIntegration));
 
-  /**
-    * Raster To SVG model.
-    */
+  var FabricJSIntegrationEvents = function FabricJSIntegrationEvents () {};
 
-  var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
-    this.colourPickerModel = new ColourPickerControls();
-    this.potrace = new PotraceIntegration();
-    this.canvas = new fabric.Canvas('main-canvas');
-    this.attributes = {
-      canvas: null,
-      transitioning: false
-    };
-    this.updateCanvasSize();
-    this.setupEvents();
-  };
-
-  FabricJSIntegrationExtras.prototype.setupEvents = function setupEvents () {
+  FabricJSIntegrationEvents.prototype.setupEvents = function setupEvents () {
     // Credit - https://stackoverflow.com/a/24238960
-    this.canvas.on('object:moving', function (e) {
+    app.fabric.model.canvas.on('object:moving', function (e) {
       var obj = e.target;
        // if object is too big ignore
       if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
@@ -714,7 +649,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       if (!e.target._element && !e.target._objects) {
         $('#btnFillActive').removeClass('disabled');
         $('#btnFillActive .icon').css('color', e.target.fill);
-        this.colourPickerModel.lookupAndSetColour(e.target.fill);
+        app.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
       }
       // Is group.
       if (e.target._objects) {
@@ -730,7 +665,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
 
       // Events
       $('#btnGroupActive').click(function(e) {
-        var activeObject = this.canvas.getActiveObject();
+        var activeObject = app.fabric.model.canvas.getActiveObject();
         if (activeObject.type != 'group') {
           activeObject.toGroup();
         }
@@ -738,8 +673,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
           activeObject.toActiveSelection();
         }
           
-        this.canvas.discardActiveObject();
-        this.canvas.requestRenderAll();
+        app.fabric.model.canvas.discardActiveObject();
+        app.fabric.model.canvas.requestRenderAll();
       }.bind(this));
         
       $('#btnFillActive:not(.disabled)').click(function(e){
@@ -747,15 +682,15 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
         $('#fill-tool').toggle();
       });
       $('#btnDeleteActive').click(function(e) {
-        var selectedObjects = this.canvas.getActiveObjects();
+        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
-          this.canvas.remove(selectedObjects[i]);  
+          app.fabric.model.canvas.remove(selectedObjects[i]);  
         }
-        this.canvas.discardActiveObject();
+        app.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
       $('#btnMake3D:not(.disabled)').click(function(e) {
-        var selectedObjects = this.canvas.getActiveObjects();
+        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
             var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
@@ -776,7 +711,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
               var threeD = new fabric.Image(threeCanvas.$el.find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              this.canvas.add(threeD);
+              app.fabric.model.canvas.add(threeD);
             }.bind(this);
             app.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
@@ -791,22 +726,22 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
               })
             );
             create3DObject(app.ThreeCanvasView[app.ThreeCanvasView.length-1]);
-            this.canvas.remove(selectedObjects[i]);
+            app.fabric.model.canvas.remove(selectedObjects[i]);
           }
           else {
             console.log('not convertible!');
           }
         }
-        this.canvas.discardActiveObject();
+        app.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
       }.bind(this));
     }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
-    this.canvas.on('selection:created', selectionCallback);
-    this.canvas.on('selection:updated', selectionCallback);
+    app.fabric.model.canvas.on('selection:created', selectionCallback);
+    app.fabric.model.canvas.on('selection:updated', selectionCallback);
 
-    this.canvas.on('mouse:dblclick', function(e){
+    app.fabric.model.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -820,14 +755,14 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
        
     }.bind(this));
 
-    this.canvas.on('selection:cleared', function(){
+    app.fabric.model.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
      $('.model-preview').hide();
      $('#fill-tool').hide();
     });
 
     // TODO: Don't follow if user moved the toolbar.
-    this.canvas.on('object:moving', function(e) {
+    app.fabric.model.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
@@ -835,8 +770,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       if (offsetX < toolbarWidth) {
         offsetX = 0;
       }
-      if (offsetX > this.canvas.width - toolbarWidth - $menu.width()) {
-        offsetX = this.canvas.width - $menu.width(); 
+      if (offsetX > app.fabric.model.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = app.fabric.model.canvas.width - $menu.width(); 
       }
       if (offsetY < 0) {
         offsetY = 0;
@@ -846,7 +781,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     }.bind(this));
 
     // Resize 3D canvas if it's that type of element.
-    this.canvas.on('object:scaling', function(e) {
+    app.fabric.model.canvas.on('object:scaling', function(e) {
       if (e.target._element) {
         var $container = $(e.target._element).parent();
         if ($container.hasClass('model-preview')) {
@@ -865,8 +800,9 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     });
   };
 
-  // Loads an SVG string and splits up objects so they're loaded in the right position.
-  FabricJSIntegrationExtras.prototype.loadSVG = function loadSVG (svg, callback) {
+  var FabricJSIntegrationHelpers = function FabricJSIntegrationHelpers () {};
+
+  FabricJSIntegrationHelpers.prototype.loadSVG = function loadSVG (svg, callback) {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
@@ -875,29 +811,29 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       // Ungroup.
       var items = group._objects;
       group._restoreObjectsState();
-      this.canvas.remove(group);
+      app.fabric.model.canvas.remove(group);
       for (var i = 0; i < items.length; i++) {
-        this.canvas.add(items[i]);
+        app.fabric.model.canvas.add(items[i]);
       }
-      this.canvas.renderAll();
+      app.fabric.model.canvas.renderAll();
       if (callback) {
         callback(items);
       }
     }.bind(this));
   };
 
-  FabricJSIntegrationExtras.prototype.updateCanvasSize = function updateCanvasSize () {
+  FabricJSIntegrationHelpers.prototype.updateCanvasSize = function updateCanvasSize () {
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
       width -= $('#toolbar').width();  
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    this.canvas.setHeight( height );
-    this.canvas.setWidth( width );
+    app.fabric.model.canvas.setHeight( height );
+    app.fabric.model.canvas.setWidth( width );
   };
 
   // Add an object to the center of the canvas.
-  FabricJSIntegrationExtras.prototype.addToCenter = function addToCenter (object) {
+  FabricJSIntegrationHelpers.prototype.addToCenter = function addToCenter (object) {
     var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
       canvasWidth -= $('#toolbar').width();  
@@ -906,7 +842,74 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
-    this.canvas.add(object);
+    app.fabric.model.canvas.add(object);
+  };
+
+  /**
+    * Potrace model for the main canvas.
+    */
+
+  var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function PotraceIntegration() {
+      this.settings = {
+        alphamax: 1,
+        optcurve: false,
+        opttolerance: 0.2,
+        turdsize: 2,
+        turnpolicy: "minority"
+      };
+    }
+
+    if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
+    PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    PotraceIntegration.prototype.constructor = PotraceIntegration;
+
+    PotraceIntegration.prototype.createSVG = function createSVG (src, callback) {
+      // Create an SVG from data and settings, draw to screen.
+      Potrace.clear();
+      Potrace.loadImageFromSrc(src);
+      Potrace.process(function() {
+        var svg = Potrace.getSVG(1);
+        var randomColor = function () { return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6); };
+        var newSVG = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+        // normalize should be used to get back absolute segments
+        var pathsDatas = $(svg).find('path')[0].getPathData({ normalize: true }).reduce(function (acc, seg) {
+          var pathData = seg.type === 'M' ? [] : acc.pop();
+          seg.values = seg.values.map(function (v) { return Math.round(v * 1000) / 1000; });
+          pathData.push(seg);
+          acc.push(pathData); 
+          
+          return acc;
+        }, []);
+
+        pathsDatas.forEach(function(d) {
+          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setPathData(d);
+          path.setAttribute('fill', randomColor());
+          newSVG.appendChild(path);
+        });
+
+        callback(newSVG.outerHTML);
+      });
+    };
+
+    return PotraceIntegration;
+  }(BaseIntegration));
+
+  /**
+    * Raster To SVG model.
+    */
+
+  var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
+    this.colourPickerModel = new ColourPickerControls();
+    this.potrace = new PotraceIntegration();
+    this.canvas = new fabric.Canvas('main-canvas');
+    this.attributes = {
+      canvas: null,
+      transitioning: false
+    };
+    this.helpers = new FabricJSIntegrationHelpers(); 
+    this.events = new FabricJSIntegrationEvents();
   };
 
   /**
@@ -917,17 +920,20 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     function FabricJSIntegration(options) {
       this.el = '#main-canvas';
       this.model = new FabricJSIntegrationExtras();
-
-      var circle = new fabric.Circle({ radius: 100, fill: 'green' });
-      this.model.addToCenter(circle);
-      circle.left -= 75;
-      var rect = new fabric.Rect({
-        fill: 'red',
-        width: 200,
-        height: 200
+      
+      $(document).ready(function(){
+        // Default scene.
+        var circle = new fabric.Circle({ radius: 100, fill: 'green' });
+        app.fabric.model.helpers.addToCenter(circle);
+        circle.left -= 75;
+        var rect = new fabric.Rect({
+          fill: 'red',
+          width: 200,
+          height: 200
+        });
+        app.fabric.model.helpers.addToCenter(rect);
+        rect.left += 75;
       });
-      this.model.addToCenter(rect);
-      rect.left += 75;
     }
 
     if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
@@ -1161,9 +1167,12 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
   $(function () {
     var app = new App();
     window.app = app;
+
+    app.fabric.model.events.setupEvents();
+    app.fabric.model.helpers.updateCanvasSize();
   });
 
   return App;
 
-}(jQuery, fabric, Potrace, THREE));
+}(jQuery, fabric, THREE, Potrace));
 //# sourceMappingURL=app.js.map

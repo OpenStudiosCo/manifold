@@ -23,4 +23,7 @@ export default class App {
 $(() => {
   var app = new App();
   window.app = app;
+
+  app.fabric.model.events.setupEvents();
+  app.fabric.model.helpers.updateCanvasSize();
 });
