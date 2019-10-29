@@ -9,14 +9,6 @@ export default class FabricJSIntegrationHelpers {
       var group = new fabric.Group(objects);
       this.addToCenter(group);
 
-      // Ungroup.
-      var items = group._objects;
-      group._restoreObjectsState();
-      app.fabric.model.canvas.remove(group);
-      for (var i = 0; i < items.length; i++) {
-        app.fabric.model.canvas.add(items[i]);
-      }
-      app.fabric.model.canvas.renderAll();
       if (callback) {
         callback(items);
       }
@@ -44,5 +36,9 @@ export default class FabricJSIntegrationHelpers {
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
     
     app.fabric.model.canvas.add(object);
+    // Update layers tool
+    if (app.layers) {
+      app.layers.updateLayers();
+    }
   }
 }

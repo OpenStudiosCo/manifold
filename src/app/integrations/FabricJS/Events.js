@@ -74,6 +74,11 @@ export default class FabricJSIntegrationEvents {
         
         app.fabric.model.canvas.discardActiveObject();
         app.fabric.model.canvas.requestRenderAll();
+
+        // Update layers tool
+        if (app.layers) {
+          app.layers.updateLayers();
+        }
       }.bind(this));
       
       $('#btnFillActive:not(.disabled)').click(function(e){
@@ -87,6 +92,10 @@ export default class FabricJSIntegrationEvents {
         }
         app.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
+        // Update layers tool
+        if (app.layers) {
+          app.layers.updateLayers();
+        }
       }.bind(this));
       $('#btnMake3D:not(.disabled)').click(function(e) {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();

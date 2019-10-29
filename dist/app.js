@@ -675,6 +675,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           
         app.fabric.model.canvas.discardActiveObject();
         app.fabric.model.canvas.requestRenderAll();
+
+        // Update layers tool
+        if (app.layers) {
+          app.layers.updateLayers();
+        }
       }.bind(this));
         
       $('#btnFillActive:not(.disabled)').click(function(e){
@@ -688,6 +693,10 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         }
         app.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
+        // Update layers tool
+        if (app.layers) {
+          app.layers.updateLayers();
+        }
       }.bind(this));
       $('#btnMake3D:not(.disabled)').click(function(e) {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
@@ -808,14 +817,6 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var group = new fabric.Group(objects);
       this.addToCenter(group);
 
-      // Ungroup.
-      var items = group._objects;
-      group._restoreObjectsState();
-      app.fabric.model.canvas.remove(group);
-      for (var i = 0; i < items.length; i++) {
-        app.fabric.model.canvas.add(items[i]);
-      }
-      app.fabric.model.canvas.renderAll();
       if (callback) {
         callback(items);
       }
@@ -843,6 +844,10 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
     app.fabric.model.canvas.add(object);
+    // Update layers tool
+    if (app.layers) {
+      app.layers.updateLayers();
+    }
   };
 
   /**
@@ -919,34 +924,75 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function FabricJSIntegration(options) {
       this.el = '#main-canvas';
-      this.model = new FabricJSIntegrationExtras();
-      
-      $(document).ready(function(){
-        // Default scene.
-        var circle = new fabric.Circle({ radius: 100, fill: 'green' });
-        app.fabric.model.helpers.addToCenter(circle);
-        circle.left -= 75;
-        var rect = new fabric.Rect({
-          fill: 'red',
-          width: 200,
-          height: 200
-        });
-        app.fabric.model.helpers.addToCenter(rect);
-        rect.left += 75;
-      });
+      this.model = new FabricJSIntegrationExtras();    
     }
 
     if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
     FabricJSIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
     FabricJSIntegration.prototype.constructor = FabricJSIntegration;
 
+    FabricJSIntegration.prototype.ready = function ready () {
+      app.fabric.model.events.setupEvents();
+      app.fabric.model.helpers.updateCanvasSize();
+
+      // Default scene.
+      var circle = new fabric.Circle({ radius: 100, fill: 'green' });
+      app.fabric.model.helpers.addToCenter(circle);
+      circle.left -= 75;
+      var rect = new fabric.Rect({
+        fill: 'red',
+        width: 200,
+        height: 200
+      });
+      app.fabric.model.helpers.addToCenter(rect);
+      rect.left += 75;
+    };
+
     return FabricJSIntegration;
   }(BaseIntegration));
 
+  function LayersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  ;var locals_for_with = (locals || {});(function (shape) {
+  pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
+  pug_html = pug_html + "\u003Ci" + (pug.attr("class", pug.classes(['icon ' + shape], [true]), false, true)) + "\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"content\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"description\"\u003E";
+  pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+  }.call(this,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
+  var LayerControls = /*@__PURE__*/(function (BaseControls) {
+    function LayerControls () {
+      BaseControls.apply(this, arguments);
+    }
+
+    if ( BaseControls ) LayerControls.__proto__ = BaseControls;
+    LayerControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    LayerControls.prototype.constructor = LayerControls;
+
+    LayerControls.prototype.ready = function ready () {
+      this.updateLayers();
+    };
+    LayerControls.prototype.updateLayers = function updateLayers () {
+      var objects = app.fabric.model.canvas.getObjects();
+      var layersHTML = '';
+      objects.forEach(function(object){
+        if (object.type){
+          if (object.type == 'rect') { object.type = 'square'; }
+          layersHTML += LayersToolItem({shape: object.type});
+        }
+        else {
+          layersHTML += LayersToolItem({shape: 'Unknown'});
+        }
+      });
+      console.log(objects);
+      $('#layers').html(layersHTML);
+    };
+
+    return LayerControls;
+  }(BaseControls));
+
   var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
     function ToolbarControls() {
-      var this$1 = this;
-
       this.setupDefaultMenu();
 
       $('.floating.overlay').draggable();
@@ -965,7 +1011,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       $('.ui.dropdown').dropdown();
 
       $(window).on('resize', function () {
-        this$1.model.updateCanvasSize();
+        app.fabric.model.helpers.updateCanvasSize();
       });
 
       $('#hideAddImage')
@@ -1035,7 +1081,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           var textBox = new fabric.Textbox("Sample Text", {
             fontFamily: 'Arial'
           });
-          this.model.addToCenter(textBox);
+          app.fabric.model.helpers.addToCenter(textBox);
         }.bind(this));
 
       // Track which overlays we hid so we don't override other settings.
@@ -1094,7 +1140,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         })
         .on('click', function(){
           var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
-          this.model.addToCenter(circle);
+          app.fabric.model.helpers.addToCenter(circle);
         }.bind(this));
       $('#btnAddSquare')
         .popup({
@@ -1109,7 +1155,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
             width: 200,
             height: 200
           });
-          this.model.addToCenter(rect);
+          app.fabric.model.helpers.addToCenter(rect);
         }.bind(this));
       $('#btnAddTriangle')
         .popup({
@@ -1118,7 +1164,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         })
         .on('click', function(){
           var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
-          this.model.addToCenter(triangle);
+          app.fabric.model.helpers.addToCenter(triangle);
         }.bind(this));
     };
 
@@ -1160,6 +1206,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     this.ThreeCanvasView = [];
 
     // UI    
+    this.layers = new LayerControls();
     this.toolbar = new ToolbarControls();
   };
 
@@ -1168,8 +1215,12 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     var app = new App();
     window.app = app;
 
-    app.fabric.model.events.setupEvents();
-    app.fabric.model.helpers.updateCanvasSize();
+    // Run all the ready functions
+    for (var classInstance in app) {
+      if (app[classInstance].ready) {
+        app[classInstance].ready();
+      }
+    }
   });
 
   return App;

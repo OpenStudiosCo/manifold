@@ -22,7 +22,7 @@ export default class ToolbarControls extends BaseControls {
     $('.ui.dropdown').dropdown();
 
     $(window).on('resize', () => {
-      this.model.updateCanvasSize();
+      app.fabric.model.helpers.updateCanvasSize();
     });
 
     $('#hideAddImage')
@@ -88,7 +88,7 @@ export default class ToolbarControls extends BaseControls {
         var textBox = new fabric.Textbox("Sample Text", {
           fontFamily: 'Arial'
         });
-        this.model.addToCenter(textBox);
+        app.fabric.model.helpers.addToCenter(textBox);
       }.bind(this));
 
     // Track which overlays we hid so we don't override other settings.
@@ -147,7 +147,7 @@ export default class ToolbarControls extends BaseControls {
       })
       .on('click', function(){
         var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
-        this.model.addToCenter(circle);
+        app.fabric.model.helpers.addToCenter(circle);
       }.bind(this));
     $('#btnAddSquare')
       .popup({
@@ -162,7 +162,7 @@ export default class ToolbarControls extends BaseControls {
           width: 200,
           height: 200
         });
-        this.model.addToCenter(rect);
+        app.fabric.model.helpers.addToCenter(rect);
       }.bind(this));
     $('#btnAddTriangle')
       .popup({
@@ -171,7 +171,7 @@ export default class ToolbarControls extends BaseControls {
       })
       .on('click', function(){
         var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
-        this.model.addToCenter(triangle);
+        app.fabric.model.helpers.addToCenter(triangle);
       }.bind(this));
   }
 
