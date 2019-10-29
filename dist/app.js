@@ -909,20 +909,12 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
     this.canvas.add(object);
   };
 
-  function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (url) {
-  pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
-  pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
-  }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
-
   /**
-    * MainCanvas view.
+    * Fabric JS Integration.
     */
 
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function FabricJSIntegration(options) {
-      var this$1 = this;
-
       this.el = '#main-canvas';
       this.model = new FabricJSIntegrationExtras();
 
@@ -936,6 +928,18 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       });
       this.model.addToCenter(rect);
       rect.left += 75;
+    }
+
+    if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
+    FabricJSIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    FabricJSIntegration.prototype.constructor = FabricJSIntegration;
+
+    return FabricJSIntegration;
+  }(BaseIntegration));
+
+  var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
+    function ToolbarControls() {
+      var this$1 = this;
 
       this.setupDefaultMenu();
 
@@ -981,11 +985,11 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
         });
     }
 
-    if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
-    FabricJSIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
-    FabricJSIntegration.prototype.constructor = FabricJSIntegration;
-
-    FabricJSIntegration.prototype.setupDefaultMenu = function setupDefaultMenu () {
+    if ( BaseControls ) ToolbarControls.__proto__ = BaseControls;
+    ToolbarControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    ToolbarControls.prototype.constructor = ToolbarControls;
+    
+    ToolbarControls.prototype.setupDefaultMenu = function setupDefaultMenu () {
       // Define slideout position based on corresponding menu item.
       $('#add-image').css('top', function(){
         return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
@@ -1112,7 +1116,7 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
         }.bind(this));
     };
 
-    FabricJSIntegration.prototype.toggleToolbar = function toggleToolbar () {
+    ToolbarControls.prototype.toggleToolbar = function toggleToolbar () {
       if (!app.fabric.model.attributes.transitioning) {
         $("#toolbar")
           .sidebar({
@@ -1135,8 +1139,8 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
       }
     };
 
-    return FabricJSIntegration;
-  }(BaseIntegration));
+    return ToolbarControls;
+  }(BaseControls));
 
   // External libs
 
@@ -1144,9 +1148,13 @@ var ManifoldApplication = (function ($, fabric, Potrace, THREE) {
    * Manifold Browser Application
    */
   var App = function App() {
+    // Integrations
     this.fabric = new FabricJSIntegration();
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
+
+    // UI    
+    this.toolbar = new ToolbarControls();
   };
 
   // Startup using jQuery.ready()
