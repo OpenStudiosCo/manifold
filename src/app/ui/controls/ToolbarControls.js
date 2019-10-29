@@ -14,7 +14,7 @@ export default class ToolbarControls extends BaseControls {
         var callback = function() {
           $('#hideAddImage').click();
         };
-        app.fabric.model.loadSVG(svg, callback);
+        app.fabric.model.helpers.loadSVG(svg, callback);
       };
       app.fabric.model.potrace.createSVG(src, callback);
     });
