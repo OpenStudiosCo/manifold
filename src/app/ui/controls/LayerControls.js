@@ -45,6 +45,18 @@ export default class LayerControls extends BaseControls {
         app.fabric.model.canvas.bringForward(object);
         app.layers.updateLayers();
       });
+      $('#layers #item-' + index + ' .display.toggle').click(function(){
+        console.log(object);
+        console.log($(this));
+        if ($(this).find('i.eye.icon').hasClass('slash')) {
+          object.visible = true;
+        }
+        else {
+          object.visible = false;          
+        }
+        app.fabric.model.canvas.renderAll();
+        $(this).find('i.eye.icon').toggleClass('slash');
+      });
     });
   }
 }

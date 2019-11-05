@@ -1013,6 +1013,18 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           app.fabric.model.canvas.bringForward(object);
           app.layers.updateLayers();
         });
+        $('#layers #item-' + index + ' .display.toggle').click(function(){
+          console.log(object);
+          console.log($(this));
+          if ($(this).find('i.eye.icon').hasClass('slash')) {
+            object.visible = true;
+          }
+          else {
+            object.visible = false;          
+          }
+          app.fabric.model.canvas.renderAll();
+          $(this).find('i.eye.icon').toggleClass('slash');
+        });
       });
     };
 
@@ -1196,7 +1208,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         }.bind(this));
     };
 
-    ToolbarControls.prototype.toggleToolbar = function toggleToolbar () {
+    ToolbarControls.prototype.toggle = function toggle () {
       if (!app.fabric.model.attributes.transitioning) {
         $("#toolbar")
           .sidebar({

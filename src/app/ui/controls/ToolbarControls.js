@@ -175,7 +175,7 @@ export default class ToolbarControls extends BaseControls {
       }.bind(this));
   }
 
-  toggleToolbar() {
+  toggle() {
     if (!app.fabric.model.attributes.transitioning) {
       $("#toolbar")
         .sidebar({
