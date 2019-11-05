@@ -1,6 +1,7 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseControls from './BaseControls.js';
+import addImageItem from '../../../templates/toolbar/add-image__item.pug';
 
 export default class ToolbarControls extends BaseControls {
   constructor() {
@@ -194,7 +195,7 @@ export default class ToolbarControls extends BaseControls {
           }
         })
         .sidebar("toggle");
-      app.fabric.model.updateCanvasSize();
+      app.fabric.model.canvas.updateCanvasSize();
     }
   }
 }
