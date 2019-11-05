@@ -1,8 +1,10 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseIntegration from './BaseIntegration.js';
-import FabricJSIntegrationExtras from './FabricJSIntegrationExtras.js';
-
+import ColourPickerControls from '../ui/controls/ColourPickerControls.js';
+import FabricJSIntegrationEvents from './FabricJS/Events.js';
+import FabricJSIntegrationHelpers from './FabricJS/Helpers.js';
+import PotraceIntegration from './PotraceIntegration.js';
 /**
   * Fabric JS Integration.
   */
@@ -10,7 +12,17 @@ import FabricJSIntegrationExtras from './FabricJSIntegrationExtras.js';
 export default class FabricJSIntegration extends BaseIntegration {
   constructor(options) {
     this.el = '#main-canvas';
-    this.model = new FabricJSIntegrationExtras();    
+    this.model = {
+      colourPickerModel: new ColourPickerControls(),
+      potrace: new PotraceIntegration(),
+      canvas: new fabric.Canvas('main-canvas'),
+      attributes: {
+        canvas: null,
+        transitioning: false
+      },
+      helpers: new FabricJSIntegrationHelpers(),
+      events: new FabricJSIntegrationEvents()
+    };
   }
 
   ready () {

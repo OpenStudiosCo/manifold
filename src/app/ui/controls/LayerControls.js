@@ -9,16 +9,42 @@ export default class LayerControls extends BaseControls {
   updateLayers() {
     var objects = app.fabric.model.canvas.getObjects();
     var layersHTML = '';
-    objects.forEach(function(object){
+    objects.reverse().forEach(function(object){
+      var type,
+          // Get index from canvas rather than containing array order.
+          index = app.fabric.model.canvas.getObjects().indexOf(object);
+
       if (object.type){
-        if (object.type == 'rect') object.type = 'square';
-        layersHTML += LayersToolItem({shape: object.type});
+        if (object.type == 'rect') {
+          type = 'square';
+        }
+        else {
+          type = object.type;
+        } 
       }
       else {
-        layersHTML += LayersToolItem({shape: 'Unknown'});
+        type = 'Unknown';
       }
+
+      layersHTML += LayersToolItem({index: index, shape: type});      
     });
-    console.log(objects);
+
     $('#layers').html(layersHTML);
+
+    // Bind events to all the newly added rows.
+    objects.forEach(function(object){
+      var index = index = app.fabric.model.canvas.getObjects().indexOf(object);
+      $('#layers #item-' + index + ' .description').click(function(){
+        app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(index));
+      });
+      $('#layers #item-' + index + ' .back').click(function(){
+        app.fabric.model.canvas.sendBackwards(object);
+        app.layers.updateLayers();
+      });
+      $('#layers #item-' + index + ' .forward').click(function(){
+        app.fabric.model.canvas.bringForward(object);
+        app.layers.updateLayers();
+      });
+    });
   }
 }

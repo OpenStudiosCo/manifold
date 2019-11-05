@@ -844,6 +844,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
     app.fabric.model.canvas.add(object);
+    app.fabric.model.canvas.moveTo(object, app.fabric.model.canvas.getObjects().length);
     // Update layers tool
     if (app.layers) {
       app.layers.updateLayers();
@@ -902,29 +903,23 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   }(BaseIntegration));
 
   /**
-    * Raster To SVG model.
-    */
-
-  var FabricJSIntegrationExtras = function FabricJSIntegrationExtras() {
-    this.colourPickerModel = new ColourPickerControls();
-    this.potrace = new PotraceIntegration();
-    this.canvas = new fabric.Canvas('main-canvas');
-    this.attributes = {
-      canvas: null,
-      transitioning: false
-    };
-    this.helpers = new FabricJSIntegrationHelpers(); 
-    this.events = new FabricJSIntegrationEvents();
-  };
-
-  /**
     * Fabric JS Integration.
     */
 
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function FabricJSIntegration(options) {
       this.el = '#main-canvas';
-      this.model = new FabricJSIntegrationExtras();    
+      this.model = {
+        colourPickerModel: new ColourPickerControls(),
+        potrace: new PotraceIntegration(),
+        canvas: new fabric.Canvas('main-canvas'),
+        attributes: {
+          canvas: null,
+          transitioning: false
+        },
+        helpers: new FabricJSIntegrationHelpers(),
+        events: new FabricJSIntegrationEvents()
+      };
     }
 
     if ( BaseIntegration ) FabricJSIntegration.__proto__ = BaseIntegration;
@@ -952,13 +947,20 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   }(BaseIntegration));
 
   function LayersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (shape) {
-  pug_html = pug_html + "\u003Cdiv class=\"item\"\u003E";
+  ;var locals_for_with = (locals || {});(function (index, shape) {
+  pug_html = pug_html + "\u003Cdiv" + (" class=\"item\""+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"right floated content\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"back\" title=\"Back\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon sort amount down\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"forward\" title=\"Forward\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon sort amount up\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"display toggle\" title=\"Hide\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon eye\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E";
   pug_html = pug_html + "\u003Ci" + (pug.attr("class", pug.classes(['icon ' + shape], [true]), false, true)) + "\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"content\"\u003E";
   pug_html = pug_html + "\u003Ca class=\"description\"\u003E";
   pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
-  }.call(this,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  }.call(this,"index" in locals_for_with?locals_for_with.index:typeof index!=="undefined"?index:undefined,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var LayerControls = /*@__PURE__*/(function (BaseControls) {
     function LayerControls () {
@@ -975,17 +977,43 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     LayerControls.prototype.updateLayers = function updateLayers () {
       var objects = app.fabric.model.canvas.getObjects();
       var layersHTML = '';
-      objects.forEach(function(object){
+      objects.reverse().forEach(function(object){
+        var type,
+            // Get index from canvas rather than containing array order.
+            index = app.fabric.model.canvas.getObjects().indexOf(object);
+
         if (object.type){
-          if (object.type == 'rect') { object.type = 'square'; }
-          layersHTML += LayersToolItem({shape: object.type});
+          if (object.type == 'rect') {
+            type = 'square';
+          }
+          else {
+            type = object.type;
+          } 
         }
         else {
-          layersHTML += LayersToolItem({shape: 'Unknown'});
+          type = 'Unknown';
         }
+
+        layersHTML += LayersToolItem({index: index, shape: type});      
       });
-      console.log(objects);
+
       $('#layers').html(layersHTML);
+
+      // Bind events to all the newly added rows.
+      objects.forEach(function(object){
+        var index = index = app.fabric.model.canvas.getObjects().indexOf(object);
+        $('#layers #item-' + index + ' .description').click(function(){
+          app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(index));
+        });
+        $('#layers #item-' + index + ' .back').click(function(){
+          app.fabric.model.canvas.sendBackwards(object);
+          app.layers.updateLayers();
+        });
+        $('#layers #item-' + index + ' .forward').click(function(){
+          app.fabric.model.canvas.bringForward(object);
+          app.layers.updateLayers();
+        });
+      });
     };
 
     return LayerControls;
