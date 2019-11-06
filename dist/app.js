@@ -742,9 +742,9 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           }
         }
         app.fabric.model.canvas.discardActiveObject();
-        app.layers.updateLayers();
         $('.active-object-context').remove();
       }.bind(this));
+      app.layers.updateLayers();
     }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
@@ -767,8 +767,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
 
     app.fabric.model.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
-     $('.model-preview').hide();
-     $('#fill-tool').hide();
+      $('.model-preview').hide();
+      $('#fill-tool').hide();
+      if (app.layers) {
+        app.layers.updateLayers();
+      }
     });
 
     // TODO: Don't follow if user moved the toolbar.
@@ -844,6 +847,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
+    object.id = object.type + '-' + Math.floor(Date.now() / 1000);
+
     app.fabric.model.canvas.add(object);
     app.fabric.model.canvas.moveTo(object, app.fabric.model.canvas.getObjects().length);
     // Update layers tool
@@ -948,8 +953,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   }(BaseIntegration));
 
   function LayersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (index, shape) {
-  pug_html = pug_html + "\u003Cdiv" + (" class=\"item\""+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
+  ;var locals_for_with = (locals || {});(function (active, index, shape) {
+  pug_html = pug_html + "\u003Cdiv" + (pug.attr("class", pug.classes(["item",(active ? 'ui label' : '')], [false,true]), false, true)+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"right floated content\"\u003E";
   pug_html = pug_html + "\u003Ca class=\"back\" title=\"Back\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"icon sort amount down\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
@@ -961,7 +966,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + "\u003Cdiv class=\"content\"\u003E";
   pug_html = pug_html + "\u003Ca class=\"description\"\u003E";
   pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
-  }.call(this,"index" in locals_for_with?locals_for_with.index:typeof index!=="undefined"?index:undefined,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+  }.call(this,"active" in locals_for_with?locals_for_with.active:typeof active!=="undefined"?active:undefined,"index" in locals_for_with?locals_for_with.index:typeof index!=="undefined"?index:undefined,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var LayerControls = /*@__PURE__*/(function (BaseControls) {
     function LayerControls () {
@@ -976,11 +981,23 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       this.updateLayers();
     };
 
+    LayerControls.prototype.checkActive = function checkActive (object) {
+      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      var active = false;
+      selectedObjects.forEach(function (selected_object){
+        if (selected_object.id == object.id) {
+          active = true;
+        }
+      });
+      return active;
+    };
+
     LayerControls.prototype.renderItem = function renderItem (parent, object) {
       var type,
           returnHtml = '',
           // Get index from canvas rather than containing array order.
-          index = parent.indexOf(object);
+          index = parent.indexOf(object),
+          active = app.layers.checkActive(object);   
 
       if (object.type) {
         if (object.type == 'rect') {
@@ -993,7 +1010,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       else {
         type = 'Unknown';
       }
-      returnHtml += LayersToolItem({index: index, shape: type});
+      returnHtml += LayersToolItem({index: index, shape: type, active: active});
       // Render sub items if a group.
       if (object.type && object.type == 'group') {
         returnHtml += '<div class="item"><div class="list">';

@@ -142,9 +142,9 @@ export default class FabricJSIntegrationEvents {
           }
         }
         app.fabric.model.canvas.discardActiveObject();
-        app.layers.updateLayers();
         $('.active-object-context').remove();
       }.bind(this));
+      app.layers.updateLayers();
     }.bind(this);
 
     // Separated for Fabric's On not supporting multiple.
@@ -167,8 +167,11 @@ export default class FabricJSIntegrationEvents {
 
     app.fabric.model.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
-     $('.model-preview').hide();
-     $('#fill-tool').hide();
+      $('.model-preview').hide();
+      $('#fill-tool').hide();
+      if (app.layers) {
+        app.layers.updateLayers();
+      }
     });
 
     // TODO: Don't follow if user moved the toolbar.

@@ -35,6 +35,8 @@ export default class FabricJSIntegrationHelpers {
     
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
     
+    object.id = object.type + '-' + Math.floor(Date.now() / 1000);
+
     app.fabric.model.canvas.add(object);
     app.fabric.model.canvas.moveTo(object, app.fabric.model.canvas.getObjects().length);
     // Update layers tool

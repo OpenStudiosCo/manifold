@@ -7,11 +7,23 @@ export default class LayerControls extends BaseControls {
     this.updateLayers();
   }
 
+  checkActive(object) {
+    var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+    var active = false;
+    selectedObjects.forEach((selected_object)=>{
+      if (selected_object.id == object.id) {
+        active = true;
+      }
+    });
+    return active;
+  }
+
   renderItem(parent, object) {
     var type,
         returnHtml = '',
         // Get index from canvas rather than containing array order.
-        index = parent.indexOf(object);
+        index = parent.indexOf(object),
+        active = app.layers.checkActive(object);   
 
     if (object.type) {
       if (object.type == 'rect') {
@@ -24,7 +36,7 @@ export default class LayerControls extends BaseControls {
     else {
       type = 'Unknown';
     }
-    returnHtml += LayersToolItem({index: index, shape: type});
+    returnHtml += LayersToolItem({index: index, shape: type, active: active});
     // Render sub items if a group.
     if (object.type && object.type == 'group') {
       returnHtml += '<div class="item"><div class="list">';
