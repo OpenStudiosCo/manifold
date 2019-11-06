@@ -819,10 +819,13 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
+      objects.forEach(function (object, index){
+        object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
+      });
       this.addToCenter(group);
 
       if (callback) {
-        callback(items);
+        callback(objects);
       }
     }.bind(this));
   };
@@ -863,13 +866,13 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
 
   var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function PotraceIntegration() {
-      this.settings = {
+      Potrace.setParameter({
         alphamax: 1,
         optcurve: false,
         opttolerance: 0.2,
-        turdsize: 2,
+        turdsize: 100,
         turnpolicy: "minority"
-      };
+      });
     }
 
     if ( BaseIntegration ) PotraceIntegration.__proto__ = BaseIntegration;
@@ -985,6 +988,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var selectedObjects = app.fabric.model.canvas.getActiveObjects();
       var active = false;
       selectedObjects.forEach(function (selected_object){
+        console.log(selected_object.id);
         if (selected_object.id == object.id) {
           active = true;
         }

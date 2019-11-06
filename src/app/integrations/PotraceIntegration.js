@@ -8,13 +8,13 @@ import BaseIntegration from './BaseIntegration.js';
 
 export default class PotraceIntegration extends BaseIntegration {
   constructor() {
-    this.settings = {
+    Potrace.setParameter({
       alphamax: 1,
       optcurve: false,
       opttolerance: 0.2,
-      turdsize: 2,
+      turdsize: 100,
       turnpolicy: "minority"
-    };
+    });
   }
 
   createSVG(src, callback) {

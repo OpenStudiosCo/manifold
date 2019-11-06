@@ -7,10 +7,13 @@ export default class FabricJSIntegrationHelpers {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
+      objects.forEach((object, index)=>{
+        object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
+      });
       this.addToCenter(group);
 
       if (callback) {
-        callback(items);
+        callback(objects);
       }
     }.bind(this));
   }
