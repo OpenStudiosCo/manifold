@@ -1,7 +1,7 @@
 {
   "name": "Manifold",
   "version": "0.0.1",
-  "description": "A browser based tool",
+  "description": "A web based design tool",
   "repository": {
     "type": "git",
     "url": "https://github.com/paulbrzeski/manifold"
