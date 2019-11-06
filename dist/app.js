@@ -1233,7 +1233,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
             }
           })
           .sidebar("toggle");
-        app.fabric.model.canvas.updateCanvasSize();
+        app.fabric.model.helpers.updateCanvasSize();
       }
     };
 

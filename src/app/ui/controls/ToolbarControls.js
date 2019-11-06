@@ -195,7 +195,7 @@ export default class ToolbarControls extends BaseControls {
           }
         })
         .sidebar("toggle");
-      app.fabric.model.canvas.updateCanvasSize();
+      app.fabric.model.helpers.updateCanvasSize();
     }
   }
 }
