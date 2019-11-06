@@ -142,6 +142,7 @@ export default class FabricJSIntegrationEvents {
           }
         }
         app.fabric.model.canvas.discardActiveObject();
+        app.layers.updateLayers();
         $('.active-object-context').remove();
       }.bind(this));
     }.bind(this);

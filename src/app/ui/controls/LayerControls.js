@@ -6,27 +6,42 @@ export default class LayerControls extends BaseControls {
   ready() {
     this.updateLayers();
   }
+
+  renderItem(parent, object) {
+    var type,
+        returnHtml = '',
+        // Get index from canvas rather than containing array order.
+        index = parent.indexOf(object);
+
+    if (object.type) {
+      if (object.type == 'rect') {
+        type = 'square';
+      }
+      else {
+        type = object.type;
+      }
+    }
+    else {
+      type = 'Unknown';
+    }
+    returnHtml += LayersToolItem({index: index, shape: type});
+    // Render sub items if a group.
+    if (object.type && object.type == 'group') {
+      returnHtml += '<div class="item"><div class="list">';
+      var objects = object.getObjects();
+      objects.reverse().forEach(function(group_object){
+        returnHtml += app.layers.renderItem(object.getObjects(), group_object);
+      });
+      returnHtml += '</div></div>';
+    }
+    return returnHtml;
+  }
+
   updateLayers() {
     var objects = app.fabric.model.canvas.getObjects();
     var layersHTML = '';
     objects.reverse().forEach(function(object){
-      var type,
-          // Get index from canvas rather than containing array order.
-          index = app.fabric.model.canvas.getObjects().indexOf(object);
-
-      if (object.type){
-        if (object.type == 'rect') {
-          type = 'square';
-        }
-        else {
-          type = object.type;
-        } 
-      }
-      else {
-        type = 'Unknown';
-      }
-
-      layersHTML += LayersToolItem({index: index, shape: type});      
+      layersHTML += app.layers.renderItem(app.fabric.model.canvas.getObjects(), object);
     });
 
     $('#layers').html(layersHTML);
