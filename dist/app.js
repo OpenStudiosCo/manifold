@@ -794,13 +794,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       $menu.css('top', offsetY);
     }.bind(this));
 
-    // Resize 3D canvas if it's that type of element.
-    app.fabric.model.canvas.on('object:scaling', function(e) {
-      if (e.target._element) {
-        app.fabric.model.events.updateModelPreviewViewPort(e.target);
-      }
-    });
-    app.fabric.model.canvas.on('object:rotating', function(e) {
+    // Update 3D canvas if it's that type of element.
+    app.fabric.model.canvas.on('object:modified', function(e) {
       if (e.target._element) {
         app.fabric.model.events.updateModelPreviewViewPort(e.target);
       }
