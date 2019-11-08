@@ -196,20 +196,32 @@ export default class FabricJSIntegrationEvents {
     // Resize 3D canvas if it's that type of element.
     app.fabric.model.canvas.on('object:scaling', function(e) {
       if (e.target._element) {
-        var $container = $(e.target._element).parent();
-        if ($container.hasClass('model-preview')) {
-          var scaledWidth = e.target.width * e.target.scaleX;
-          var scaledHeight = e.target.height * e.target.scaleY;
-          $container.css('width', scaledWidth);
-          $container.css('height', scaledHeight);
-          
-          var id = $container.attr('id').replace('model-preview-','');
-          app.ThreeCanvasModel[id].attributes.width = scaledWidth;
-          app.ThreeCanvasModel[id].attributes.height = scaledHeight;
-          app.ThreeCanvasModel[id].resize();
-          e.target._resetWidthHeight();
-        }
+        app.fabric.model.events.updateModelPreviewViewPort(e.target);
       }
     });
+    app.fabric.model.canvas.on('object:rotating', function(e) {
+      if (e.target._element) {
+        app.fabric.model.events.updateModelPreviewViewPort(e.target);
+      }
+    });
+  }
+
+  updateModelPreviewViewPort(target) {
+    var $container = $(target._element).parent();
+    if ($container.hasClass('model-preview')) {
+      var scaledWidth = target.width * target.scaleX;
+      var scaledHeight = target.height * target.scaleY;
+      var rotateY = target.get('angle');
+      $container.css('width', scaledWidth);
+      $container.css('height', scaledHeight);
+      $container.css('transform', 'rotateZ(' + rotateY + 'deg)');
+
+      var id = $container.attr('id').replace('model-preview-','');
+      app.ThreeCanvasModel[id].attributes.width = scaledWidth;
+      app.ThreeCanvasModel[id].attributes.height = scaledHeight;
+      app.ThreeCanvasModel[id].resize();
+      
+      target._resetWidthHeight();
+    }
   }
 }

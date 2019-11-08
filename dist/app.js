@@ -559,9 +559,9 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var boundingBoxSize = box.max.sub( box.min );
       this.model.attributes.mesh = svgExtruded;
       this.model.attributes.scene.add( this.model.attributes.mesh );
-      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 6);
+      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 8);
       this.model.attributes.controls.target =  new THREE.Vector3(
-          box.min.x + 100, box.min.y + 100 , box.min.z * 3
+          box.min.x + 100, box.min.y + 100 , box.min.z * 4
       );
       // Start the animation loop.
       this.model.animate();
@@ -590,6 +590,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
 
           var mesh = new THREE.Mesh( shape3d, material );
           mesh.rotation.x = Math.PI;
+          mesh.rotation.y = Math.PI;
           mesh.translateZ( - amount - 1 );
           mesh.translateX( - center.x);
           mesh.translateY( - center.y);
@@ -796,21 +797,33 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     // Resize 3D canvas if it's that type of element.
     app.fabric.model.canvas.on('object:scaling', function(e) {
       if (e.target._element) {
-        var $container = $(e.target._element).parent();
-        if ($container.hasClass('model-preview')) {
-          var scaledWidth = e.target.width * e.target.scaleX;
-          var scaledHeight = e.target.height * e.target.scaleY;
-          $container.css('width', scaledWidth);
-          $container.css('height', scaledHeight);
-            
-          var id = $container.attr('id').replace('model-preview-','');
-          app.ThreeCanvasModel[id].attributes.width = scaledWidth;
-          app.ThreeCanvasModel[id].attributes.height = scaledHeight;
-          app.ThreeCanvasModel[id].resize();
-          e.target._resetWidthHeight();
-        }
+        app.fabric.model.events.updateModelPreviewViewPort(e.target);
       }
     });
+    app.fabric.model.canvas.on('object:rotating', function(e) {
+      if (e.target._element) {
+        app.fabric.model.events.updateModelPreviewViewPort(e.target);
+      }
+    });
+  };
+
+  FabricJSIntegrationEvents.prototype.updateModelPreviewViewPort = function updateModelPreviewViewPort (target) {
+    var $container = $(target._element).parent();
+    if ($container.hasClass('model-preview')) {
+      var scaledWidth = target.width * target.scaleX;
+      var scaledHeight = target.height * target.scaleY;
+      var rotateY = target.get('angle');
+      $container.css('width', scaledWidth);
+      $container.css('height', scaledHeight);
+      $container.css('transform', 'rotateZ(' + rotateY + 'deg)');
+
+      var id = $container.attr('id').replace('model-preview-','');
+      app.ThreeCanvasModel[id].attributes.width = scaledWidth;
+      app.ThreeCanvasModel[id].attributes.height = scaledHeight;
+      app.ThreeCanvasModel[id].resize();
+        
+      target._resetWidthHeight();
+    }
   };
 
   var FabricJSIntegrationHelpers = function FabricJSIntegrationHelpers () {};
@@ -988,7 +1001,6 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var selectedObjects = app.fabric.model.canvas.getActiveObjects();
       var active = false;
       selectedObjects.forEach(function (selected_object){
-        console.log(selected_object.id);
         if (selected_object.id == object.id) {
           active = true;
         }
@@ -1129,6 +1141,21 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       $('#add-image').css('top', function(){
         return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
       });
+      $('#btnDrawTool')
+        .popup({
+          title: 'Draw',
+          position: 'right center'
+        })
+        .on('click', function(){
+          $(this).find('i.icon').toggleClass('grey');
+          $(this).find('i.icon').toggleClass('inverted');
+          if ($(this).find('i.icon').hasClass('grey')) {
+            app.fabric.model.canvas.isDrawingMode = false;
+          }
+          if ($(this).find('i.icon').hasClass('inverted')) {
+            app.fabric.model.canvas.isDrawingMode = true;
+          }
+        });
       $('#btnAddImage')
         .popup({
           title: 'Trace Image',
@@ -1246,7 +1273,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           position: 'right center'
         })
         .on('click', function(){
-          var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
+          var triangle = new fabric.Triangle({ width: 200, height: 200, fill: 'blue', left: 50, top: 50 });
           app.fabric.model.helpers.addToCenter(triangle);
         }.bind(this));
     };

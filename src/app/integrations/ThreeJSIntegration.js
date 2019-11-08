@@ -51,9 +51,9 @@ export default class ThreeIntegration extends BaseIntegration {
     var boundingBoxSize = box.max.sub( box.min );
     this.model.attributes.mesh = svgExtruded;
     this.model.attributes.scene.add( this.model.attributes.mesh );
-    this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 6);
+    this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 8);
     this.model.attributes.controls.target =  new THREE.Vector3(
-        box.min.x + 100, box.min.y + 100 , box.min.z * 3
+        box.min.x + 100, box.min.y + 100 , box.min.z * 4
     );
     // Start the animation loop.
     this.model.animate();
@@ -82,6 +82,7 @@ export default class ThreeIntegration extends BaseIntegration {
 
         var mesh = new THREE.Mesh( shape3d, material );
         mesh.rotation.x = Math.PI;
+        mesh.rotation.y = Math.PI;
         mesh.translateZ( - amount - 1 );
         mesh.translateX( - center.x);
         mesh.translateY( - center.y);

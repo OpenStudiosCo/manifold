@@ -54,6 +54,21 @@ export default class ToolbarControls extends BaseControls {
     $('#add-image').css('top', function(){
       return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
     });
+    $('#btnDrawTool')
+      .popup({
+        title: 'Draw',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $(this).find('i.icon').toggleClass('grey');
+        $(this).find('i.icon').toggleClass('inverted');
+        if ($(this).find('i.icon').hasClass('grey')) {
+          app.fabric.model.canvas.isDrawingMode = false;
+        }
+        if ($(this).find('i.icon').hasClass('inverted')) {
+          app.fabric.model.canvas.isDrawingMode = true;
+        }
+      });
     $('#btnAddImage')
       .popup({
         title: 'Trace Image',
@@ -171,7 +186,7 @@ export default class ToolbarControls extends BaseControls {
         position: 'right center'
       })
       .on('click', function(){
-        var triangle = new fabric.Triangle({ width: 100, height: 100, fill: 'blue', left: 50, top: 50 });
+        var triangle = new fabric.Triangle({ width: 200, height: 200, fill: 'blue', left: 50, top: 50 });
         app.fabric.model.helpers.addToCenter(triangle);
       }.bind(this));
   }

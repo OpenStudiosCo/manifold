@@ -11,7 +11,6 @@ export default class LayerControls extends BaseControls {
     var selectedObjects = app.fabric.model.canvas.getActiveObjects();
     var active = false;
     selectedObjects.forEach((selected_object)=>{
-      console.log(selected_object.id);
       if (selected_object.id == object.id) {
         active = true;
       }
