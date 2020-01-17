@@ -1,4 +1,9 @@
 ![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold.svg)
+# Contents
+- [Introduction](#introduction)
+- [What's working?](#whats-working)
+- [What's next?](#whats-next)
+- [Credits](#credits)
 
 # Introduction
 
