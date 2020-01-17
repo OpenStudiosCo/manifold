@@ -1,4 +1,4 @@
-![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold-01.png)
+![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold.svg)
 
 # Introduction
 
