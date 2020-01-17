@@ -1,13 +1,18 @@
-# manifold
-The Swiss Army knife of graphics tools for indie game development.
+![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold-01.png)
 
-![Logo](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/manifold.svg)
+# Introduction
 
-[Demo](http://manifold.paulbrzeski.com)
+A hybrid 2D/3D design tool, this is an experimental program to address the need for fast and efficient modelling for Three.JS scenes. The 2D vector component can also be used for general illustration and design needs.
+
+Current build and proof of concept: [Manifold demo](http://manifold.paulbrzeski.com)
+
+# What's working?
 - Preview of UI, some elements are working in a rudimentary way 
 - Currently convert raster images into vectors using Potrace
-![Screenshot](/assets/screenshot.png)
+- Check out [this video](https://openstudios.xyz/assets/manifold.mp4) to see Manifold in action
+![Screenshot](https://cdn.rawgit.com/paulbrzeski/manifold/master/assets/screenshot.png)
 
+# What's next?
 There's a lot to come, but more info can be found in my blog posts about this project: 
 - [My angel is the manifold](https://medium.com/@mail_59849/my-angel-is-the-manifold-d0b718d03071)
   - My initial attempt to define what Manifold is meant to be.
