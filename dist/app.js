@@ -1159,7 +1159,13 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           }
         });
 
-      $('#btnTraceImage')
+      $('#btnPointTool')
+        .popup({
+          title: 'Manipulate Shapes',
+          position: 'right center'
+        });
+
+        $('#btnTraceImage')
         .popup({
           title: 'Trace Image',
           position: 'right center'
@@ -1228,7 +1234,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var overlays_visible = [];
       $('#btnToggleOverlays')
         .popup({
-          title: 'Toggle Overlays',
+          title: 'Toggle All Overlays',
           position: 'right center'
         })
         .on('click', function(){
@@ -1248,7 +1254,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         });
       $('#btnToggleVector')
         .popup({
-          title: 'Toggle Vector',
+          title: 'Toggle Vector Controls',
           position: 'right center'
         })
         .on('click', function(){
@@ -1257,7 +1263,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         });
       $('#btnToggleLayers')
         .popup({
-          title: 'Toggle Layers',
+          title: 'Toggle Layer Controls',
           position: 'right center'
         })
         .on('click', function(){

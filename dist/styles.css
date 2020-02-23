@@ -58,6 +58,10 @@
 #toolbar .item {
   cursor: pointer;
 }
+#toolbar .item:active i,
+#toolbar .item:focus i {
+  color: #fff !important;
+}
 #container {
   position: relative;
 }
