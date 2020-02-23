@@ -8,14 +8,10 @@ block append title
 
 block append page
   #toolbar.ui.very.thin.left.vertical.visible.sidebar.icon.menu
-    include /src/templates/toolbar/default.pug
+    include /src/templates/toolbar.pug
   #container.pusher
     #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();')
       a(href='#', title='Toggle Toolbar')
         img(src='/assets/manifold.svg')
     canvas#main-canvas
-    include /src/templates/toolbar/add-image.pug
-    include /src/templates/toolbar/fill-tool.pug
-    include /src/templates/toolbar/layers-tool.pug
-    include /src/templates/toolbar/vector-tool.pug
-    include /src/templates/toolbar/3d-tool.pug
+    include /src/templates/toolbar_overlays.pug
