@@ -11,13 +11,20 @@ export default class ToolbarControls extends BaseControls {
 
     $('#add-image').on('click', 'a.item.image', function(e){
       var src = $(e.target).attr('src');
-      var callback = function(svg) {
-        var callback = function() {
-          $('#hideAddImage').click();
+      if ($('#btnTraceImage').find('i.icon').hasClass('disabled')) {
+        fabric.Image.fromURL(src, function(img) {
+          app.fabric.model.helpers.addToCenter(img);
+        });
+      }
+      else {
+        var callback = function(svg) {
+          var callback = function() {
+            $('#hideAddImage').click();
+          };
+          app.fabric.model.helpers.loadSVG(svg, callback);
         };
-        app.fabric.model.helpers.loadSVG(svg, callback);
-      };
-      app.fabric.model.potrace.createSVG(src, callback);
+        app.fabric.model.potrace.createSVG(src, callback);        
+      }
     });
 
     $('.ui.dropdown').dropdown();
@@ -69,12 +76,40 @@ export default class ToolbarControls extends BaseControls {
           app.fabric.model.canvas.isDrawingMode = true;
         }
       });
-    $('#btnAddImage')
+
+    $('#btnTraceImage')
       .popup({
         title: 'Trace Image',
         position: 'right center'
       })
       .on('click', function(){
+        $('#btnAddImage').find('i.icon').addClass('disabled');
+        $(this).find('i.icon').toggleClass('disabled');
+        if ($(this).find('i.icon').hasClass('disabled')) {
+          $('#add-image')
+            .css('left', '0px')
+            .show()
+            .animate({
+              left: '-' + $('#add-image').width() + 'px'
+            });
+        }
+        else {
+          $('#add-image')
+            .css('left', '-' + $('#add-image').width() + 'px')
+            .show()
+            .animate({
+              left: '0px'
+            });
+        }
+      });
+
+      $('#btnAddImage')
+      .popup({
+        title: 'Add Image',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $('#btnTraceImage').find('i.icon').addClass('disabled');
         $(this).find('i.icon').toggleClass('disabled');
         if ($(this).find('i.icon').hasClass('disabled')) {
           $('#add-image')

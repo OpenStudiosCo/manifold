@@ -1,5 +1,10 @@
 {
- "name": "App",
+ "short_name": "Manifold",
+ "name": "Manifold - A hybrid 2D/3D design tool",
+ "theme_color": "#ffffff",
+ "background_color": "#ffffff",
+ "display": "standalone",
+ "start_url": "index.html",
  "icons": [
   {
    "src": "\/assets\/icons\/android-icon-36x36.png",
