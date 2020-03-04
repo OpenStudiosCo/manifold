@@ -18,7 +18,7 @@ export default class PotraceIntegration extends BaseIntegration {
     });
   }
 
-  createSVG(src, callback) {
+  createSVG(src, callbackFn) {
     // Create an SVG from data and settings, draw to screen.
     Potrace.clear();
     Potrace.loadImageFromSrc(src);
@@ -43,7 +43,7 @@ export default class PotraceIntegration extends BaseIntegration {
         newSVG.appendChild(path);
       });
 
-      callback(newSVG.outerHTML);
+      callbackFn(newSVG.outerHTML);
     });
   }
 

@@ -595,7 +595,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     // this.attributes.scene.add( this.attributes.highlighter );
     // }
 
-    if (app$1.fabric.model.canvas) {
+    if (app$1 && app$1.fabric && app$1.fabric.model.canvas) {
       app$1.fabric.model.canvas.renderAll();
     }
   };
@@ -901,7 +901,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     PotraceIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
     PotraceIntegration.prototype.constructor = PotraceIntegration;
 
-    PotraceIntegration.prototype.createSVG = function createSVG (src, callback) {
+    PotraceIntegration.prototype.createSVG = function createSVG (src, callbackFn) {
       // Create an SVG from data and settings, draw to screen.
       Potrace.clear();
       Potrace.loadImageFromSrc(src);
@@ -926,7 +926,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           newSVG.appendChild(path);
         });
 
-        callback(newSVG.outerHTML);
+        callbackFn(newSVG.outerHTML);
       });
     };
 
