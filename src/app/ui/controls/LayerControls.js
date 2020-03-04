@@ -1,8 +1,14 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
-import LayersToolItem from '../../../templates/toolbar/layers-tool-item.pug';
+import layersToolItem from '../../../templates/toolbar/layers-tool-item.pug';
 
+var app = {};
 export default class LayerControls extends BaseControls {
+  constructor(appInstance) {
+    app = appInstance;
+    super();
+  }
+
   ready() {
     this.updateLayers();
   }
@@ -10,20 +16,21 @@ export default class LayerControls extends BaseControls {
   checkActive(object) {
     var selectedObjects = app.fabric.model.canvas.getActiveObjects();
     var active = false;
-    selectedObjects.forEach((selected_object)=>{
+    selectedObjects.forEach((selected_object) => {
       if (selected_object.id == object.id) {
         active = true;
       }
     });
+
     return active;
   }
 
   renderItem(parent, object) {
-    var type,
-        returnHtml = '',
-        // Get index from canvas rather than containing array order.
+    var active = app.layers.checkActive(object),
+        // Get index from canvas rather than containing array order.    
         index = parent.indexOf(object),
-        active = app.layers.checkActive(object);   
+        returnHtml = '',
+        type;
 
     if (object.type) {
       if (object.type == 'rect') {
@@ -36,7 +43,7 @@ export default class LayerControls extends BaseControls {
     else {
       type = 'Unknown';
     }
-    returnHtml += LayersToolItem({index: index, shape: type, active: active});
+    returnHtml += layersToolItem( { index: index, shape: type, active: active } );
     // Render sub items if a group.
     if (object.type && object.type == 'group') {
       returnHtml += '<div class="item"><div class="list">';
@@ -46,6 +53,7 @@ export default class LayerControls extends BaseControls {
       });
       returnHtml += '</div></div>';
     }
+
     return returnHtml;
   }
 
@@ -60,7 +68,7 @@ export default class LayerControls extends BaseControls {
 
     // Bind events to all the newly added rows.
     objects.forEach(function(object){
-      var index = index = app.fabric.model.canvas.getObjects().indexOf(object);
+      var index = app.fabric.model.canvas.getObjects().indexOf(object);
       $('#layers #item-' + index + ' .description').click(function(){
         app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(index));
       });

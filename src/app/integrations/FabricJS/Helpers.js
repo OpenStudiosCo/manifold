@@ -1,19 +1,24 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
 
+var app = {};
 export default class FabricJSIntegrationHelpers {
+  constructor(appInstance) {
+    app = appInstance;
+  }
+
   // Loads an SVG string and splits up objects so they're loaded in the right position.
-  loadSVG(svg, callback) {
+  loadSVG(svg, callbackFn) {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
-      objects.forEach((object, index)=>{
+      objects.forEach((object, index) => {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
       this.addToCenter(group);
 
-      if (callback) {
-        callback(objects);
+      if (callbackFn) {
+        callbackFn(objects);
       }
     }.bind(this));
   }

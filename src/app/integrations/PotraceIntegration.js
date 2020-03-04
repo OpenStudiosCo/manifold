@@ -8,6 +8,7 @@ import BaseIntegration from './BaseIntegration.js';
 
 export default class PotraceIntegration extends BaseIntegration {
   constructor() {
+    super();
     Potrace.setParameter({
       alphamax: 1,
       optcurve: false,

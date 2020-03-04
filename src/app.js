@@ -11,20 +11,19 @@ import ToolbarControls from './app/ui/controls/ToolbarControls.js';
 export default class App {
   constructor() {
     // Integrations
-    this.fabric = new FabricJSIntegration();
+    this.fabric = new FabricJSIntegration(this);
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
 
     // UI    
-    this.layers = new LayerControls();
-    this.toolbar = new ToolbarControls();
+    this.layers = new LayerControls(this);
+    this.toolbar = new ToolbarControls(this);
   }
 }
 
 // Startup using jQuery.ready()
 $(() => {
   var app = new App();
-  window.app = app;
 
   // Run all the ready functions
   for (var classInstance in app) {

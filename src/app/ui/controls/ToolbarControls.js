@@ -3,8 +3,11 @@ import fabric from 'fabric';
 import BaseControls from './BaseControls.js';
 import addImageItem from '../../../templates/toolbar/add-image__item.pug';
 
+var app = {};
 export default class ToolbarControls extends BaseControls {
-  constructor() {
+  constructor(appInstance) {
+    app = appInstance;
+    super();
     this.setupDefaultMenu();
 
     $('.floating.overlay').draggable();
@@ -17,13 +20,13 @@ export default class ToolbarControls extends BaseControls {
         });
       }
       else {
-        var callback = function(svg) {
-          var callback = function() {
+        var svgLoadWrapper = function(svg) {
+          var hideAddImageFn = function() {
             $('#hideAddImage').click();
           };
-          app.fabric.model.helpers.loadSVG(svg, callback);
+          app.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
         };
-        app.fabric.model.potrace.createSVG(src, callback);        
+        app.fabric.model.potrace.createSVG(src, svgLoadWrapper);        
       }
     });
 
@@ -135,7 +138,7 @@ export default class ToolbarControls extends BaseControls {
         }
       });
 
-    // TODO: https://codepen.io/shershen08/pen/JGepQv
+    // @TODO: https://codepen.io/shershen08/pen/JGepQv
     $('#btnAddText')
       .popup({
         title: 'Text',
@@ -146,7 +149,7 @@ export default class ToolbarControls extends BaseControls {
           fontFamily: 'Arial'
         });
         app.fabric.model.helpers.addToCenter(textBox);
-      }.bind(this));
+      });
 
     // Track which overlays we hid so we don't override other settings.
     var overlays_visible = [];
@@ -205,7 +208,7 @@ export default class ToolbarControls extends BaseControls {
       .on('click', function(){
         var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
         app.fabric.model.helpers.addToCenter(circle);
-      }.bind(this));
+      });
     $('#btnAddSquare')
       .popup({
         title: 'Square',
@@ -220,7 +223,7 @@ export default class ToolbarControls extends BaseControls {
           height: 200
         });
         app.fabric.model.helpers.addToCenter(rect);
-      }.bind(this));
+      });
     $('#btnAddTriangle')
       .popup({
         title: 'Triangle',
@@ -229,7 +232,7 @@ export default class ToolbarControls extends BaseControls {
       .on('click', function(){
         var triangle = new fabric.Triangle({ width: 200, height: 200, fill: 'blue', left: 50, top: 50 });
         app.fabric.model.helpers.addToCenter(triangle);
-      }.bind(this));
+      });
   }
 
   toggle() {

@@ -4,8 +4,10 @@ import THREE from 'THREE';
   * Three Canvas model.
   */
 
+var app = {};
 export default class ThreeJSIntegrationExtras {
-  constructor(options) {
+  constructor(appInstance) {
+    app = appInstance;
     this.attributes = {
       animationId: null,
       renderer: null,
@@ -77,7 +79,7 @@ export default class ThreeJSIntegrationExtras {
     this.attributes.controls.update();
     this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
 
-    //this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+    // this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
     
     // var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
     // if ( intersects.length > 0 ) {

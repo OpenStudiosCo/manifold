@@ -6,8 +6,11 @@ import BaseControls from './BaseControls.js';
   * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
   */
 
+var app = {};
 export default class ColourPickerControls extends BaseControls {
-  constructor() {
+  constructor(appInstance) {
+    app = appInstance;
+    super();
     var el = document.getElementById('colour-picker');
     if (!el) {
       return;
@@ -41,7 +44,7 @@ export default class ColourPickerControls extends BaseControls {
   }
 
   lookupAndSetColour(colour) {
-    var cvs, ctx;
+    var ctx, cvs;
     cvs = document.createElement('canvas');
     cvs.height = 1;
     cvs.width = 1;

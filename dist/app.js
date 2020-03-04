@@ -23,8 +23,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
     */
 
+  var app = {};
   var ColourPickerControls = /*@__PURE__*/(function (BaseControls) {
-    function ColourPickerControls() {
+    function ColourPickerControls(appInstance) {
+      app = appInstance;
+      BaseControls.call(this);
       var el = document.getElementById('colour-picker');
       if (!el) {
         return;
@@ -62,7 +65,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     ColourPickerControls.prototype.constructor = ColourPickerControls;
 
     ColourPickerControls.prototype.lookupAndSetColour = function lookupAndSetColour (colour) {
-      var cvs, ctx;
+      var ctx, cvs;
       cvs = document.createElement('canvas');
       cvs.height = 1;
       cvs.width = 1;
@@ -402,11 +405,114 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + "\u003Cspan\u003E";
   pug_html = pug_html + "3D\u003C\u002Fspan\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
+  function modelPreview(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  ;var locals_for_with = (locals || {});(function (id) {
+  pug_html = pug_html + "\u003Cdiv" + (" class=\"model-preview\""+" style=\"box-shadow: inset 0 0 5px #ccc;\""+pug.attr("id", id, true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+  }.call(this,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
+  /**
+    * Three Canvas view.
+    *
+    * Manages a THREE.JS canvas view.
+    */
+
+  var models = 0;
+
+  var ThreeIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function ThreeIntegration(options) {
+      BaseIntegration.call(this, options);
+      $('#container').append(modelPreview( { id: 'model-preview-' + models } ));
+      this.$el = $('#model-preview-' + models);
+      this.model = options.model;
+      this.$el.css('width', options.width);
+      this.$el.css('height', options.height);
+      this.model.attributes.width = options.width;
+      this.model.attributes.height = options.height;
+      this.$el.on( 'mousemove', function(event) {
+        this.model.attributes.mouse.x = (( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 ) - 1;
+        this.model.attributes.mouse.y = - (( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 ) + 1;
+      }.bind(this));
+
+      this.createScene(options.svg);
+      models +=1;
+    }
+
+    if ( BaseIntegration ) ThreeIntegration.__proto__ = BaseIntegration;
+    ThreeIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    ThreeIntegration.prototype.constructor = ThreeIntegration;
+
+    ThreeIntegration.prototype.createScene = function createScene (svg) {
+      
+      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
+      this.model.clearScene();
+      
+      this.$el.append( this.model.attributes.renderer.domElement );
+
+       // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
+      var loader = new THREE.SVGLoader();
+      var paths = loader.parse(svg).paths;
+      var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
+      var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
+      var svgExtruded = this.extrudeSVG({
+        paths: paths,
+        amount: this.model.attributes.extrudeAmount,
+        center: { x: offsetX, y: offsetY }
+      });
+      var box = new THREE.Box3().setFromObject( svgExtruded );
+
+      this.model.attributes.mesh = svgExtruded;
+      this.model.attributes.scene.add( this.model.attributes.mesh );
+      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 8);
+      this.model.attributes.controls.target = new THREE.Vector3( box.min.x + 100, box.min.y + 100 , box.min.z * 4 );
+      // Start the animation loop.
+      this.model.animate();
+    };
+
+    // Populate a 3D group from an SVG using SVGLoader
+    ThreeIntegration.prototype.extrudeSVG = function extrudeSVG (svgObject) {
+      var paths = svgObject.paths;
+      var amount = svgObject.amount;
+      var center = svgObject.center;
+
+      var group = new THREE.Group();
+      for ( var i = 0; i < paths.length; i ++ ) {
+        var path = paths[ i ];
+        var shapes = path.toShapes( true );
+        for ( var j = 0; j < shapes.length; j ++ ) {
+          var color = new THREE.Color(Math.random() * 0xffffff);
+          var material = new THREE.MeshBasicMaterial( {
+            color: path.color ? path.color : color
+          } );
+          var simpleShape = shapes[ j ];
+          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
+            depth: amount ,
+            bevelEnabled: false
+          } );
+
+          var mesh = new THREE.Mesh( shape3d, material );
+          mesh.rotation.x = Math.PI;
+          mesh.rotation.y = Math.PI;
+          mesh.translateZ( - amount - 1 );
+          mesh.translateX( - center.x);
+          mesh.translateY( - center.y);
+
+          group.add( mesh );
+        }
+      }
+
+      return group;
+    };
+
+    return ThreeIntegration;
+  }(BaseIntegration));
+
   /**
     * Three Canvas model.
     */
 
-  var ThreeJSIntegrationExtras = function ThreeJSIntegrationExtras(options) {
+  var app$1 = {};
+  var ThreeJSIntegrationExtras = function ThreeJSIntegrationExtras(appInstance) {
+    app$1 = appInstance;
     this.attributes = {
       animationId: null,
       renderer: null,
@@ -478,7 +584,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     this.attributes.controls.update();
     this.attributes.renderer.render( this.attributes.scene, this.attributes.camera );
 
-    //this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
+    // this.attributes.raycaster.setFromCamera( this.attributes.mouse, this.attributes.camera );
       
     // var intersects = this.attributes.raycaster.intersectObjects( this.attributes.mesh.children );
     // if ( intersects.length > 0 ) {
@@ -489,8 +595,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     // this.attributes.scene.add( this.attributes.highlighter );
     // }
 
-    if (app.fabric.model.canvas) {
-      app.fabric.model.canvas.renderAll();
+    if (app$1.fabric.model.canvas) {
+      app$1.fabric.model.canvas.renderAll();
     }
   };
 
@@ -503,113 +609,14 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
   };
 
-  function modelPreview(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (id) {
-  pug_html = pug_html + "\u003Cdiv" + (" class=\"model-preview\""+" style=\"box-shadow: inset 0 0 5px #ccc;\""+pug.attr("id", id, true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-  }.call(this,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
-
-  /**
-    * Three Canvas view.
-    *
-    * Manages a THREE.JS canvas view.
-    */
-
-  var models = 0;
-
-  var ThreeIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function ThreeIntegration(options) {
-      $('#container').append(modelPreview({id: 'model-preview-' + models}));
-      this.$el = $('#model-preview-' + models);
-      this.model = options.model;
-      this.$el.css('width', options.width);
-      this.$el.css('height', options.height);
-      this.model.attributes.width = options.width;
-      this.model.attributes.height = options.height;
-      this.$el.on( 'mousemove', function(event) {
-        this.model.attributes.mouse.x = (( event.offsetX / this.model.attributes.renderer.domElement.clientWidth ) * 2 ) - 1;
-        this.model.attributes.mouse.y = - (( event.offsetY / this.model.attributes.renderer.domElement.clientHeight ) * 2 ) + 1;
-      }.bind(this));
-
-      this.createScene(options.svg);
-      models++;
-    }
-
-    if ( BaseIntegration ) ThreeIntegration.__proto__ = BaseIntegration;
-    ThreeIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
-    ThreeIntegration.prototype.constructor = ThreeIntegration;
-
-    ThreeIntegration.prototype.createScene = function createScene (svg) {
-      
-      this.model.attributes.renderer.setSize( this.model.attributes.width, this.model.attributes.height );
-      this.model.clearScene();
-      
-      this.$el.append( this.model.attributes.renderer.domElement );
-
-       // Load the imagetracejs SVG using experimental SVGLoader from three.js dev.
-      var loader = new THREE.SVGLoader();
-      var paths = loader.parse(svg).paths;
-      var offsetX = (paths[0].currentPath ? paths[0].currentPath.currentPoint.x : 0);
-      var offsetY = (paths[0].currentPath ? paths[0].currentPath.currentPoint.y : 0);
-      var svgExtruded = this.extrudeSVG({
-        paths: paths,
-        amount: this.model.attributes.extrudeAmount,
-        center: { x: offsetX, y: offsetY }
-      });
-      var box = new THREE.Box3().setFromObject( svgExtruded );
-      var boundingBoxSize = box.max.sub( box.min );
-      this.model.attributes.mesh = svgExtruded;
-      this.model.attributes.scene.add( this.model.attributes.mesh );
-      this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 8);
-      this.model.attributes.controls.target =  new THREE.Vector3(
-          box.min.x + 100, box.min.y + 100 , box.min.z * 4
-      );
-      // Start the animation loop.
-      this.model.animate();
-    };
-
-    // Populate a 3D group from an SVG using SVGLoader
-    ThreeIntegration.prototype.extrudeSVG = function extrudeSVG (svgObject) {
-      var paths = svgObject.paths;
-      var amount = svgObject.amount;
-      var center = svgObject.center;
-
-      var group = new THREE.Group();
-      for ( var i = 0; i < paths.length; i ++ ) {
-        var path = paths[ i ];
-        var shapes = path.toShapes( true );
-        for ( var j = 0; j < shapes.length; j ++ ) {
-          var color = new THREE.Color(Math.random() * 0xffffff);
-          var material = new THREE.MeshBasicMaterial( {
-            color: path.color ? path.color : color
-          } );
-          var simpleShape = shapes[ j ];
-          var shape3d = new THREE.ExtrudeBufferGeometry( simpleShape, {
-            depth: amount ,
-            bevelEnabled: false
-          } );
-
-          var mesh = new THREE.Mesh( shape3d, material );
-          mesh.rotation.x = Math.PI;
-          mesh.rotation.y = Math.PI;
-          mesh.translateZ( - amount - 1 );
-          mesh.translateX( - center.x);
-          mesh.translateY( - center.y);
-
-          group.add( mesh );
-        }
-      }
-
-      return group;
-    };
-
-    return ThreeIntegration;
-  }(BaseIntegration));
-
-  var FabricJSIntegrationEvents = function FabricJSIntegrationEvents () {};
+  var app$2 = {};
+  var FabricJSIntegrationEvents = function FabricJSIntegrationEvents(appInstance) {
+    app$2 = appInstance;
+  };
 
   FabricJSIntegrationEvents.prototype.setupEvents = function setupEvents () {
     // Credit - https://stackoverflow.com/a/24238960
-    app.fabric.model.canvas.on('object:moving', function (e) {
+    app$2.fabric.model.canvas.on('object:moving', function (e) {
       var obj = e.target;
        // if object is too big ignore
       if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
@@ -650,7 +657,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       if (!e.target._element && !e.target._objects) {
         $('#btnFillActive').removeClass('disabled');
         $('#btnFillActive .icon').css('color', e.target.fill);
-        app.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
+        app$2.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
       }
       // Is group.
       if (e.target._objects) {
@@ -665,55 +672,58 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       }
 
       // Events
-      $('#btnGroupActive').click(function(e) {
-        var activeObject = app.fabric.model.canvas.getActiveObject();
-        if (activeObject.type != 'group') {
-          activeObject.toGroup();
-        }
-        else {
+      $('#btnGroupActive').click(function() {
+        var activeObject = app$2.fabric.model.canvas.getActiveObject();
+        if (activeObject.type == 'group') {
           activeObject.toActiveSelection();
         }
+        else {
+          activeObject.toGroup();
+        }
           
-        app.fabric.model.canvas.discardActiveObject();
-        app.fabric.model.canvas.requestRenderAll();
+        app$2.fabric.model.canvas.discardActiveObject();
+        app$2.fabric.model.canvas.requestRenderAll();
 
         // Update layers tool
-        if (app.layers) {
-          app.layers.updateLayers();
+        if (app$2.layers) {
+          app$2.layers.updateLayers();
         }
-      }.bind(this));
+      });
         
-      $('#btnFillActive:not(.disabled)').click(function(e){
+      $('#btnFillActive:not(.disabled)').click(function(){
         $(this).toggleClass('active');
         $('#fill-tool').toggle();
       });
-      $('#btnDeleteActive').click(function(e) {
-        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      $('#btnDeleteActive').click(function() {
+        var selectedObjects = app$2.fabric.model.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
-          app.fabric.model.canvas.remove(selectedObjects[i]);  
+          app$2.fabric.model.canvas.remove(selectedObjects[i]);  
         }
-        app.fabric.model.canvas.discardActiveObject();
+        app$2.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
         // Update layers tool
-        if (app.layers) {
-          app.layers.updateLayers();
+        if (app$2.layers) {
+          app$2.layers.updateLayers();
         }
-      }.bind(this));
-      $('#btnMake3D:not(.disabled)').click(function(e) {
-        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      });
+      $('#btnMake3D:not(.disabled)').click(function() {
+        var selectedObjects = app$2.fabric.model.canvas.getActiveObjects();
+
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
             var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
             var obj_height = selectedObjects[i].height * selectedObjects[i].scaleY;
 
-            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';//' viewbox="0 0 ';
+            // Start SVG document.
+            // Removed: ' viewbox="0 0 ';
+            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';
             svg_start += ' style="fill: ';
             svg_start += selectedObjects[i].fill + '">';
 
             var svg_end = '</svg>';
 
             // Hack for matrix transform;
-            //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+            // var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
 
             var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
@@ -721,38 +731,37 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
               var threeD = new fabric.Image(threeCanvas.$el.find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              app.fabric.model.canvas.add(threeD);
-            }.bind(this);
-            app.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
+              app$2.fabric.model.canvas.add(threeD);
+            };
+            app$2.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
               width: obj_width
             }));
-            app.ThreeCanvasView.push(
-              new ThreeIntegration({ 
-                model: app.ThreeCanvasModel[app.ThreeCanvasModel.length-1],
-                svg: svgElements,
-                width: obj_width,
-                height: obj_height
-              })
-            );
-            create3DObject(app.ThreeCanvasView[app.ThreeCanvasView.length-1]);
-            app.fabric.model.canvas.remove(selectedObjects[i]);
+            var ThreeFabricObject = new ThreeIntegration({ 
+              model: app$2.ThreeCanvasModel[app$2.ThreeCanvasModel.length-1],
+              svg: svgElements,
+              width: obj_width,
+              height: obj_height
+            });
+            app$2.ThreeCanvasView.push( ThreeFabricObject );
+            create3DObject(app$2.ThreeCanvasView[app$2.ThreeCanvasView.length-1]);
+            app$2.fabric.model.canvas.remove(selectedObjects[i]);
           }
           else {
             console.log('not convertible!');
           }
         }
-        app.fabric.model.canvas.discardActiveObject();
+        app$2.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
-      }.bind(this));
-      app.layers.updateLayers();
-    }.bind(this);
+      });
+      app$2.layers.updateLayers();
+    };
 
     // Separated for Fabric's On not supporting multiple.
-    app.fabric.model.canvas.on('selection:created', selectionCallback);
-    app.fabric.model.canvas.on('selection:updated', selectionCallback);
+    app$2.fabric.model.canvas.on('selection:created', selectionCallback);
+    app$2.fabric.model.canvas.on('selection:updated', selectionCallback);
 
-    app.fabric.model.canvas.on('mouse:dblclick', function(e){
+    app$2.fabric.model.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -764,19 +773,19 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         $el.css('top', offsetY);
       }
        
-    }.bind(this));
+    });
 
-    app.fabric.model.canvas.on('selection:cleared', function(){
+    app$2.fabric.model.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
       $('.model-preview').hide();
       $('#fill-tool').hide();
-      if (app.layers) {
-        app.layers.updateLayers();
+      if (app$2.layers) {
+        app$2.layers.updateLayers();
       }
     });
 
-    // TODO: Don't follow if user moved the toolbar.
-    app.fabric.model.canvas.on('object:moving', function(e) {
+    // @TODO: Don't follow if user moved the toolbar.
+    app$2.fabric.model.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
@@ -784,20 +793,20 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       if (offsetX < toolbarWidth) {
         offsetX = 0;
       }
-      if (offsetX > app.fabric.model.canvas.width - toolbarWidth - $menu.width()) {
-        offsetX = app.fabric.model.canvas.width - $menu.width(); 
+      if (offsetX > app$2.fabric.model.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = app$2.fabric.model.canvas.width - $menu.width(); 
       }
       if (offsetY < 0) {
         offsetY = 0;
       }
       $menu.css('left', offsetX);
       $menu.css('top', offsetY);
-    }.bind(this));
+    });
 
     // Update 3D canvas if it's that type of element.
-    app.fabric.model.canvas.on('object:modified', function(e) {
+    app$2.fabric.model.canvas.on('object:modified', function(e) {
       if (e.target._element) {
-        app.fabric.model.events.updateModelPreviewViewPort(e.target);
+        app$2.fabric.model.events.updateModelPreviewViewPort(e.target);
       }
     });
   };
@@ -813,27 +822,31 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       $container.css('transform', 'rotateZ(' + rotateY + 'deg)');
 
       var id = $container.attr('id').replace('model-preview-','');
-      app.ThreeCanvasModel[id].attributes.width = scaledWidth;
-      app.ThreeCanvasModel[id].attributes.height = scaledHeight;
-      app.ThreeCanvasModel[id].resize();
+      app$2.ThreeCanvasModel[id].attributes.width = scaledWidth;
+      app$2.ThreeCanvasModel[id].attributes.height = scaledHeight;
+      app$2.ThreeCanvasModel[id].resize();
         
       target._resetWidthHeight();
     }
   };
 
-  var FabricJSIntegrationHelpers = function FabricJSIntegrationHelpers () {};
+  var app$3 = {};
+  var FabricJSIntegrationHelpers = function FabricJSIntegrationHelpers(appInstance) {
+    app$3 = appInstance;
+  };
 
-  FabricJSIntegrationHelpers.prototype.loadSVG = function loadSVG (svg, callback) {
+  // Loads an SVG string and splits up objects so they're loaded in the right position.
+  FabricJSIntegrationHelpers.prototype.loadSVG = function loadSVG (svg, callbackFn) {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
-      objects.forEach(function (object, index){
+      objects.forEach(function (object, index) {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
       this.addToCenter(group);
 
-      if (callback) {
-        callback(objects);
+      if (callbackFn) {
+        callbackFn(objects);
       }
     }.bind(this));
   };
@@ -844,8 +857,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       width -= $('#toolbar').width();  
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    app.fabric.model.canvas.setHeight( height );
-    app.fabric.model.canvas.setWidth( width );
+    app$3.fabric.model.canvas.setHeight( height );
+    app$3.fabric.model.canvas.setWidth( width );
   };
 
   // Add an object to the center of the canvas.
@@ -860,11 +873,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
 
-    app.fabric.model.canvas.add(object);
-    app.fabric.model.canvas.moveTo(object, app.fabric.model.canvas.getObjects().length);
+    app$3.fabric.model.canvas.add(object);
+    app$3.fabric.model.canvas.moveTo(object, app$3.fabric.model.canvas.getObjects().length);
     // Update layers tool
-    if (app.layers) {
-      app.layers.updateLayers();
+    if (app$3.layers) {
+      app$3.layers.updateLayers();
     }
   };
 
@@ -874,6 +887,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
 
   var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function PotraceIntegration() {
+      BaseIntegration.call(this);
       Potrace.setParameter({
         alphamax: 1,
         optcurve: false,
@@ -923,19 +937,22 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     * Fabric JS Integration.
     */
 
+  var app$4 = {};
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function FabricJSIntegration(options) {
+    function FabricJSIntegration(appInstance) {
+      app$4 = appInstance;
+      BaseIntegration.call(this);
       this.el = '#main-canvas';
       this.model = {
-        colourPickerModel: new ColourPickerControls(),
+        colourPickerModel: new ColourPickerControls(appInstance),
         potrace: new PotraceIntegration(),
         canvas: new fabric.Canvas('main-canvas'),
         attributes: {
           canvas: null,
           transitioning: false
         },
-        helpers: new FabricJSIntegrationHelpers(),
-        events: new FabricJSIntegrationEvents()
+        helpers: new FabricJSIntegrationHelpers(appInstance),
+        events: new FabricJSIntegrationEvents(appInstance)
       };
     }
 
@@ -944,26 +961,26 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     FabricJSIntegration.prototype.constructor = FabricJSIntegration;
 
     FabricJSIntegration.prototype.ready = function ready () {
-      app.fabric.model.events.setupEvents();
-      app.fabric.model.helpers.updateCanvasSize();
+      app$4.fabric.model.events.setupEvents();
+      app$4.fabric.model.helpers.updateCanvasSize();
 
       // Default scene.
       var circle = new fabric.Circle({ radius: 100, fill: 'green' });
-      app.fabric.model.helpers.addToCenter(circle);
+      app$4.fabric.model.helpers.addToCenter(circle);
       circle.left -= 75;
       var rect = new fabric.Rect({
         fill: 'red',
         width: 200,
         height: 200
       });
-      app.fabric.model.helpers.addToCenter(rect);
+      app$4.fabric.model.helpers.addToCenter(rect);
       rect.left += 75;
     };
 
     return FabricJSIntegration;
   }(BaseIntegration));
 
-  function LayersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  function layersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (active, index, shape) {
   pug_html = pug_html + "\u003Cdiv" + (pug.attr("class", pug.classes(["item",(active ? 'ui label' : '')], [false,true]), false, true)+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"right floated content\"\u003E";
@@ -979,9 +996,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
   }.call(this,"active" in locals_for_with?locals_for_with.active:typeof active!=="undefined"?active:undefined,"index" in locals_for_with?locals_for_with.index:typeof index!=="undefined"?index:undefined,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
+  var app$5 = {};
   var LayerControls = /*@__PURE__*/(function (BaseControls) {
-    function LayerControls () {
-      BaseControls.apply(this, arguments);
+    function LayerControls(appInstance) {
+      app$5 = appInstance;
+      BaseControls.call(this);
     }
 
     if ( BaseControls ) LayerControls.__proto__ = BaseControls;
@@ -993,22 +1012,23 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     };
 
     LayerControls.prototype.checkActive = function checkActive (object) {
-      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      var selectedObjects = app$5.fabric.model.canvas.getActiveObjects();
       var active = false;
-      selectedObjects.forEach(function (selected_object){
+      selectedObjects.forEach(function (selected_object) {
         if (selected_object.id == object.id) {
           active = true;
         }
       });
+
       return active;
     };
 
     LayerControls.prototype.renderItem = function renderItem (parent, object) {
-      var type,
-          returnHtml = '',
-          // Get index from canvas rather than containing array order.
+      var active = app$5.layers.checkActive(object),
+          // Get index from canvas rather than containing array order.    
           index = parent.indexOf(object),
-          active = app.layers.checkActive(object);   
+          returnHtml = '',
+          type;
 
       if (object.type) {
         if (object.type == 'rect') {
@@ -1021,41 +1041,42 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       else {
         type = 'Unknown';
       }
-      returnHtml += LayersToolItem({index: index, shape: type, active: active});
+      returnHtml += layersToolItem( { index: index, shape: type, active: active } );
       // Render sub items if a group.
       if (object.type && object.type == 'group') {
         returnHtml += '<div class="item"><div class="list">';
         var objects = object.getObjects();
         objects.reverse().forEach(function(group_object){
-          returnHtml += app.layers.renderItem(object.getObjects(), group_object);
+          returnHtml += app$5.layers.renderItem(object.getObjects(), group_object);
         });
         returnHtml += '</div></div>';
       }
+
       return returnHtml;
     };
 
     LayerControls.prototype.updateLayers = function updateLayers () {
-      var objects = app.fabric.model.canvas.getObjects();
+      var objects = app$5.fabric.model.canvas.getObjects();
       var layersHTML = '';
       objects.reverse().forEach(function(object){
-        layersHTML += app.layers.renderItem(app.fabric.model.canvas.getObjects(), object);
+        layersHTML += app$5.layers.renderItem(app$5.fabric.model.canvas.getObjects(), object);
       });
 
       $('#layers').html(layersHTML);
 
       // Bind events to all the newly added rows.
       objects.forEach(function(object){
-        var index = index = app.fabric.model.canvas.getObjects().indexOf(object);
+        var index = app$5.fabric.model.canvas.getObjects().indexOf(object);
         $('#layers #item-' + index + ' .description').click(function(){
-          app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(index));
+          app$5.fabric.model.canvas.setActiveObject(app$5.fabric.model.canvas.item(index));
         });
         $('#layers #item-' + index + ' .back').click(function(){
-          app.fabric.model.canvas.sendBackwards(object);
-          app.layers.updateLayers();
+          app$5.fabric.model.canvas.sendBackwards(object);
+          app$5.layers.updateLayers();
         });
         $('#layers #item-' + index + ' .forward').click(function(){
-          app.fabric.model.canvas.bringForward(object);
-          app.layers.updateLayers();
+          app$5.fabric.model.canvas.bringForward(object);
+          app$5.layers.updateLayers();
         });
         $('#layers #item-' + index + ' .display.toggle').click(function(){
           console.log(object);
@@ -1066,7 +1087,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           else {
             object.visible = false;          
           }
-          app.fabric.model.canvas.renderAll();
+          app$5.fabric.model.canvas.renderAll();
           $(this).find('i.eye.icon').toggleClass('slash');
         });
       });
@@ -1081,8 +1102,11 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
+  var app$6 = {};
   var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
-    function ToolbarControls() {
+    function ToolbarControls(appInstance) {
+      app$6 = appInstance;
+      BaseControls.call(this);
       this.setupDefaultMenu();
 
       $('.floating.overlay').draggable();
@@ -1091,24 +1115,24 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         var src = $(e.target).attr('src');
         if ($('#btnTraceImage').find('i.icon').hasClass('disabled')) {
           fabric.Image.fromURL(src, function(img) {
-            app.fabric.model.helpers.addToCenter(img);
+            app$6.fabric.model.helpers.addToCenter(img);
           });
         }
         else {
-          var callback = function(svg) {
-            var callback = function() {
+          var svgLoadWrapper = function(svg) {
+            var hideAddImageFn = function() {
               $('#hideAddImage').click();
             };
-            app.fabric.model.helpers.loadSVG(svg, callback);
+            app$6.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
           };
-          app.fabric.model.potrace.createSVG(src, callback);        
+          app$6.fabric.model.potrace.createSVG(src, svgLoadWrapper);        
         }
       });
 
       $('.ui.dropdown').dropdown();
 
       $(window).on('resize', function () {
-        app.fabric.model.helpers.updateCanvasSize();
+        app$6.fabric.model.helpers.updateCanvasSize();
       });
 
       $('#hideAddImage')
@@ -1152,10 +1176,10 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           $(this).find('i.icon').toggleClass('grey');
           $(this).find('i.icon').toggleClass('inverted');
           if ($(this).find('i.icon').hasClass('grey')) {
-            app.fabric.model.canvas.isDrawingMode = false;
+            app$6.fabric.model.canvas.isDrawingMode = false;
           }
           if ($(this).find('i.icon').hasClass('inverted')) {
-            app.fabric.model.canvas.isDrawingMode = true;
+            app$6.fabric.model.canvas.isDrawingMode = true;
           }
         });
 
@@ -1217,7 +1241,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           }
         });
 
-      // TODO: https://codepen.io/shershen08/pen/JGepQv
+      // @TODO: https://codepen.io/shershen08/pen/JGepQv
       $('#btnAddText')
         .popup({
           title: 'Text',
@@ -1227,8 +1251,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           var textBox = new fabric.Textbox("Sample Text", {
             fontFamily: 'Arial'
           });
-          app.fabric.model.helpers.addToCenter(textBox);
-        }.bind(this));
+          app$6.fabric.model.helpers.addToCenter(textBox);
+        });
 
       // Track which overlays we hid so we don't override other settings.
       var overlays_visible = [];
@@ -1286,8 +1310,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         })
         .on('click', function(){
           var circle = new fabric.Circle({ radius: 100, fill: 'green', left: 100, top: 100 });
-          app.fabric.model.helpers.addToCenter(circle);
-        }.bind(this));
+          app$6.fabric.model.helpers.addToCenter(circle);
+        });
       $('#btnAddSquare')
         .popup({
           title: 'Square',
@@ -1301,8 +1325,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
             width: 200,
             height: 200
           });
-          app.fabric.model.helpers.addToCenter(rect);
-        }.bind(this));
+          app$6.fabric.model.helpers.addToCenter(rect);
+        });
       $('#btnAddTriangle')
         .popup({
           title: 'Triangle',
@@ -1310,12 +1334,12 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         })
         .on('click', function(){
           var triangle = new fabric.Triangle({ width: 200, height: 200, fill: 'blue', left: 50, top: 50 });
-          app.fabric.model.helpers.addToCenter(triangle);
-        }.bind(this));
+          app$6.fabric.model.helpers.addToCenter(triangle);
+        });
     };
 
     ToolbarControls.prototype.toggle = function toggle () {
-      if (!app.fabric.model.attributes.transitioning) {
+      if (!app$6.fabric.model.attributes.transitioning) {
         $("#toolbar")
           .sidebar({
             dimPage: false,
@@ -1323,17 +1347,17 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
             exclusive: false,
             closable: false,
             onChange: function() {
-              app.fabric.model.attributes.transitioning = true;
+              app$6.fabric.model.attributes.transitioning = true;
             },
             onHide: function() {
-              app.fabric.model.attributes.transitioning = false;
+              app$6.fabric.model.attributes.transitioning = false;
             },
             onShow: function() {
-              app.fabric.model.attributes.transitioning = false;
+              app$6.fabric.model.attributes.transitioning = false;
             }
           })
           .sidebar("toggle");
-        app.fabric.model.helpers.updateCanvasSize();
+        app$6.fabric.model.helpers.updateCanvasSize();
       }
     };
 
@@ -1347,19 +1371,18 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
    */
   var App = function App() {
     // Integrations
-    this.fabric = new FabricJSIntegration();
+    this.fabric = new FabricJSIntegration(this);
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
 
     // UI    
-    this.layers = new LayerControls();
-    this.toolbar = new ToolbarControls();
+    this.layers = new LayerControls(this);
+    this.toolbar = new ToolbarControls(this);
   };
 
   // Startup using jQuery.ready()
   $(function () {
     var app = new App();
-    window.app = app;
 
     // Run all the ready functions
     for (var classInstance in app) {

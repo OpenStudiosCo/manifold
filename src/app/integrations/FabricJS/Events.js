@@ -4,7 +4,12 @@ import activeObjectContext from '../../../templates/toolbar/active-object-contex
 import ThreeJSIntegration from '../ThreeJSIntegration.js';
 import ThreeJSIntegrationExtras from '../ThreeJSIntegrationExtras.js';
 
+var app = {};
 export default class FabricJSIntegrationEvents {
+  constructor(appInstance) {
+    app = appInstance;
+  }
+
   setupEvents() {
     // Credit - https://stackoverflow.com/a/24238960
     app.fabric.model.canvas.on('object:moving', function (e) {
@@ -63,13 +68,13 @@ export default class FabricJSIntegrationEvents {
       }
 
       // Events
-      $('#btnGroupActive').click(function(e) {
+      $('#btnGroupActive').click(function() {
         var activeObject = app.fabric.model.canvas.getActiveObject();
-        if (activeObject.type != 'group') {
-          activeObject.toGroup();
+        if (activeObject.type == 'group') {
+          activeObject.toActiveSelection();
         }
         else {
-          activeObject.toActiveSelection();
+          activeObject.toGroup();
         }
         
         app.fabric.model.canvas.discardActiveObject();
@@ -79,13 +84,13 @@ export default class FabricJSIntegrationEvents {
         if (app.layers) {
           app.layers.updateLayers();
         }
-      }.bind(this));
+      });
       
-      $('#btnFillActive:not(.disabled)').click(function(e){
+      $('#btnFillActive:not(.disabled)').click(function(){
         $(this).toggleClass('active');
         $('#fill-tool').toggle();
       });
-      $('#btnDeleteActive').click(function(e) {
+      $('#btnDeleteActive').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
           app.fabric.model.canvas.remove(selectedObjects[i]);  
@@ -96,23 +101,25 @@ export default class FabricJSIntegrationEvents {
         if (app.layers) {
           app.layers.updateLayers();
         }
-      }.bind(this));
-      $('#btnMake3D:not(.disabled)').click(function(e) {
+      });
+      $('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-        var convertibleObjects = [];
+
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
             var obj_width = selectedObjects[i].width * selectedObjects[i].scaleX;
             var obj_height = selectedObjects[i].height * selectedObjects[i].scaleY;
 
-            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';//' viewbox="0 0 ';
+            // Start SVG document.
+            // Removed: ' viewbox="0 0 ';
+            var svg_start = '<svg xmlns="http://www.w3.org/2000/svg"';
             svg_start += ' style="fill: ';
             svg_start += selectedObjects[i].fill + '">';
 
             var svg_end = '</svg>';
 
             // Hack for matrix transform;
-            //var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
+            // var svgElements = svg_start + selectedObjects[i].toSVG().replace(/matrix\(.*\)/,'matrix(1 0 0 1 0 0)') + svg_end;
 
             var svgElements = svg_start + selectedObjects[i].toSVG() + svg_end;
 
@@ -121,19 +128,18 @@ export default class FabricJSIntegrationEvents {
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
               app.fabric.model.canvas.add(threeD);
-            }.bind(this);
+            };
             app.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
               width: obj_width
             }));
-            app.ThreeCanvasView.push(
-              new ThreeJSIntegration({ 
-                model: app.ThreeCanvasModel[app.ThreeCanvasModel.length-1],
-                svg: svgElements,
-                width: obj_width,
-                height: obj_height
-              })
-            );
+            var ThreeFabricObject = new ThreeJSIntegration({ 
+              model: app.ThreeCanvasModel[app.ThreeCanvasModel.length-1],
+              svg: svgElements,
+              width: obj_width,
+              height: obj_height
+            });
+            app.ThreeCanvasView.push( ThreeFabricObject );
             create3DObject(app.ThreeCanvasView[app.ThreeCanvasView.length-1]);
             app.fabric.model.canvas.remove(selectedObjects[i]);
           }
@@ -143,9 +149,9 @@ export default class FabricJSIntegrationEvents {
         }
         app.fabric.model.canvas.discardActiveObject();
         $('.active-object-context').remove();
-      }.bind(this));
+      });
       app.layers.updateLayers();
-    }.bind(this);
+    };
 
     // Separated for Fabric's On not supporting multiple.
     app.fabric.model.canvas.on('selection:created', selectionCallback);
@@ -163,7 +169,7 @@ export default class FabricJSIntegrationEvents {
         $el.css('top', offsetY);
       }
      
-    }.bind(this));
+    });
 
     app.fabric.model.canvas.on('selection:cleared', function(){
       $('.active-object-context').remove();
@@ -174,7 +180,7 @@ export default class FabricJSIntegrationEvents {
       }
     });
 
-    // TODO: Don't follow if user moved the toolbar.
+    // @TODO: Don't follow if user moved the toolbar.
     app.fabric.model.canvas.on('object:moving', function(e) {
       var $menu = $('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
@@ -191,7 +197,7 @@ export default class FabricJSIntegrationEvents {
       }
       $menu.css('left', offsetX);
       $menu.css('top', offsetY);
-    }.bind(this));
+    });
 
     // Update 3D canvas if it's that type of element.
     app.fabric.model.canvas.on('object:modified', function(e) {

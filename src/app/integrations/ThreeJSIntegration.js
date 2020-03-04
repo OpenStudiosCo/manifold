@@ -1,7 +1,6 @@
 import $ from 'jQuery';
 import THREE from 'THREE';
 import BaseIntegration from './BaseIntegration.js';
-import ThreeJSIntegrationExtras from './ThreeJSIntegrationExtras.js';
 import modelPreview from '../../templates/toolbar/model-preview.pug';
 
 /**
@@ -14,7 +13,8 @@ var models = 0;
 
 export default class ThreeIntegration extends BaseIntegration {
   constructor(options) {
-    $('#container').append(modelPreview({id: 'model-preview-' + models}));
+    super(options);
+    $('#container').append(modelPreview( { id: 'model-preview-' + models } ));
     this.$el = $('#model-preview-' + models);
     this.model = options.model;
     this.$el.css('width', options.width);
@@ -27,7 +27,7 @@ export default class ThreeIntegration extends BaseIntegration {
     }.bind(this));
 
     this.createScene(options.svg);
-    models++;
+    models +=1;
   }
 
   createScene(svg) {
@@ -48,13 +48,11 @@ export default class ThreeIntegration extends BaseIntegration {
       center: { x: offsetX, y: offsetY }
     });
     var box = new THREE.Box3().setFromObject( svgExtruded );
-    var boundingBoxSize = box.max.sub( box.min );
+
     this.model.attributes.mesh = svgExtruded;
     this.model.attributes.scene.add( this.model.attributes.mesh );
     this.model.attributes.camera.position.set(box.min.x + 100, box.min.y + 100 , - box.max.z * 8);
-    this.model.attributes.controls.target =  new THREE.Vector3(
-        box.min.x + 100, box.min.y + 100 , box.min.z * 4
-    );
+    this.model.attributes.controls.target = new THREE.Vector3( box.min.x + 100, box.min.y + 100 , box.min.z * 4 );
     // Start the animation loop.
     this.model.animate();
   }
