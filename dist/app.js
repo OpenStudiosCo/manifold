@@ -992,10 +992,9 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + "\u003Ci class=\"icon sort amount up\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"display toggle\" title=\"Hide\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"icon eye\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + "\u003Ca class=\"description left floated\"\u003E";
   pug_html = pug_html + "\u003Ci" + (pug.attr("class", pug.classes(['icon ' + shape], [true]), false, true)) + "\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Cdiv class=\"content\"\u003E";
-  pug_html = pug_html + "\u003Ca class=\"description\"\u003E";
-  pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+  pug_html = pug_html + (pug.escape(null == (pug_interp = shape) ? "" : pug_interp)) + "\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E";
   }.call(this,"active" in locals_for_with?locals_for_with.active:typeof active!=="undefined"?active:undefined,"index" in locals_for_with?locals_for_with.index:typeof index!=="undefined"?index:undefined,"shape" in locals_for_with?locals_for_with.shape:typeof shape!=="undefined"?shape:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var app$1 = {};
