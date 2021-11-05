@@ -378,6 +378,10 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   function activeObjectContext(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   pug_html = pug_html + "\u003Cdiv class=\"active-object-context floating overlay\"\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"ui mini menu labeled icon pointing\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnSaveSVG\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"save icon\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Cspan\u003E";
+  pug_html = pug_html + "Save SVG\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
   pug_html = pug_html + "\u003Ca class=\"item\" id=\"btnDeleteActive\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"trash alternate icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Cspan\u003E";
@@ -707,6 +711,18 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         if (app$4.layers) {
           app$4.layers.updateLayers();
         }
+      });
+      $__default["default"]('#btnSaveSVG').click(function() {
+        var a = document.createElement("a");
+        a.href = window.URL.createObjectURL(new Blob([app$4.fabric.model.canvas.toSVG()], {type: "text/plain"}));
+        a.download = prompt("Please enter a filename", "Manifold-Download.svg");
+        if (a.download.indexOf('.svg') < 0) {
+          a.download += '.svg';
+        }
+        a.click();
+        // let w = window.open('')
+        // w.document.write()
+        // return 'data:image/svg+xml;utf8,' + encodeURIComponent(app.fabric.model.canvas.toSVG())
       });
       $__default["default"]('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
