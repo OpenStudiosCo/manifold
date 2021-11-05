@@ -175,15 +175,6 @@ export default class ToolbarControls extends BaseControls {
         }
         $(this).find('i.icon').toggleClass('slash');
       });
-    $('#btnToggleVector')
-      .popup({
-        title: 'Toggle Vector Controls',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $(this).find('i.icon').toggleClass('disabled');
-        $('#vector-tool').toggle();
-      });
     $('#btnToggleLayers')
       .popup({
         title: 'Toggle Layer Controls',

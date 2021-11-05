@@ -1,9 +1,9 @@
-var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
+var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
   'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-  var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+  var $__default = /*#__PURE__*/_interopDefaultLegacy($$1);
   var fabric__default = /*#__PURE__*/_interopDefaultLegacy(fabric);
   var THREE__default = /*#__PURE__*/_interopDefaultLegacy(THREE);
   var Potrace__default = /*#__PURE__*/_interopDefaultLegacy(Potrace);
@@ -402,7 +402,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
   pug_html = pug_html + "\u003Ci class=\"pencil alternate icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Cspan\u003E";
   pug_html = pug_html + "Stroke\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
-  pug_html = pug_html + "\u003Ca class=\"item disabled\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"item disabled\" id=\"btnToggleVector\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"paper plane outline icon\"\u003E\u003C\u002Fi\u003E";
   pug_html = pug_html + "\u003Cspan\u003E";
   pug_html = pug_html + "Vector\u003C\u002Fspan\u003E\u003C\u002Fa\u003E";
@@ -640,11 +640,17 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
       }
     });
-
+    // Hide previous active context windows
+    var clearOverlays = function() { 
+      $__default["default"]('.model-preview').hide();
+      $__default["default"]('#vector-tool').hide();
+      $__default["default"]('.active-object-context').remove();
+      $__default["default"]('#fill-tool').hide();
+    };
     // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
-      $__default["default"]('.model-preview').hide();
-      $__default["default"]('.active-object-context').remove();
+      clearOverlays();
+
       var $menu = $__default["default"](activeObjectContext());
       $__default["default"]('#container').append($menu);
       var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
@@ -654,6 +660,12 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
 
       // Set the menu to be draggable
       $__default["default"]('.floating.overlay').draggable();
+
+      switch(e.target.type) {
+        case 'image':
+          $__default["default"]('#btnToggleVector').removeClass('disabled');
+          break;
+      }
 
       // Not 3D, not text, not group
       if (!e.target._element && !e.target.text && !e.target._objects) {
@@ -722,10 +734,14 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           }
           a.click();
         }
-          
-        // let w = window.open('')
-        // w.document.write()
-        // return 'data:image/svg+xml;utf8,' + encodeURIComponent(app.fabric.model.canvas.toSVG())
+      });
+      $__default["default"]('#btnToggleVector:not(.disabled)')
+      .popup({
+        title: 'Toggle Vector Controls',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $__default["default"]('#vector-tool').toggle();
       });
       $__default["default"]('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
@@ -797,9 +813,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     });
 
     app$4.fabric.model.canvas.on('selection:cleared', function(){
-      $__default["default"]('.active-object-context').remove();
-      $__default["default"]('.model-preview').hide();
-      $__default["default"]('#fill-tool').hide();
+      clearOverlays();
       if (app$4.layers) {
         app$4.layers.updateLayers();
       }
@@ -997,6 +1011,8 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
       var imgSrc = '/assets/demo2.jpg';
       fabric__default["default"].Image.fromURL(imgSrc, function(oImg) {
         app$2.fabric.model.helpers.addToCenter(oImg);
+        app$2.fabric.model.canvas.setActiveObject(app$2.fabric.model.canvas.item(0));
+        $('#btnToggleVector').click();
       });
 
       // var circle = new fabric.Circle({ radius: 100, fill: '  green' });
@@ -1310,15 +1326,6 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
             $__default["default"]('.floating.overlay:visible').hide();
           }
           $__default["default"](this).find('i.icon').toggleClass('slash');
-        });
-      $__default["default"]('#btnToggleVector')
-        .popup({
-          title: 'Toggle Vector Controls',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $__default["default"](this).find('i.icon').toggleClass('disabled');
-          $__default["default"]('#vector-tool').toggle();
         });
       $__default["default"]('#btnToggleLayers')
         .popup({

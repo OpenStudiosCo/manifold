@@ -30,11 +30,17 @@ export default class FabricJSIntegrationEvents {
           obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
       }
     });
-
+    // Hide previous active context windows
+    var clearOverlays = function() { 
+      $('.model-preview').hide();
+      $('#vector-tool').hide();
+      $('.active-object-context').remove();
+      $('#fill-tool').hide();
+    }
     // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
-      $('.model-preview').hide();
-      $('.active-object-context').remove();
+      clearOverlays();
+
       var $menu = $(activeObjectContext());
       $('#container').append($menu);
       var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
@@ -44,6 +50,12 @@ export default class FabricJSIntegrationEvents {
 
       // Set the menu to be draggable
       $('.floating.overlay').draggable();
+
+      switch(e.target.type) {
+        case 'image':
+          $('#btnToggleVector').removeClass('disabled');
+          break;
+      }
 
       // Not 3D, not text, not group
       if (!e.target._element && !e.target.text && !e.target._objects) {
@@ -112,10 +124,14 @@ export default class FabricJSIntegrationEvents {
           }
           a.click();
         }
-        
-        // let w = window.open('')
-        // w.document.write()
-        // return 'data:image/svg+xml;utf8,' + encodeURIComponent(app.fabric.model.canvas.toSVG())
+      });
+      $('#btnToggleVector:not(.disabled)')
+      .popup({
+        title: 'Toggle Vector Controls',
+        position: 'right center'
+      })
+      .on('click', function(){
+        $('#vector-tool').toggle();
       });
       $('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
@@ -187,9 +203,7 @@ export default class FabricJSIntegrationEvents {
     });
 
     app.fabric.model.canvas.on('selection:cleared', function(){
-      $('.active-object-context').remove();
-      $('.model-preview').hide();
-      $('#fill-tool').hide();
+      clearOverlays();
       if (app.layers) {
         app.layers.updateLayers();
       }

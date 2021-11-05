@@ -35,6 +35,8 @@ export default class FabricJSIntegration extends BaseIntegration {
     var imgSrc = '/assets/demo2.jpg';
     fabric.Image.fromURL(imgSrc, function(oImg) {
       app.fabric.model.helpers.addToCenter(oImg);
+      app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(0));
+      $('#btnToggleVector').click();
     });
 
     // var circle = new fabric.Circle({ radius: 100, fill: '  green' });
