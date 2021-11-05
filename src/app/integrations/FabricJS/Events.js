@@ -30,6 +30,11 @@ export default class FabricJSIntegrationEvents {
           obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
       }
     });
+
+    $('.potraceConfig').on('change', () => {
+      app.fabric.model.potrace.preview(app);
+    });
+
     // Hide previous active context windows
     var clearOverlays = function() { 
       $('.model-preview').hide();
@@ -134,19 +139,20 @@ export default class FabricJSIntegrationEvents {
         }
       });
       $('#btnToggleVector:not(.disabled)')
-      .popup({
-        title: 'Toggle Vector Controls',
-        position: 'right center'
-      })
-      .on('click', function(e){
-        $('#vector-tool').toggle();
-        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-        console.log(selectedObjects[0]._element.src);
-        app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
-          app.fabric.model.helpers.loadSVG(svg, (group) => {
-            console.log(group);
-          }, true);
-        });        
+        .popup({
+          title: 'Toggle Vector Controls',
+          position: 'right center'
+        })
+        .on('click', (e) => {
+          $('#vector-tool').toggle();
+          app.fabric.model.potrace.preview(app);
+        });
+      // @todo: Move these vector tool event handlers somewhere better
+      $('#btnCreateVector').on('click', () => {
+        app.fabric.model.potrace.create(app);
+      });
+      $('#btnReplaceVector').on('click', () => {
+        app.fabric.model.potrace.create(app, true);
       });
       $('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();

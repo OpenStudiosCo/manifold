@@ -640,6 +640,11 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
           obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
       }
     });
+
+    $__default["default"]('.potraceConfig').on('change', function () {
+      app$4.fabric.model.potrace.preview(app$4);
+    });
+
     // Hide previous active context windows
     var clearOverlays = function() { 
       $__default["default"]('.model-preview').hide();
@@ -744,19 +749,20 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
         }
       });
       $__default["default"]('#btnToggleVector:not(.disabled)')
-      .popup({
-        title: 'Toggle Vector Controls',
-        position: 'right center'
-      })
-      .on('click', function(e){
-        $__default["default"]('#vector-tool').toggle();
-        var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
-        console.log(selectedObjects[0]._element.src);
-        app$4.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
-          app$4.fabric.model.helpers.loadSVG(svg, function (group) {
-            console.log(group);
-          }, true);
-        });        
+        .popup({
+          title: 'Toggle Vector Controls',
+          position: 'right center'
+        })
+        .on('click', function (e) {
+          $__default["default"]('#vector-tool').toggle();
+          app$4.fabric.model.potrace.preview(app$4);
+        });
+      // @todo: Move these vector tool event handlers somewhere better
+      $__default["default"]('#btnCreateVector').on('click', function () {
+        app$4.fabric.model.potrace.create(app$4);
+      });
+      $__default["default"]('#btnReplaceVector').on('click', function () {
+        app$4.fabric.model.potrace.create(app$4, true);
       });
       $__default["default"]('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
@@ -952,12 +958,23 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
   var PotraceIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function PotraceIntegration() {
       BaseIntegration.call(this);
+      // *     parameters:
+      // *        turnpolicy ("black" / "white" / "left" / "right" / "minority" / "majority")
+      // *          how to resolve ambiguities in path decomposition. (default: "minority")       
+      // *        turdsize
+      // *          suppress speckles of up to this size (default: 2)
+      // *        optcurve (true / false)
+      // *          turn on/off curve optimization (default: true)
+      // *        alphamax
+      // *          corner threshold parameter (default: 1)
+      // *        opttolerance 
+      // *          curve optimization tolerance (default: 0.2)
       Potrace__default["default"].setParameter({
         alphamax: 1,
         optcurve: false,
         opttolerance: 0.2,
         turdsize: 100,
-        turnpolicy: "minority"
+        turnpolicy: "black"
       });
     }
 
@@ -992,6 +1009,46 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
         callbackFn(newSVG.outerHTML);
       });
+    };
+
+    PotraceIntegration.prototype.preview = function preview (app) {
+      // Remove other previews
+      // @todo: Expand when other things are set to temporary
+      var objects = app.fabric.model.canvas.getObjects();
+      objects.forEach(function (object) {
+        if (object.temporary) {
+          app.fabric.model.canvas.remove(object);  
+        }
+      });
+
+      Potrace__default["default"].setParameter({
+        alphamax: $__default["default"]('.alphamax').val(),
+        optcurve: $__default["default"]('.optcurve').is(":checked"),
+        opttolerance: $__default["default"]('.opttolerance').val(),
+        turdsize: $__default["default"]('.turdsize').val(),
+        turnpolicy: $__default["default"]('.turnpolicy').find(":selected").text().toLowerCase()
+      });
+
+      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+        app.fabric.model.helpers.loadSVG(svg, function () {}, true);
+      });
+    };
+
+    PotraceIntegration.prototype.create = function create (app, replace) {
+      if ( replace === void 0 ) replace = false;
+
+      // @todo: Expand when other things are set to temporary
+      var objects = app.fabric.model.canvas.getObjects();
+      objects.forEach(function (object) {
+        if (object.temporary) {
+          object.temporary = false;
+        }
+      });
+      if (replace) {
+        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+        app.fabric.model.canvas.remove(selectedObjects[0]);  
+      }
     };
 
     return PotraceIntegration;

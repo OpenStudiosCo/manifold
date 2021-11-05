@@ -9,12 +9,23 @@ import BaseIntegration from './BaseIntegration.js';
 export default class PotraceIntegration extends BaseIntegration {
   constructor() {
     super();
+    // *     parameters:
+    // *        turnpolicy ("black" / "white" / "left" / "right" / "minority" / "majority")
+    // *          how to resolve ambiguities in path decomposition. (default: "minority")       
+    // *        turdsize
+    // *          suppress speckles of up to this size (default: 2)
+    // *        optcurve (true / false)
+    // *          turn on/off curve optimization (default: true)
+    // *        alphamax
+    // *          corner threshold parameter (default: 1)
+    // *        opttolerance 
+    // *          curve optimization tolerance (default: 0.2)
     Potrace.setParameter({
       alphamax: 1,
       optcurve: false,
       opttolerance: 0.2,
       turdsize: 100,
-      turnpolicy: "minority"
+      turnpolicy: "black"
     });
   }
 
@@ -45,6 +56,44 @@ export default class PotraceIntegration extends BaseIntegration {
 
       callbackFn(newSVG.outerHTML);
     });
+  }
+
+  preview(app) {
+    // Remove other previews
+    // @todo: Expand when other things are set to temporary
+    let objects = app.fabric.model.canvas.getObjects();
+    objects.forEach((object) => {
+      if (object.temporary) {
+        app.fabric.model.canvas.remove(object);  
+      }
+    });
+
+    Potrace.setParameter({
+      alphamax: $('.alphamax').val(),
+      optcurve: $('.optcurve').is(":checked"),
+      opttolerance: $('.opttolerance').val(),
+      turdsize: $('.turdsize').val(),
+      turnpolicy: $('.turnpolicy').find(":selected").text().toLowerCase()
+    });
+
+    var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+    app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+      app.fabric.model.helpers.loadSVG(svg, () => {}, true);
+    });
+  }
+
+  create (app, replace = false) {
+    // @todo: Expand when other things are set to temporary
+    let objects = app.fabric.model.canvas.getObjects();
+    objects.forEach((object) => {
+      if (object.temporary) {
+        object.temporary = false;
+      }
+    });
+    if (replace) {
+      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      app.fabric.model.canvas.remove(selectedObjects[0]);  
+    }
   }
 
 }
