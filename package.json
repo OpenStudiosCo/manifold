@@ -11,7 +11,7 @@
     "pug": "pug src/pages -P -o . -b . -w",
     "rollup": "rollup -c -w",
     "dev-osx": "sudo http-server -p 80 -c-1 .",
-    "dev": "http-server -p 80 -c-1 .",
+    "dev": "http-server -c-1 .",
     "watch": "npm run pug & rollup -c -w",
     "gs": "for i in ../*; do (cd $i && (echo $i; git status)); done",
     "gsw": "for /D %i in (../*) do cd ../%i && (git status && git remote get-url origin)",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "axis": "^1.0.0",
+    "minimist": "^1.2.5",
     "npm": "^7.6.0",
     "prompt": "^1.1.0",
     "pug": "^3.0.2",

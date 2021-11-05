@@ -23,13 +23,13 @@ export default {
   },
   plugins: [
     // uglify(),
-    eslint({
-      exclude: ['**/**/*.pug'],
-      rules: {
-        'no-bitwise': 'off',
-        'no-underscore-dangle': 'off'
-      }
-    }),
+    // eslint({
+    //   exclude: ['**/**/*.pug'],
+    //   rules: {
+    //     'no-bitwise': 'off',
+    //     'no-underscore-dangle': 'off'
+    //   }
+    // }),
     pug(),
     buble()
   ]
