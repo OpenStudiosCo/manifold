@@ -1131,6 +1131,7 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         }
       });
 
+      $__default["default"]('.ui.accordion').accordion();
       $__default["default"]('.ui.dropdown').dropdown();
 
       $__default["default"](window).on('resize', function () {

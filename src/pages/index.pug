@@ -15,3 +15,14 @@ block append page
         img(src='/assets/manifold.svg')
     canvas#main-canvas
     include /src/templates/toolbar_overlays.pug
+  #details.ui.wide.right.vertical.visible.sidebar.icon.menu.inverted
+    .ui(class="inverted fluid accordion")
+      .title
+        i.dropdown.icon
+        | Artboards
+      .content
+      .active.title
+        i.dropdown.icon
+        | Layers
+      .active.content
+        include /src/templates/toolbar/layers-tool.pug

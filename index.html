@@ -53,45 +53,6 @@
           </div>
         </div>
       </div>
-      <div class="floating overlay" id="layers-tool">
-        <div class="ui card">
-          <div class="content">
-            <div class="left floated">
-              <div class="ui header tiny"><i class="align justify icon"></i>Layers</div>
-            </div>
-          </div>
-          <div class="content">
-            <div class="description">
-              <div class="ui divided list" id="layers" style="box-shadow: inset 0 0 5px #ccc; padding: 1em; margin: -1em;">
-                <div class="item">
-                  <div class="content"><a class="description"><i class="object group outline icon"></i>Example Group</a></div>
-                </div>
-                <div class="item">
-                  <div class="right floated content"><a class="ui link"><i class="minus icon black"></i></a></div>
-                  <div class="content"><a class="description"><i class="image outline icon"></i>Vector Image</a></div>
-                  <div class="list">
-                    <div class="item"><i class="circle icon"></i>
-                      <div class="content"><a class="description">Circle</a></div>
-                    </div>
-                    <div class="item"><i class="square icon"></i>
-                      <div class="content"><a class="description">Rectangle</a></div>
-                    </div>
-                    <div class="item"><i class="play counterclockwise rotated icon"></i>
-                      <div class="content"><a class="description">Triangle</a></div>
-                    </div>
-                    <div class="item"><i class="cube icon"></i>
-                      <div class="content"><a class="description">3D Shape</a></div>
-                    </div>
-                    <div class="item"><i class="i cursor icon"></i>
-                      <div class="content"><a class="description">Textbox</a></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="floating overlay" id="vector-tool" style="display: none">
         <div class="ui header tiny grey">Options for converting raster to vector</div>
         <div class="ui card">
@@ -178,6 +139,43 @@
         </div>
       </div>
     </div>
+    <div class="ui wide right vertical visible sidebar icon menu inverted" id="details">
+      <div class="ui inverted fluid accordion">
+        <div class="title"><i class="dropdown icon"></i>Artboards</div>
+        <div class="content"></div>
+        <div class="active title"><i class="dropdown icon"></i>Layers</div>
+        <div class="active content">
+          <div id="layers-tool">
+            <div class="ui divided inverted list" id="layers" style="box-shadow: inset 0 0 5px #ccc; padding: 1em; margin: -1em;">
+              <div class="item">
+                <div class="content"><a class="description"><i class="object group outline icon"></i>Example Group</a></div>
+              </div>
+              <div class="item">
+                <div class="right floated content"><a class="ui link"><i class="minus icon black"></i></a></div>
+                <div class="content"><a class="description"><i class="image outline icon"></i>Vector Image</a></div>
+                <div class="list">
+                  <div class="item"><i class="circle icon"></i>
+                    <div class="content"><a class="description">Circle</a></div>
+                  </div>
+                  <div class="item"><i class="square icon"></i>
+                    <div class="content"><a class="description">Rectangle</a></div>
+                  </div>
+                  <div class="item"><i class="play counterclockwise rotated icon"></i>
+                    <div class="content"><a class="description">Triangle</a></div>
+                  </div>
+                  <div class="item"><i class="cube icon"></i>
+                    <div class="content"><a class="description">3D Shape</a></div>
+                  </div>
+                  <div class="item"><i class="i cursor icon"></i>
+                    <div class="content"><a class="description">Textbox</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="./vendor/jquery.3.3.1.min.js"></script>
   <script src="./vendor/jquery-ui.min.js"></script>
@@ -186,7 +184,7 @@
   <script src="./vendor/three.js"></script>
   <script src="./vendor/semantic.2.3.1.js"></script>
   <script src="./vendor/dat.gui.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
   <script src="./vendor/OrbitControls.js"></script>
   <script src="./vendor/SVGLoader.js"></script>
   <script src="./vendor/SVGRenderer.js"></script>

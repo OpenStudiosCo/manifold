@@ -30,6 +30,7 @@ export default class ToolbarControls extends BaseControls {
       }
     });
 
+    $('.ui.accordion').accordion();
     $('.ui.dropdown').dropdown();
 
     $(window).on('resize', () => {
