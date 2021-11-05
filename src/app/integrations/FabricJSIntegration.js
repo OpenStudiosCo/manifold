@@ -17,7 +17,7 @@ export default class FabricJSIntegration extends BaseIntegration {
     this.model = {
       colourPickerModel: new ColourPickerControls(appInstance),
       potrace: new PotraceIntegration(),
-      canvas: new fabric.Canvas('main-canvas'),
+      canvas: new fabric.Canvas('main-canvas', { preserveObjectStacking: true }),
       attributes: {
         canvas: null,
         transitioning: false
@@ -35,6 +35,8 @@ export default class FabricJSIntegration extends BaseIntegration {
     var imgSrc = '/assets/demo2.jpg';
     fabric.Image.fromURL(imgSrc, function(oImg) {
       app.fabric.model.helpers.addToCenter(oImg);
+      oImg.left -= 7;
+      oImg.top += 13;
       app.fabric.model.canvas.setActiveObject(app.fabric.model.canvas.item(0));
       $('#btnToggleVector').click();
     });

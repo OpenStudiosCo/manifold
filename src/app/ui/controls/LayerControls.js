@@ -45,7 +45,7 @@ export default class LayerControls extends BaseControls {
     }
     returnHtml += layersToolItem( { index: index, shape: type, active: active } );
     // Render sub items if a group.
-    if (object.type && object.type == 'group') {
+    if (object.type && object.type == 'group' && object.temporary == false) {
       returnHtml += '<div class="item"><div class="list">';
       var objects = object.getObjects();
       objects.reverse().forEach(function(group_object){
@@ -61,7 +61,9 @@ export default class LayerControls extends BaseControls {
     var objects = app.fabric.model.canvas.getObjects();
     var layersHTML = '';
     objects.reverse().forEach(function(object){
-      layersHTML += app.layers.renderItem(app.fabric.model.canvas.getObjects(), object);
+      if (object.temporary == false) {
+        layersHTML += app.layers.renderItem(app.fabric.model.canvas.getObjects(), object);
+      }
     });
 
     $('#layers').html(layersHTML);

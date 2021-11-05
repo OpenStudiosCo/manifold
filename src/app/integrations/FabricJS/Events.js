@@ -36,6 +36,14 @@ export default class FabricJSIntegrationEvents {
       $('#vector-tool').hide();
       $('.active-object-context').remove();
       $('#fill-tool').hide();
+
+      // Remove any objects added to the canvas by tools, i.e. previews
+      let objects = app.fabric.model.canvas.getObjects();
+      objects.forEach((object) => {
+        if (object.temporary) {
+          app.fabric.model.canvas.remove(object);  
+        }
+      });
     }
     // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
@@ -130,8 +138,15 @@ export default class FabricJSIntegrationEvents {
         title: 'Toggle Vector Controls',
         position: 'right center'
       })
-      .on('click', function(){
+      .on('click', function(e){
         $('#vector-tool').toggle();
+        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+        console.log(selectedObjects[0]._element.src);
+        app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+          app.fabric.model.helpers.loadSVG(svg, (group) => {
+            console.log(group);
+          }, true);
+        });        
       });
       $('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
@@ -204,6 +219,7 @@ export default class FabricJSIntegrationEvents {
 
     app.fabric.model.canvas.on('selection:cleared', function(){
       clearOverlays();
+
       if (app.layers) {
         app.layers.updateLayers();
       }

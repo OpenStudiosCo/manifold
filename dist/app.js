@@ -646,6 +646,14 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
       $__default["default"]('#vector-tool').hide();
       $__default["default"]('.active-object-context').remove();
       $__default["default"]('#fill-tool').hide();
+
+      // Remove any objects added to the canvas by tools, i.e. previews
+      var objects = app$4.fabric.model.canvas.getObjects();
+      objects.forEach(function (object) {
+        if (object.temporary) {
+          app$4.fabric.model.canvas.remove(object);  
+        }
+      });
     };
     // Create the active object context menu when selecting an object.
     var selectionCallback = function(e) {
@@ -740,8 +748,15 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
         title: 'Toggle Vector Controls',
         position: 'right center'
       })
-      .on('click', function(){
+      .on('click', function(e){
         $__default["default"]('#vector-tool').toggle();
+        var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
+        console.log(selectedObjects[0]._element.src);
+        app$4.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+          app$4.fabric.model.helpers.loadSVG(svg, function (group) {
+            console.log(group);
+          }, true);
+        });        
       });
       $__default["default"]('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
@@ -814,6 +829,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
     app$4.fabric.model.canvas.on('selection:cleared', function(){
       clearOverlays();
+
       if (app$4.layers) {
         app$4.layers.updateLayers();
       }
@@ -871,17 +887,19 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
   };
 
   // Loads an SVG string and splits up objects so they're loaded in the right position.
-  FabricJSIntegrationHelpers.prototype.loadSVG = function loadSVG (svg, callbackFn) {
+  FabricJSIntegrationHelpers.prototype.loadSVG = function loadSVG (svg, callbackFn, temporary) {
+      if ( temporary === void 0 ) temporary = false;
+
     fabric__default["default"].loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric__default["default"].Group(objects);
       objects.forEach(function (object, index) {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
-      this.addToCenter(group);
+      this.addToCenter(group, temporary);
 
       if (callbackFn) {
-        callbackFn(objects);
+        callbackFn(group);
       }
     }.bind(this));
   };
@@ -901,7 +919,9 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
   };
 
   // Add an object to the center of the canvas.
-  FabricJSIntegrationHelpers.prototype.addToCenter = function addToCenter (object) {
+  FabricJSIntegrationHelpers.prototype.addToCenter = function addToCenter (object, temporary) {
+      if ( temporary === void 0 ) temporary = false;
+
     var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($__default["default"]("#toolbar").sidebar('is visible')) {
       $__default["default"]('.canvas-container').css('marginLeft', ($__default["default"]('#toolbar').width()*1.5) + 'px');
@@ -915,6 +935,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
       
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
+    object.temporary = temporary;
 
     app$3.fabric.model.canvas.add(object);
     app$3.fabric.model.canvas.moveTo(object, app$3.fabric.model.canvas.getObjects().length);
@@ -989,7 +1010,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
       this.model = {
         colourPickerModel: new ColourPickerControls(appInstance),
         potrace: new PotraceIntegration(),
-        canvas: new fabric__default["default"].Canvas('main-canvas'),
+        canvas: new fabric__default["default"].Canvas('main-canvas', { preserveObjectStacking: true }),
         attributes: {
           canvas: null,
           transitioning: false
@@ -1011,6 +1032,8 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
       var imgSrc = '/assets/demo2.jpg';
       fabric__default["default"].Image.fromURL(imgSrc, function(oImg) {
         app$2.fabric.model.helpers.addToCenter(oImg);
+        oImg.left -= 7;
+        oImg.top += 13;
         app$2.fabric.model.canvas.setActiveObject(app$2.fabric.model.canvas.item(0));
         $('#btnToggleVector').click();
       });
@@ -1092,7 +1115,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
       }
       returnHtml += layersToolItem( { index: index, shape: type, active: active } );
       // Render sub items if a group.
-      if (object.type && object.type == 'group') {
+      if (object.type && object.type == 'group' && object.temporary == false) {
         returnHtml += '<div class="item"><div class="list">';
         var objects = object.getObjects();
         objects.reverse().forEach(function(group_object){
@@ -1108,7 +1131,9 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
       var objects = app$1.fabric.model.canvas.getObjects();
       var layersHTML = '';
       objects.reverse().forEach(function(object){
-        layersHTML += app$1.layers.renderItem(app$1.fabric.model.canvas.getObjects(), object);
+        if (object.temporary == false) {
+          layersHTML += app$1.layers.renderItem(app$1.fabric.model.canvas.getObjects(), object);
+        }
       });
 
       $__default["default"]('#layers').html(layersHTML);

@@ -8,17 +8,17 @@ export default class FabricJSIntegrationHelpers {
   }
 
   // Loads an SVG string and splits up objects so they're loaded in the right position.
-  loadSVG(svg, callbackFn) {
+  loadSVG(svg, callbackFn, temporary = false) {
     fabric.loadSVGFromString(svg, function(objects){
       // Create a group so we add to center accurately.
       var group = new fabric.Group(objects);
       objects.forEach((object, index) => {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
-      this.addToCenter(group);
+      this.addToCenter(group, temporary);
 
       if (callbackFn) {
-        callbackFn(objects);
+        callbackFn(group);
       }
     }.bind(this));
   }
@@ -38,7 +38,7 @@ export default class FabricJSIntegrationHelpers {
   }
 
   // Add an object to the center of the canvas.
-  addToCenter(object) {
+  addToCenter(object, temporary = false) {
     var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
       $('.canvas-container').css('marginLeft', ($('#toolbar').width()*1.5) + 'px');
@@ -52,6 +52,7 @@ export default class FabricJSIntegrationHelpers {
     object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
     
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
+    object.temporary = temporary;
 
     app.fabric.model.canvas.add(object);
     app.fabric.model.canvas.moveTo(object, app.fabric.model.canvas.getObjects().length);
