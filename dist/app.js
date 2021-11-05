@@ -716,10 +716,13 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
         var a = document.createElement("a");
         a.href = window.URL.createObjectURL(new Blob([app$4.fabric.model.canvas.toSVG()], {type: "text/plain"}));
         a.download = prompt("Please enter a filename", "Manifold-Download.svg");
-        if (a.download.indexOf('.svg') < 0) {
-          a.download += '.svg';
+        if (a.download != 'null') {
+          if (a.download.indexOf('.svg') < 0) {
+            a.download += '.svg';
+          }
+          a.click();
         }
-        a.click();
+          
         // let w = window.open('')
         // w.document.write()
         // return 'data:image/svg+xml;utf8,' + encodeURIComponent(app.fabric.model.canvas.toSVG())
