@@ -26,7 +26,11 @@ export default class FabricJSIntegrationHelpers {
   updateCanvasSize() {
     var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
-      width -= $('#toolbar').width();  
+      $('.canvas-container').css('marginLeft', ($('#toolbar').width()*1.5) + 'px');
+      width -= $('#toolbar').width();
+    }
+    if ($("#details").sidebar('is visible')) {
+      width -= $('#details').width();
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     app.fabric.model.canvas.setHeight( height );
@@ -37,7 +41,11 @@ export default class FabricJSIntegrationHelpers {
   addToCenter(object) {
     var canvasWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     if ($("#toolbar").sidebar('is visible')) {
-      canvasWidth -= $('#toolbar').width();  
+      $('.canvas-container').css('marginLeft', ($('#toolbar').width()*1.5) + 'px');
+      canvasWidth -= $('#toolbar').width();
+    }
+    if ($("#details").sidebar('is visible')) {
+      canvasWidth -= $('#details').width();
     }
     var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     
