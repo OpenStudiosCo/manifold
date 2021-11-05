@@ -64,6 +64,8 @@
   color: #fff !important;
 }
 #details {
+  background: #333;
+  box-shadow: inset -2.5px 0px 20px 0px #222;
   padding-bottom: 100px;
 }
 #container {
@@ -81,11 +83,11 @@
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  filter: invert(75%);
-  transition: filter 0.25s;
+  filter: invert(0%) drop-shadow(5px 5px 5px #666);
+  transition: all 0.25s;
 }
 #logo img:hover {
-  filter: invert(0%) drop-shadow(5px 5px 5px #666);
+  filter: invert(75%);
 }
 #main-canvas {
   position: absolute;

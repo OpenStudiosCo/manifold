@@ -12,17 +12,5 @@ block append page
   #container.pusher
     canvas#main-canvas
     include /src/templates/toolbar_overlays.pug
-  #details.ui.wide.right.vertical.visible.sidebar.menu.inverted
-    .ui(class="inverted fluid accordion")
-      .title
-        i.dropdown.icon
-        | Artboards
-      .content
-      .active.title
-        i.dropdown.icon
-        | Layers
-      .active.content
-        include /src/templates/toolbar/layers-tool.pug
-    #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();' style="position: absolute; bottom: 0")
-      a(href='#', title='Toggle Toolbars')
-        img(src='/assets/manifold.svg')
+  #details.ui.right.vertical.visible.sidebar.menu.inverted
+    include /src/templates/details.pug
