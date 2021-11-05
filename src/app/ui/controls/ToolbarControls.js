@@ -20,13 +20,12 @@ export default class ToolbarControls extends BaseControls {
         });
       }
       else {
-        var svgLoadWrapper = function(svg) {
+        app.fabric.model.potrace.createSVG(src, function(svg) {
           var hideAddImageFn = function() {
             $('#hideAddImage').click();
           };
           app.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
-        };
-        app.fabric.model.potrace.createSVG(src, svgLoadWrapper);        
+        });        
       }
     });
 

@@ -30,17 +30,22 @@ export default class FabricJSIntegration extends BaseIntegration {
   ready () {
     app.fabric.model.events.setupEvents();
     app.fabric.model.helpers.updateCanvasSize();
-
+    
     // Default scene.
-    var circle = new fabric.Circle({ radius: 100, fill: 'green' });
-    app.fabric.model.helpers.addToCenter(circle);
-    circle.left -= 75;
-    var rect = new fabric.Rect({
-      fill: 'red',
-      width: 200,
-      height: 200
+    var imgSrc = '/assets/demo2.jpg';
+    fabric.Image.fromURL(imgSrc, function(oImg) {
+      app.fabric.model.helpers.addToCenter(oImg);
     });
-    app.fabric.model.helpers.addToCenter(rect);
-    rect.left += 75;
+
+    // var circle = new fabric.Circle({ radius: 100, fill: '  green' });
+    // app.fabric.model.helpers.addToCenter(circle);
+    // circle.left -= 75;
+    // var rect = new fabric.Rect({
+    //   fill: 'red',
+    //   width: 200,
+    //   height: 200
+    // });
+    // app.fabric.model.helpers.addToCenter(rect);
+    // rect.left += 75;
   }
 }

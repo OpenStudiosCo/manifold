@@ -992,18 +992,23 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
     FabricJSIntegration.prototype.ready = function ready () {
       app$2.fabric.model.events.setupEvents();
       app$2.fabric.model.helpers.updateCanvasSize();
-
+      
       // Default scene.
-      var circle = new fabric__default["default"].Circle({ radius: 100, fill: 'green' });
-      app$2.fabric.model.helpers.addToCenter(circle);
-      circle.left -= 75;
-      var rect = new fabric__default["default"].Rect({
-        fill: 'red',
-        width: 200,
-        height: 200
+      var imgSrc = '/assets/demo2.jpg';
+      fabric__default["default"].Image.fromURL(imgSrc, function(oImg) {
+        app$2.fabric.model.helpers.addToCenter(oImg);
       });
-      app$2.fabric.model.helpers.addToCenter(rect);
-      rect.left += 75;
+
+      // var circle = new fabric.Circle({ radius: 100, fill: '  green' });
+      // app.fabric.model.helpers.addToCenter(circle);
+      // circle.left -= 75;
+      // var rect = new fabric.Rect({
+      //   fill: 'red',
+      //   width: 200,
+      //   height: 200
+      // });
+      // app.fabric.model.helpers.addToCenter(rect);
+      // rect.left += 75;
     };
 
     return FabricJSIntegration;
@@ -1147,13 +1152,12 @@ var ManifoldApplication = (function ($, fabric, THREE, Potrace) {
           });
         }
         else {
-          var svgLoadWrapper = function(svg) {
+          app.fabric.model.potrace.createSVG(src, function(svg) {
             var hideAddImageFn = function() {
               $__default["default"]('#hideAddImage').click();
             };
             app.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
-          };
-          app.fabric.model.potrace.createSVG(src, svgLoadWrapper);        
+          });        
         }
       });
 
