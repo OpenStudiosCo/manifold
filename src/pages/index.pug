@@ -10,9 +10,6 @@ block append page
   #toolbar.ui.very.thin.left.vertical.visible.sidebar.icon.menu
     include /src/templates/toolbar.pug
   #container.pusher
-    #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();')
-      a(href='#', title='Toggle Toolbar')
-        img(src='/assets/manifold.svg')
     canvas#main-canvas
     include /src/templates/toolbar_overlays.pug
   #details.ui.wide.right.vertical.visible.sidebar.icon.menu.inverted
@@ -26,3 +23,6 @@ block append page
         | Layers
       .active.content
         include /src/templates/toolbar/layers-tool.pug
+    #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();' style="position: absolute; bottom: 0")
+      a(href='#', title='Toggle Toolbars')
+        img(src='/assets/manifold.svg')
