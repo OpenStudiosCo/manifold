@@ -98,14 +98,21 @@
           <div class="content">
             <div class="ui header tiny"><i class="paper plane outline icon"></i>Image to Vector</div>
           </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+          <div class="content">
             <div class="ui header tiny">Select method</div>
-            <select class="ui dropdown fluid potraceConfig">
-              <option value="imagetracer">Imagetracer</option>
-              <option value="potrace" selected="">Potrace</option>
-            </select>
+            <div id="method">
+              <div class="ui radio checkbox">
+                <input id="vctMthImg" type="radio" name="vector-method" value="imagetracer">
+                <label for="vctMthImg">Imagetracer</label>
+              </div>
+              <hr>
+              <div class="ui radio checkbox">
+                <input id="vctMthPo" type="radio" name="vector-method" value="potrace">
+                <label for="vctMthPo">Potrace</label>
+              </div>
+            </div>
           </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+          <div class="content">
             <div class="ui header tiny">Potrace Options</div>
             <div class="ui mini form">
               <div class="field">

@@ -5,12 +5,17 @@
       .ui.header.tiny
         i.paper.plane.outline.icon
         | Image to Vector
-    .content(style='box-shadow: inset 0 0 5px #ccc; padding: 1em;')
+    .content
       .ui.header.tiny Select method
-      select.ui.dropdown.fluid.potraceConfig
-        option(value='imagetracer') Imagetracer
-        option(value='potrace', selected='') Potrace
-    .content(style='box-shadow: inset 0 0 5px #ccc; padding: 1em;')
+      #method
+        .ui.radio.checkbox
+          input(id="vctMthImg" type='radio' name='vector-method' value='imagetracer')
+          label(for="vctMthImg") Imagetracer
+        hr
+        .ui.radio.checkbox
+          input(id="vctMthPo" type='radio' name='vector-method' value='potrace')
+          label(for="vctMthPo") Potrace
+    .content
       .ui.header.tiny Potrace Options
       .ui.mini.form
         .field
