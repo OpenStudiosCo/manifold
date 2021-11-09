@@ -1110,6 +1110,32 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     return FabricJSIntegration;
   }(BaseIntegration));
 
+  // External libs
+
+  /**
+    * Fomantic Integration
+    */
+
+  var FomanticIntegration = /*@__PURE__*/(function (BaseIntegration) {
+    function FomanticIntegration() {   
+      BaseIntegration.call(this);
+    }
+
+    if ( BaseIntegration ) FomanticIntegration.__proto__ = BaseIntegration;
+    FomanticIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
+    FomanticIntegration.prototype.constructor = FomanticIntegration;
+
+    FomanticIntegration.prototype.ready = function ready () {  
+      $__default["default"]('.ui.accordion').accordion({
+        exclusive: false
+      });
+      $__default["default"]('.ui.dropdown').dropdown();
+      $__default["default"]('.floating.overlay').draggable();
+    };
+
+    return FomanticIntegration;
+  }(BaseIntegration));
+
   /**
     * Base Events class.
     */
@@ -1283,14 +1309,29 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     return LayerControls;
   }(BaseControls));
 
+  var LibraryControls = /*@__PURE__*/(function (BaseControls) {
+    function LibraryControls(appInstance) {
+      BaseControls.call(this);
+      var el = document.getElementById('add-image');
+      if (!el) {
+        return;
+      }
+
+    }
+
+    if ( BaseControls ) LibraryControls.__proto__ = BaseControls;
+    LibraryControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    LibraryControls.prototype.constructor = LibraryControls;
+
+    return LibraryControls;
+  }(BaseControls));
+
   var app = {};
   var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
     function ToolbarControls(appInstance) {
       app = appInstance;
       BaseControls.call(this);
       this.setupDefaultMenu();
-
-      $__default["default"]('.floating.overlay').draggable();
 
       $__default["default"]('#add-image').on('click', 'a.ui.image.button img', function(e){
         var src = $__default["default"](e.target).attr('src');
@@ -1300,11 +1341,6 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
         });
         
       });
-
-      $__default["default"]('.ui.accordion').accordion({
-        exclusive: false
-      });
-      $__default["default"]('.ui.dropdown').dropdown();
 
       $__default["default"](window).on('resize', function () {
         app.fabric.model.helpers.updateCanvasSize();
@@ -1458,6 +1494,23 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     return ToolbarControls;
   }(BaseControls));
 
+  var VectorControls = /*@__PURE__*/(function (BaseControls) {
+    function VectorControls(appInstance) {
+      BaseControls.call(this);
+      var el = document.getElementById('vector-tool');
+      if (!el) {
+        return;
+      }
+
+    }
+
+    if ( BaseControls ) VectorControls.__proto__ = BaseControls;
+    VectorControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    VectorControls.prototype.constructor = VectorControls;
+
+    return VectorControls;
+  }(BaseControls));
+
   // External libs
 
   /**
@@ -1466,6 +1519,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
   var App = function App() {
     // Integrations
     this.fabric = new FabricJSIntegration(this);
+    this.fomantic = new FomanticIntegration(this);
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
 
@@ -1475,12 +1529,16 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
     // UI    
     this.layers = new LayerControls(this);
+    this.library = new LibraryControls(this);
     this.toolbar = new ToolbarControls(this);
+    this.vector = new VectorControls(this);
   };
 
   // Startup using jQuery.ready()
   $__default["default"](function () {
     var app = new App();
+
+    app.fomantic.ready();
 
     // Run all the ready functions
     for (var classInstance in app) {

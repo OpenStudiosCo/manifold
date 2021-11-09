@@ -29,6 +29,44 @@ export default class ImageTracerIntegration extends BaseIntegration {
     this.$el.html('');
     ImageTracer.appendSVGString( svgStr, 'imagetracer-preview' );
   }
+
+  preview(app) {
+    // // Remove other previews
+    // // @todo: Expand when other things are set to temporary
+    // let objects = app.fabric.model.canvas.getObjects();
+    // objects.forEach((object) => {
+    //   if (object.temporary) {
+    //     app.fabric.model.canvas.remove(object);  
+    //   }
+    // });
+
+    // Potrace.setParameter({
+    //   alphamax: $('.alphamax').val(),
+    //   optcurve: $('.optcurve').is(":checked"),
+    //   opttolerance: $('.opttolerance').val(),
+    //   turdsize: $('.turdsize').val(),
+    //   turnpolicy: $('.turnpolicy').find(":selected").text().toLowerCase()
+    // });
+
+    // var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+    // app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+    //   app.fabric.model.helpers.loadSVG(svg, () => {}, true);
+    // });
+  }
+
+  create (app, replace = false) {
+    // // @todo: Expand when other things are set to temporary
+    // let objects = app.fabric.model.canvas.getObjects();
+    // objects.forEach((object) => {
+    //   if (object.temporary) {
+    //     object.temporary = false;
+    //   }
+    // });
+    // if (replace) {
+    //   var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+    //   app.fabric.model.canvas.remove(selectedObjects[0]);  
+    // }
+  }
   
   // Duplicates the image programatically so we can get its original dimensions.
   getImageDimensions() {

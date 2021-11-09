@@ -10,8 +10,6 @@ export default class ToolbarControls extends BaseControls {
     super();
     this.setupDefaultMenu();
 
-    $('.floating.overlay').draggable();
-
     $('#add-image').on('click', 'a.ui.image.button img', function(e){
       var src = $(e.target).attr('src');
     
@@ -20,11 +18,6 @@ export default class ToolbarControls extends BaseControls {
       });
       
     });
-
-    $('.ui.accordion').accordion({
-      exclusive: false
-    });
-    $('.ui.dropdown').dropdown();
 
     $(window).on('resize', () => {
       app.fabric.model.helpers.updateCanvasSize();
