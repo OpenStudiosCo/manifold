@@ -1437,22 +1437,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         app.fabric.model.helpers.loadSVG(svg, function () {}, true);
       }, app.vector.imagetracer.controls);
     };
-
-    ImageTracerIntegration.prototype.create = function create (app, replace) {
-
-      // // @todo: Expand when other things are set to temporary
-      // let objects = app.fabric.model.canvas.getObjects();
-      // objects.forEach((object) => {
-      //   if (object.temporary) {
-      //     object.temporary = false;
-      //   }
-      // });
-      // if (replace) {
-      //   var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-      //   app.fabric.model.canvas.remove(selectedObjects[0]);  
-      // }
-    };
-    
+   
     // Duplicates the image programatically so we can get its original dimensions.
     ImageTracerIntegration.prototype.getImageDimensions = function getImageDimensions () {
       var original_image = document.getElementById('original-image');
@@ -1562,22 +1547,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       });
     };
 
-    PotraceIntegration.prototype.create = function create (app, replace) {
-      if ( replace === void 0 ) replace = false;
-
-      // @todo: Expand when other things are set to temporary
-      var objects = app.fabric.model.canvas.getObjects();
-      objects.forEach(function (object) {
-        if (object.temporary) {
-          object.temporary = false;
-        }
-      });
-      if (replace) {
-        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-        app.fabric.model.canvas.remove(selectedObjects[0]);  
-      }
-    };
-
     return PotraceIntegration;
   }(BaseIntegration));
 
@@ -1619,7 +1588,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     VectorControls.prototype.create = function create (app, replace) {
       if ( replace === void 0 ) replace = false;
 
-      this[this.selected].create(app, replace);
+      // @todo: Expand when other things are set to temporary
+      var objects = app.fabric.model.canvas.getObjects();
+      objects.forEach(function (object) {
+        if (object.temporary) {
+          object.temporary = false;
+        }
+      });
+      if (replace) {
+        var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+        app.fabric.model.canvas.remove(selectedObjects[0]);  
+      }
     };
 
     return VectorControls;

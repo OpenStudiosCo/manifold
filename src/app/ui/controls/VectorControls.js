@@ -33,7 +33,18 @@ export default class VectorControls extends BaseControls {
   }
 
   create (app, replace = false) {
-    this[this.selected].create(app, replace);
+    // @todo: Expand when other things are set to temporary
+    let objects = app.fabric.model.canvas.getObjects();
+    objects.forEach((object) => {
+      if (object.temporary) {
+        object.temporary = false;
+      }
+    });
+    if (replace) {
+      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+      app.fabric.model.canvas.remove(selectedObjects[0]);  
+    }
   }
+
 
 }

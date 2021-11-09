@@ -86,18 +86,5 @@ export default class PotraceIntegration extends BaseIntegration {
     });
   }
 
-  create (app, replace = false) {
-    // @todo: Expand when other things are set to temporary
-    let objects = app.fabric.model.canvas.getObjects();
-    objects.forEach((object) => {
-      if (object.temporary) {
-        object.temporary = false;
-      }
-    });
-    if (replace) {
-      var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-      app.fabric.model.canvas.remove(selectedObjects[0]);  
-    }
-  }
-
+  
 }

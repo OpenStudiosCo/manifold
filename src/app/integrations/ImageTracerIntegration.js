@@ -49,21 +49,7 @@ export default class ImageTracerIntegration extends BaseIntegration {
       app.fabric.model.helpers.loadSVG(svg, () => {}, true);
     }, app.vector.imagetracer.controls);
   }
-
-  create (app, replace = false) {
-    // // @todo: Expand when other things are set to temporary
-    // let objects = app.fabric.model.canvas.getObjects();
-    // objects.forEach((object) => {
-    //   if (object.temporary) {
-    //     object.temporary = false;
-    //   }
-    // });
-    // if (replace) {
-    //   var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-    //   app.fabric.model.canvas.remove(selectedObjects[0]);  
-    // }
-  }
-  
+ 
   // Duplicates the image programatically so we can get its original dimensions.
   getImageDimensions() {
     var original_image = document.getElementById('original-image');
