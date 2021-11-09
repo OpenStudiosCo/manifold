@@ -10,17 +10,12 @@ import BaseIntegration from './BaseIntegration.js';
 export default class ImageTracerIntegration extends BaseIntegration {
   constructor(options) {
 
-    var controls = ImageTracer.checkoptions();
-    controls.numberofcolors = 2;
-    controls.strokewidth = 1;
-    controls.viewbox = true;
+    this.controls = ImageTracer.checkoptions();
+    this.controls.numberofcolors = 16;
+    this.controls.strokewidth = 2;
+    this.controls.viewbox = true;
     
-    super({
-      el: '#imagetracer-preview',
-      model: controls
-    });
-
-
+    super();
   }
 
   // Create an SVG from data and settings, draw to screen.
@@ -31,14 +26,14 @@ export default class ImageTracerIntegration extends BaseIntegration {
   }
 
   preview(app) {
-    // // Remove other previews
-    // // @todo: Expand when other things are set to temporary
-    // let objects = app.fabric.model.canvas.getObjects();
-    // objects.forEach((object) => {
-    //   if (object.temporary) {
-    //     app.fabric.model.canvas.remove(object);  
-    //   }
-    // });
+    // Remove other previews
+    // @todo: Expand when other things are set to temporary
+    let objects = app.fabric.model.canvas.getObjects();
+    objects.forEach((object) => {
+      if (object.temporary) {
+        app.fabric.model.canvas.remove(object);  
+      }
+    });
 
     // Potrace.setParameter({
     //   alphamax: $('.alphamax').val(),
@@ -48,10 +43,10 @@ export default class ImageTracerIntegration extends BaseIntegration {
     //   turnpolicy: $('.turnpolicy').find(":selected").text().toLowerCase()
     // });
 
-    // var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-    // app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
-    //   app.fabric.model.helpers.loadSVG(svg, () => {}, true);
-    // });
+    var selectedObjects = app.fabric.model.canvas.getActiveObjects();
+    ImageTracer.imageToSVG(selectedObjects[0]._element.src, function(svg) {
+      app.fabric.model.helpers.loadSVG(svg, () => {}, true);
+    }, app.vector.imagetracer.controls);
   }
 
   create (app, replace = false) {
