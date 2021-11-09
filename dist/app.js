@@ -1118,8 +1118,8 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
   function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (url) {
-  pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
-  pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Ca class=\"ui image button\"\u003E";
+  pug_html = pug_html + "\u003Cimg" + (" class=\"ui tiny image\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var DropEvents = /*@__PURE__*/(function (BaseEvents) {
@@ -1149,7 +1149,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
             var url = URL.createObjectURL(file);
             console.log(url);
             $__default["default"](addImageItem({ url: url }))
-              .insertBefore('#add-image .ui.menu .item:last-child');
+              .insertBefore('#btnUploadImage');
           }
         }
       } else {
@@ -1289,21 +1289,13 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
       $__default["default"]('.floating.overlay').draggable();
 
-      $__default["default"]('#add-image').on('click', 'a.item.image', function(e){
+      $__default["default"]('#add-image').on('click', 'a.ui.image.button img', function(e){
         var src = $__default["default"](e.target).attr('src');
-        if ($__default["default"]('#btnTraceImage').find('i.icon').hasClass('disabled')) {
-          fabric__default["default"].Image.fromURL(src, function(img) {
-            app.fabric.model.helpers.addToCenter(img);
-          });
-        }
-        else {
-          app.fabric.model.potrace.createSVG(src, function(svg) {
-            var hideAddImageFn = function() {
-              $__default["default"]('#hideAddImage').click();
-            };
-            app.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
-          });        
-        }
+      
+        fabric__default["default"].Image.fromURL(src, function(img) {
+          app.fabric.model.helpers.addToCenter(img);
+        });
+        
       });
 
       $__default["default"]('.ui.accordion').accordion({
@@ -1315,14 +1307,6 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
         app.fabric.model.helpers.updateCanvasSize();
       });
 
-      $__default["default"]('#hideAddImage')
-        .on('click', function() {
-          $__default["default"]('#btnAddImage').find('i.icon').toggleClass('disabled');
-          $__default["default"]('#add-image')
-            .animate({
-             left: '-' + $__default["default"]('#add-image').width() + 'px'
-            });
-        });
       $__default["default"]('#btnUploadImage')
         .on('click', function(e) {
           e.stopImmediatePropagation();
@@ -1334,7 +1318,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
           window.URL = window.URL || window.webkitURL || window.mozURL;
           var url = URL.createObjectURL(e.currentTarget.files[0]);
           $__default["default"](addImageItem({ url: url }))
-            .insertBefore('#add-image .ui.menu .item:last-child');
+            .insertBefore('#btnUploadImage');
         });
     }
 
@@ -1343,10 +1327,6 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     ToolbarControls.prototype.constructor = ToolbarControls;
     
     ToolbarControls.prototype.setupDefaultMenu = function setupDefaultMenu () {
-      // Define slideout position based on corresponding menu item.
-      $__default["default"]('#add-image').css('top', function(){
-        return $__default["default"]('#btnAddImage').offset().top +(($__default["default"]('#btnAddImage').height() / 2) - ($__default["default"](this).height() / 2));
-      });
       $__default["default"]('#btnDrawTool')
         .popup({
           title: 'Draw',
@@ -1367,58 +1347,6 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
         .popup({
           title: 'Manipulate Shapes',
           position: 'right center'
-        });
-
-        $__default["default"]('#btnTraceImage')
-        .popup({
-          title: 'Trace Image',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $__default["default"]('#btnAddImage').find('i.icon').addClass('disabled');
-          $__default["default"](this).find('i.icon').toggleClass('disabled');
-          if ($__default["default"](this).find('i.icon').hasClass('disabled')) {
-            $__default["default"]('#add-image')
-              .css('left', '0px')
-              .show()
-              .animate({
-                left: '-' + $__default["default"]('#add-image').width() + 'px'
-              });
-          }
-          else {
-            $__default["default"]('#add-image')
-              .css('left', '-' + $__default["default"]('#add-image').width() + 'px')
-              .show()
-              .animate({
-                left: '0px'
-              });
-          }
-        });
-
-        $__default["default"]('#btnAddImage')
-        .popup({
-          title: 'Add Image',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $__default["default"]('#btnTraceImage').find('i.icon').addClass('disabled');
-          $__default["default"](this).find('i.icon').toggleClass('disabled');
-          if ($__default["default"](this).find('i.icon').hasClass('disabled')) {
-            $__default["default"]('#add-image')
-              .css('left', '0px')
-              .show()
-              .animate({
-                left: '-' + $__default["default"]('#add-image').width() + 'px'
-              });
-          }
-          else {
-            $__default["default"]('#add-image')
-              .css('left', '-' + $__default["default"]('#add-image').width() + 'px')
-              .show()
-              .animate({
-                left: '0px'
-              });
-          }
         });
 
       // @TODO: https://codepen.io/shershen08/pen/JGepQv
@@ -1456,15 +1384,7 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
           }
           $__default["default"](this).find('i.icon').toggleClass('slash');
         });
-      $__default["default"]('#btnToggleLayers')
-        .popup({
-          title: 'Toggle Layer Controls',
-          position: 'right center'
-        })
-        .on('click', function(){
-          $__default["default"](this).find('i.icon').toggleClass('disabled');
-          $__default["default"]('#layers-tool').toggle();
-        });
+
       $__default["default"]('#btnToggle3DOptions')
         .popup({
           title: 'Toggle 3D Options',

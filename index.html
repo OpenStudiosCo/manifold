@@ -16,7 +16,7 @@
   </head>
   <body>
     <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnPointTool"><i class="icon map marker vertically flipped grey"></i></a><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
-      <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddImage"><i class="image icon inverted disabled"></i></a><a class="item" id="btnTraceImage"><i class="image outline icon inverted disabled"></i></a><a class="item" id="btnAddCircle"><i class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item" id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i class="corner snowflake outline icon inverted disabled"></i></a>
+      <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddCircle"><i class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item" id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i class="corner snowflake outline icon inverted disabled"></i></a>
     </div>
     <div class="ui right vertical visible sidebar menu inverted" id="details">
       <div class="ui inverted fluid accordion">
@@ -53,15 +53,17 @@
             </div>
           </div>
         </div>
+        <div class="active title"><i class="dropdown icon"></i>Library</div>
+        <div class="active content">
+          <div id="add-image"><a class="ui image button"><img class="ui tiny image" src="/assets/shapes.png"></a><a class="ui image button"><img class="ui tiny image" src="/assets/demo.jpg"></a><a class="ui image button"><img class="ui tiny image" src="/assets/demo2.jpg"></a><a class="ui image button" id="btnUploadImage"><i class="add icon"></i></a>
+            <input id="image_input" type="file" accept="image/*">
+          </div>
+        </div>
       </div>
       <div class="ui fluid image small" id="logo" onclick="app.toolbar.toggle();" style="position: absolute; bottom: 0"><a href="#" title="Toggle Toolbars"><img src="/assets/manifold.svg"></a></div>
     </div>
     <div class="pusher" id="container">
       <canvas id="main-canvas"></canvas>
-      <div id="add-image">
-        <div class="ui menu labeled"><a class="item button active" id="hideAddImage"><i class="arrow alternate circle left icon large"></i></a><a class="item image" id="original-image"><img class="ui fluid small image" src="/assets/shapes.png"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo.jpg"></a><a class="item image"><img class="ui fluid image small" src="/assets/demo2.jpg"></a><a class="item button" id="btnUploadImage"><i class="add icon"></i></a></div>
-        <input id="image_input" type="file" accept="image/*">
-      </div>
       <div class="floating overlay" id="fill-tool" style="display: none">
         <div class="ui card">
           <div class="content">

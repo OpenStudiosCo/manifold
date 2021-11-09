@@ -8,6 +8,11 @@
     | Layers
   .active.content
     include /src/templates/toolbar/layers-tool.pug
+  .active.title
+    i.dropdown.icon
+    | Library
+  .active.content
+    include /src/templates/toolbar/add-image.pug
 #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();' style="position: absolute; bottom: 0")
   a(href='#', title='Toggle Toolbars')
     img(src='/assets/manifold.svg')

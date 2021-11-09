@@ -1,13 +1,10 @@
 #add-image
-  .ui.menu.labeled
-    a.item.button.active#hideAddImage
-      i.arrow.alternate.circle.left.icon.large
-    a.item.image#original-image
-      img.ui.fluid.small.image(src='/assets/shapes.png')
-    a.item.image
-      img.ui.fluid.image.small(src='/assets/demo.jpg')
-    a.item.image
-      img.ui.fluid.image.small(src='/assets/demo2.jpg')
-    a.item.button#btnUploadImage
-      i.add.icon
+  a.ui.image.button
+    img.ui.tiny.image(src='/assets/shapes.png')
+  a.ui.image.button
+    img.ui.tiny.image(src='/assets/demo.jpg')
+  a.ui.image.button
+    img.ui.tiny.image(src='/assets/demo2.jpg')
+  a.ui.image.button#btnUploadImage
+    i.add.icon
   input#image_input(type='file',accept='image/*')

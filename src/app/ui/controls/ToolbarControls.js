@@ -12,21 +12,13 @@ export default class ToolbarControls extends BaseControls {
 
     $('.floating.overlay').draggable();
 
-    $('#add-image').on('click', 'a.item.image', function(e){
+    $('#add-image').on('click', 'a.ui.image.button img', function(e){
       var src = $(e.target).attr('src');
-      if ($('#btnTraceImage').find('i.icon').hasClass('disabled')) {
-        fabric.Image.fromURL(src, function(img) {
-          app.fabric.model.helpers.addToCenter(img);
-        });
-      }
-      else {
-        app.fabric.model.potrace.createSVG(src, function(svg) {
-          var hideAddImageFn = function() {
-            $('#hideAddImage').click();
-          };
-          app.fabric.model.helpers.loadSVG(svg, hideAddImageFn);
-        });        
-      }
+    
+      fabric.Image.fromURL(src, function(img) {
+        app.fabric.model.helpers.addToCenter(img);
+      });
+      
     });
 
     $('.ui.accordion').accordion({
@@ -38,14 +30,6 @@ export default class ToolbarControls extends BaseControls {
       app.fabric.model.helpers.updateCanvasSize();
     });
 
-    $('#hideAddImage')
-      .on('click', function() {
-        $('#btnAddImage').find('i.icon').toggleClass('disabled');
-        $('#add-image')
-          .animate({
-           left: '-' + $('#add-image').width() + 'px'
-          });
-      });
     $('#btnUploadImage')
       .on('click', function(e) {
         e.stopImmediatePropagation();
@@ -57,15 +41,11 @@ export default class ToolbarControls extends BaseControls {
         window.URL = window.URL || window.webkitURL || window.mozURL;
         var url = URL.createObjectURL(e.currentTarget.files[0]);
         $(addImageItem({ url: url }))
-          .insertBefore('#add-image .ui.menu .item:last-child');
+          .insertBefore('#btnUploadImage');
       });
   }
   
   setupDefaultMenu() {
-    // Define slideout position based on corresponding menu item.
-    $('#add-image').css('top', function(){
-      return $('#btnAddImage').offset().top +(($('#btnAddImage').height() / 2) - ($(this).height() / 2));
-    });
     $('#btnDrawTool')
       .popup({
         title: 'Draw',
@@ -86,58 +66,6 @@ export default class ToolbarControls extends BaseControls {
       .popup({
         title: 'Manipulate Shapes',
         position: 'right center'
-      });
-
-      $('#btnTraceImage')
-      .popup({
-        title: 'Trace Image',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#btnAddImage').find('i.icon').addClass('disabled');
-        $(this).find('i.icon').toggleClass('disabled');
-        if ($(this).find('i.icon').hasClass('disabled')) {
-          $('#add-image')
-            .css('left', '0px')
-            .show()
-            .animate({
-              left: '-' + $('#add-image').width() + 'px'
-            });
-        }
-        else {
-          $('#add-image')
-            .css('left', '-' + $('#add-image').width() + 'px')
-            .show()
-            .animate({
-              left: '0px'
-            });
-        }
-      });
-
-      $('#btnAddImage')
-      .popup({
-        title: 'Add Image',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $('#btnTraceImage').find('i.icon').addClass('disabled');
-        $(this).find('i.icon').toggleClass('disabled');
-        if ($(this).find('i.icon').hasClass('disabled')) {
-          $('#add-image')
-            .css('left', '0px')
-            .show()
-            .animate({
-              left: '-' + $('#add-image').width() + 'px'
-            });
-        }
-        else {
-          $('#add-image')
-            .css('left', '-' + $('#add-image').width() + 'px')
-            .show()
-            .animate({
-              left: '0px'
-            });
-        }
       });
 
     // @TODO: https://codepen.io/shershen08/pen/JGepQv
@@ -175,15 +103,7 @@ export default class ToolbarControls extends BaseControls {
         }
         $(this).find('i.icon').toggleClass('slash');
       });
-    $('#btnToggleLayers')
-      .popup({
-        title: 'Toggle Layer Controls',
-        position: 'right center'
-      })
-      .on('click', function(){
-        $(this).find('i.icon').toggleClass('disabled');
-        $('#layers-tool').toggle();
-      });
+
     $('#btnToggle3DOptions')
       .popup({
         title: 'Toggle 3D Options',

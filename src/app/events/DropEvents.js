@@ -31,7 +31,7 @@ export default class DropEvents extends BaseEvents {
           var url = URL.createObjectURL(file);
           console.log(url);
           $(addImageItem({ url: url }))
-            .insertBefore('#add-image .ui.menu .item:last-child');
+            .insertBefore('#btnUploadImage');
         }
       }
     } else {
