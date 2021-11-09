@@ -8,7 +8,7 @@ import BaseIntegration from './BaseIntegration.js';
   */
 
 export default class ImageTracerIntegration extends BaseIntegration {
-  constructor(options) {
+  constructor(app) {
 
     this.controls = ImageTracer.checkoptions();
     this.controls.numberofcolors = 16;
@@ -17,13 +17,10 @@ export default class ImageTracerIntegration extends BaseIntegration {
     console.log(this.controls);
     
     super();
-  }
 
-  // Create an SVG from data and settings, draw to screen.
-  createSVG() {  
-    var svgStr = ImageTracer.imagedataToSVG(this.getImageDimensions(), this.model.attributes);
-    this.$el.html('');
-    ImageTracer.appendSVGString( svgStr, 'imagetracer-preview' );
+    $('.imagetracerConfig').on('change', () => {
+      this.preview(app);
+    });
   }
 
   preview(app) {
@@ -36,6 +33,9 @@ export default class ImageTracerIntegration extends BaseIntegration {
       }
     });
 
+    let preset = $('.preset').find(":selected").text().toLowerCase();
+
+
     // Potrace.setParameter({
     //   alphamax: $('.alphamax').val(),
     //   optcurve: $('.optcurve').is(":checked"),
@@ -47,7 +47,7 @@ export default class ImageTracerIntegration extends BaseIntegration {
     var selectedObjects = app.fabric.model.canvas.getActiveObjects();
     ImageTracer.imageToSVG(selectedObjects[0]._element.src, function(svg) {
       app.fabric.model.helpers.loadSVG(svg, () => {}, true);
-    }, app.vector.imagetracer.controls);
+    }, preset != 'default' ? preset : app.vector.imagetracer.controls);
   }
  
   // Duplicates the image programatically so we can get its original dimensions.

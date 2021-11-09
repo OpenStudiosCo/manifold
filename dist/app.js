@@ -1392,7 +1392,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     */
 
   var ImageTracerIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function ImageTracerIntegration(options) {
+    function ImageTracerIntegration(app) {
+      var this$1$1 = this;
+
 
       this.controls = ImageTracer__default["default"].checkoptions();
       this.controls.numberofcolors = 16;
@@ -1401,18 +1403,15 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       console.log(this.controls);
       
       BaseIntegration.call(this);
+
+      $('.imagetracerConfig').on('change', function () {
+        this$1$1.preview(app);
+      });
     }
 
     if ( BaseIntegration ) ImageTracerIntegration.__proto__ = BaseIntegration;
     ImageTracerIntegration.prototype = Object.create( BaseIntegration && BaseIntegration.prototype );
     ImageTracerIntegration.prototype.constructor = ImageTracerIntegration;
-
-    // Create an SVG from data and settings, draw to screen.
-    ImageTracerIntegration.prototype.createSVG = function createSVG () {  
-      var svgStr = ImageTracer__default["default"].imagedataToSVG(this.getImageDimensions(), this.model.attributes);
-      this.$el.html('');
-      ImageTracer__default["default"].appendSVGString( svgStr, 'imagetracer-preview' );
-    };
 
     ImageTracerIntegration.prototype.preview = function preview (app) {
       // Remove other previews
@@ -1423,6 +1422,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           app.fabric.model.canvas.remove(object);  
         }
       });
+
+      var preset = $('.preset').find(":selected").text().toLowerCase();
+
 
       // Potrace.setParameter({
       //   alphamax: $('.alphamax').val(),
@@ -1435,7 +1437,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       var selectedObjects = app.fabric.model.canvas.getActiveObjects();
       ImageTracer__default["default"].imageToSVG(selectedObjects[0]._element.src, function(svg) {
         app.fabric.model.helpers.loadSVG(svg, function () {}, true);
-      }, app.vector.imagetracer.controls);
+      }, preset != 'default' ? preset : app.vector.imagetracer.controls);
     };
    
     // Duplicates the image programatically so we can get its original dimensions.
@@ -1558,46 +1560,53 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
   var app = {};
   var VectorControls = /*@__PURE__*/(function (BaseControls) {
-    function VectorControls(appInstance) {
+    function VectorControls( appInstance ) {
       var this$1$1 = this;
 
       app = appInstance;
       BaseControls.call(this);
-      var el = document.getElementById('vector-tool');
-      if (!el) {
+      var el = document.getElementById( 'vector-tool' );
+      if ( !el ) {
         return;
       }
-      this.imagetracer = new ImageTracerIntegration();
-      this.potrace = new PotraceIntegration(app);
-      
-      this.selected = $__default["default"]('#vector-tool .method input:checked').val();
-      $__default["default"]('#vector-tool .method input').change(function () {
-        this$1$1.selected = $__default["default"]('#vector-tool .method input:checked').val();
-        this$1$1.preview(app);
-      });
+      this.imagetracer = new ImageTracerIntegration( app );
+      this.potrace = new PotraceIntegration( app );
+
+      this.updateSelection();
+
+      $__default["default"]( '#vector-tool .method input' ).change( function () {
+        this$1$1.updateSelection();
+        this$1$1.preview( app );
+      } );
     }
 
     if ( BaseControls ) VectorControls.__proto__ = BaseControls;
     VectorControls.prototype = Object.create( BaseControls && BaseControls.prototype );
     VectorControls.prototype.constructor = VectorControls;
 
-    VectorControls.prototype.preview = function preview (app) {
-      this[this.selected].preview(app);
+    VectorControls.prototype.updateSelection = function updateSelection () {
+      this.selected = $__default["default"]( '#vector-tool .method input:checked' ).val();
+      $__default["default"]( '#vector-tool .controls:not(.' + this.selected + ')' ).slideUp();
+      $__default["default"]( '#vector-tool .controls.' + this.selected ).slideDown();
     };
 
-    VectorControls.prototype.create = function create (app, replace) {
+    VectorControls.prototype.preview = function preview ( app ) {
+      this[ this.selected ].preview( app );
+    };
+
+    VectorControls.prototype.create = function create ( app, replace ) {
       if ( replace === void 0 ) replace = false;
 
       // @todo: Expand when other things are set to temporary
       var objects = app.fabric.model.canvas.getObjects();
-      objects.forEach(function (object) {
-        if (object.temporary) {
+      objects.forEach( function ( object ) {
+        if ( object.temporary ) {
           object.temporary = false;
         }
-      });
-      if (replace) {
+      } );
+      if ( replace ) {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-        app.fabric.model.canvas.remove(selectedObjects[0]);  
+        app.fabric.model.canvas.remove( selectedObjects[ 0 ] );
       }
     };
 

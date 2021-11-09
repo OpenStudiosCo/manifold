@@ -11,38 +11,45 @@ import PotraceIntegration from '../../integrations/PotraceIntegration.js';
 
 var app = {};
 export default class VectorControls extends BaseControls {
-  constructor(appInstance) {
+  constructor( appInstance ) {
     app = appInstance;
     super();
-    var el = document.getElementById('vector-tool');
-    if (!el) {
+    var el = document.getElementById( 'vector-tool' );
+    if ( !el ) {
       return;
     }
-    this.imagetracer = new ImageTracerIntegration();
-    this.potrace = new PotraceIntegration(app);
-    
-    this.selected = $('#vector-tool .method input:checked').val();
-    $('#vector-tool .method input').change(() => {
-      this.selected = $('#vector-tool .method input:checked').val();
-      this.preview(app);
-    });
+    this.imagetracer = new ImageTracerIntegration( app );
+    this.potrace = new PotraceIntegration( app );
+
+    this.updateSelection();
+
+    $( '#vector-tool .method input' ).change( () => {
+      this.updateSelection();
+      this.preview( app );
+    } );
   }
 
-  preview(app) {
-    this[this.selected].preview(app);
+  updateSelection() {
+    this.selected = $( '#vector-tool .method input:checked' ).val();
+    $( '#vector-tool .controls:not(.' + this.selected + ')' ).slideUp()
+    $( '#vector-tool .controls.' + this.selected ).slideDown()
   }
 
-  create (app, replace = false) {
+  preview( app ) {
+    this[ this.selected ].preview( app );
+  }
+
+  create( app, replace = false ) {
     // @todo: Expand when other things are set to temporary
     let objects = app.fabric.model.canvas.getObjects();
-    objects.forEach((object) => {
-      if (object.temporary) {
+    objects.forEach( ( object ) => {
+      if ( object.temporary ) {
         object.temporary = false;
       }
-    });
-    if (replace) {
+    } );
+    if ( replace ) {
       var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-      app.fabric.model.canvas.remove(selectedObjects[0]);  
+      app.fabric.model.canvas.remove( selectedObjects[ 0 ] );
     }
   }
 
