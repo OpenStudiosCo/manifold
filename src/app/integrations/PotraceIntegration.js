@@ -7,7 +7,7 @@ import BaseIntegration from './BaseIntegration.js';
   */
 
 export default class PotraceIntegration extends BaseIntegration {
-  constructor() {
+  constructor(app) {
     super();
     // *     parameters:
     // *        turnpolicy ("black" / "white" / "left" / "right" / "minority" / "majority")
@@ -29,7 +29,7 @@ export default class PotraceIntegration extends BaseIntegration {
     });
 
     $('.potraceConfig').on('change', () => {
-      app.vector.potrace.preview(app);
+      this.preview(app);
     });
   }
 

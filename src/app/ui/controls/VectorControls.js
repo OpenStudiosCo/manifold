@@ -19,7 +19,7 @@ export default class VectorControls extends BaseControls {
       return;
     }
     this.imagetracer = new ImageTracerIntegration();
-    this.potrace = new PotraceIntegration();
+    this.potrace = new PotraceIntegration(app);
     
     this.selected = $('#vector-tool .method input:checked').val();
     $('#vector-tool .method input').change(() => {

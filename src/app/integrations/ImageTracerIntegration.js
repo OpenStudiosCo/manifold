@@ -14,6 +14,7 @@ export default class ImageTracerIntegration extends BaseIntegration {
     this.controls.numberofcolors = 16;
     this.controls.strokewidth = 2;
     this.controls.viewbox = true;
+    console.log(this.controls);
     
     super();
   }

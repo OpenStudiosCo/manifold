@@ -9,13 +9,13 @@
       .ui.header.tiny Select method
       .method
         .ui.radio.checkbox
-          input(id="vctMthImg" type='radio' name='vector-method' value='imagetracer')
+          input(id="vctMthImg" type='radio' name='vector-method' value='imagetracer' checked="true")
           label(for="vctMthImg") Imagetracer
         hr
         .ui.radio.checkbox
-          input(id="vctMthPo" type='radio' name='vector-method' value='potrace' checked="true")
+          input(id="vctMthPo" type='radio' name='vector-method' value='potrace')
           label(for="vctMthPo") Potrace
-    .content
+    .content.potrace
       .ui.header.tiny Potrace Options
       .ui.mini.form
         .field
@@ -40,8 +40,8 @@
           .ui.checkbox
             input.potraceConfig.optcurve(type='checkbox')
             label Curve Optimisation
-        .field.inline
-          .ui.buttons
-            .ui.button#btnCreateVector Create
-            .or
-            .ui.button#btnReplaceVector Replace
+    .extra.content
+      .ui.buttons
+        .ui.button#btnCreateVector Create
+        .or
+        .ui.button#btnReplaceVector Replace

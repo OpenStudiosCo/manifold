@@ -31,7 +31,7 @@ export default class FabricJSIntegration extends BaseIntegration {
     app.fabric.model.helpers.updateCanvasSize();
     
     // Default scene.
-    var imgSrc = '/assets/demo2.jpg';
+    var imgSrc = '/assets/puppies.jpg';
     fabric.Image.fromURL(imgSrc, function(oImg) {
       app.fabric.model.helpers.addToCenter(oImg);
       oImg.left -= 7;
