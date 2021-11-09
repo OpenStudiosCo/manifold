@@ -2,6 +2,7 @@
 import $ from 'jQuery';
 // @TODO: update as part of refactor
 import FabricJSIntegration from './app/integrations/FabricJSIntegration.js';
+import DropEvents from './app/events/DropEvents.js';
 import LayerControls from './app/ui/controls/LayerControls.js';
 import ToolbarControls from './app/ui/controls/ToolbarControls.js';
 
@@ -14,6 +15,10 @@ export default class App {
     this.fabric = new FabricJSIntegration(this);
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
+
+    // Events
+    this.events = {};
+    this.events.drop = new DropEvents(this);
 
     // UI    
     this.layers = new LayerControls(this);

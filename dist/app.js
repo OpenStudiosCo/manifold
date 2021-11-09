@@ -1110,6 +1110,54 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     return FabricJSIntegration;
   }(BaseIntegration));
 
+  /**
+    * Base Events class.
+    */
+
+   var BaseEvents = function BaseEvents () {};
+
+  var DropEvents = /*@__PURE__*/(function (BaseEvents) {
+    function DropEvents( appInstance ) {
+      BaseEvents.call(this);
+
+      window.addEventListener("drop", this.handleDrop);
+    }
+
+    if ( BaseEvents ) DropEvents.__proto__ = BaseEvents;
+    DropEvents.prototype = Object.create( BaseEvents && BaseEvents.prototype );
+    DropEvents.prototype.constructor = DropEvents;
+
+    DropEvents.prototype.handleDrop = function handleDrop ( event ) {
+      console.log('File(s) dropped');
+
+      // Prevent default behavior (Prevent file from being opened)
+      event.preventDefault();
+
+      if (event.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (var i = 0; i < event.dataTransfer.items.length; i++) {
+          // If dropped items aren't files, reject them
+          if (event.dataTransfer.items[i].kind === 'file') {
+            var file = event.dataTransfer.items[i].getAsFile();
+            window.URL = window.URL || window.webkitURL || window.mozURL;
+            var url = URL.createObjectURL(file);
+            console.log(url);
+            //- $(addImageItem({ url: url }))
+            //-   .insertBefore('#add-image .ui.menu .item:last-child');
+            console.log('... file[' + i + '].name = ' + file.name);
+          }
+        }
+      } else {
+        // Use DataTransfer interface to access the file(s)
+        for (var i = 0; i < event.dataTransfer.files.length; i++) {
+          console.log('... file[' + i + '].name = ' + event.dataTransfer.files[i].name);
+        }
+      }
+    };
+
+    return DropEvents;
+  }(BaseEvents));
+
   function layersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (active, index, shape) {
   pug_html = pug_html + "\u003Cdiv" + (pug.attr("class", pug.classes(["item",(active ? 'ui label' : '')], [false,true]), false, true)+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
@@ -1498,6 +1546,10 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
     this.fabric = new FabricJSIntegration(this);
     this.ThreeCanvasModel = [];
     this.ThreeCanvasView = [];
+
+    // Events
+    this.events = {};
+    this.events.drop = new DropEvents(this);
 
     // UI    
     this.layers = new LayerControls(this);
