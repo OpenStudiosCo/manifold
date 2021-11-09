@@ -23,10 +23,10 @@ export default class ImageTracerIntegration extends BaseIntegration {
     });
 
     $('.ui.slider.colours').slider({
-      min: 1,
+      min: 2,
       max: 32,
-      start: 16,
-      step: 2,
+      start: 6,
+      step: 4,
       onChange: () => { this.preview(app) }
     });
   }
