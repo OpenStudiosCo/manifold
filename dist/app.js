@@ -1116,6 +1116,12 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
    var BaseEvents = function BaseEvents () {};
 
+  function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  ;var locals_for_with = (locals || {});(function (url) {
+  pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
+  pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
+  }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
   var DropEvents = /*@__PURE__*/(function (BaseEvents) {
     function DropEvents( appInstance ) {
       BaseEvents.call(this);
@@ -1142,9 +1148,8 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
             window.URL = window.URL || window.webkitURL || window.mozURL;
             var url = URL.createObjectURL(file);
             console.log(url);
-            //- $(addImageItem({ url: url }))
-            //-   .insertBefore('#add-image .ui.menu .item:last-child');
-            console.log('... file[' + i + '].name = ' + file.name);
+            $__default["default"](addImageItem({ url: url }))
+              .insertBefore('#add-image .ui.menu .item:last-child');
           }
         }
       } else {
@@ -1274,12 +1279,6 @@ var ManifoldApplication = (function ($$1, fabric, THREE, Potrace) {
 
     return LayerControls;
   }(BaseControls));
-
-  function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
-  ;var locals_for_with = (locals || {});(function (url) {
-  pug_html = pug_html + "\u003Ca class=\"item image\"\u003E";
-  pug_html = pug_html + "\u003Cimg" + (" class=\"ui fluid image small\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
-  }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var app = {};
   var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
