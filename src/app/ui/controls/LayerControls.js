@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
-import layersToolItem from '../../../templates/toolbar/layers-tool-item.pug';
+import layersToolItem from '../../../templates/helpers/layers-tool-item.pug';
 
 var app = {};
 export default class LayerControls extends BaseControls {

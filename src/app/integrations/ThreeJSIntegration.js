@@ -1,7 +1,7 @@
 import $ from 'jQuery';
 import THREE from 'THREE';
 import BaseIntegration from './BaseIntegration.js';
-import modelPreview from '../../templates/toolbar/model-preview.pug';
+import modelPreview from '../../templates/helpers/3d-tool-preview.pug';
 
 /**
   * Three Canvas view.

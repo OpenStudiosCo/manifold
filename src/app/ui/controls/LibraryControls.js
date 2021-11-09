@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
-import addImageItem from '../../../templates/toolbar/add-image__item.pug';
+import addImageItem from '../../../templates/helpers/add-image__item.pug';
 
 /**
   * Library controls

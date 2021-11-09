@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
-import activeObjectContext from '../../../templates/toolbar/active-object-context.pug';
+import activeObjectContext from '../../../templates/helpers/active-object-context.pug';
 import ThreeJSIntegration from '../ThreeJSIntegration.js';
 import ThreeJSIntegrationExtras from '../ThreeJSIntegrationExtras.js';
 
