@@ -31,10 +31,6 @@ export default class FabricJSIntegrationEvents {
       }
     });
 
-    $('.potraceConfig').on('change', () => {
-      app.fabric.model.potrace.preview(app);
-    });
-
     // Hide previous active context windows
     var clearOverlays = function() { 
       $('.model-preview').hide();
@@ -145,14 +141,14 @@ export default class FabricJSIntegrationEvents {
         })
         .on('click', (e) => {
           $('#vector-tool').toggle();
-          app.fabric.model.potrace.preview(app);
+          app.vector.preview(app);
         });
       // @todo: Move these vector tool event handlers somewhere better
       $('#btnCreateVector').on('click', () => {
-        app.fabric.model.potrace.create(app);
+        app.vector.create(app);
       });
       $('#btnReplaceVector').on('click', () => {
-        app.fabric.model.potrace.create(app, true);
+        app.vector.create(app, true);
       });
       $('#btnMake3D:not(.disabled)').click(function() {
         var selectedObjects = app.fabric.model.canvas.getActiveObjects();
@@ -220,7 +216,6 @@ export default class FabricJSIntegrationEvents {
         $el.css('left', offsetX);
         $el.css('top', offsetY);
       }
-     
     });
 
     app.fabric.model.canvas.on('selection:cleared', function(){

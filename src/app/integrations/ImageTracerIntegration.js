@@ -20,7 +20,7 @@ export default class ImageTracerIntegration extends BaseIntegration {
       model: controls
     });
 
-    this.generateControls('ImageTracer Controls');
+
   }
 
   // Create an SVG from data and settings, draw to screen.

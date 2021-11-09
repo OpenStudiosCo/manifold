@@ -3,7 +3,7 @@ import BaseIntegration from './BaseIntegration.js';
 import ColourPickerControls from '../ui/controls/ColourPickerControls.js';
 import FabricJSIntegrationEvents from './FabricJS/Events.js';
 import FabricJSIntegrationHelpers from './FabricJS/Helpers.js';
-import PotraceIntegration from './PotraceIntegration.js';
+
 /**
   * Fabric JS Integration.
   */
@@ -16,7 +16,6 @@ export default class FabricJSIntegration extends BaseIntegration {
     this.el = '#main-canvas';
     this.model = {
       colourPickerModel: new ColourPickerControls(appInstance),
-      potrace: new PotraceIntegration(),
       canvas: new fabric.Canvas('main-canvas', { preserveObjectStacking: true }),
       attributes: {
         canvas: null,

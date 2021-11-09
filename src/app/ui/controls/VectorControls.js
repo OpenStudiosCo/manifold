@@ -1,5 +1,7 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
+import ImageTracerIntegration from '../../integrations/ImageTracerIntegration.js'
+import PotraceIntegration from '../../integrations/PotraceIntegration.js';
 
 /**
   * Vector converter controls
@@ -16,7 +18,16 @@ export default class VectorControls extends BaseControls {
     if (!el) {
       return;
     }
+    this.imagetracer = new ImageTracerIntegration();
+    this.potrace = new PotraceIntegration();
+  }
 
+  preview(app) {
+    this.potrace.preview(app);
+  }
+
+  create (app, replace = false) {
+    this.potrace.create(app, replace);
   }
 
 }

@@ -27,6 +27,10 @@ export default class PotraceIntegration extends BaseIntegration {
       turdsize: 100,
       turnpolicy: "black"
     });
+
+    $('.potraceConfig').on('change', () => {
+      app.vector.potrace.preview(app);
+    });
   }
 
   createSVG(src, callbackFn) {
@@ -77,7 +81,7 @@ export default class PotraceIntegration extends BaseIntegration {
     });
 
     var selectedObjects = app.fabric.model.canvas.getActiveObjects();
-    app.fabric.model.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
+    app.vector.potrace.createSVG(selectedObjects[0]._element.src, function(svg) {
       app.fabric.model.helpers.loadSVG(svg, () => {}, true);
     });
   }
