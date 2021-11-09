@@ -1407,6 +1407,14 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       $('.imagetracerConfig').on('change', function () {
         this$1$1.preview(app);
       });
+
+      $('.ui.slider.colours').slider({
+        min: 1,
+        max: 32,
+        start: 16,
+        step: 2,
+        onChange: function () { this$1$1.preview(app); }
+      });
     }
 
     if ( BaseIntegration ) ImageTracerIntegration.__proto__ = BaseIntegration;
@@ -1424,7 +1432,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       });
 
       var preset = $('.preset').find(":selected").text().toLowerCase();
-
+      app.vector.imagetracer.controls.numberofcolors = $('.ui.slider.colours').slider('get value');
 
       // Potrace.setParameter({
       //   alphamax: $('.alphamax').val(),

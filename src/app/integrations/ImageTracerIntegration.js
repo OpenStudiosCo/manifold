@@ -21,6 +21,14 @@ export default class ImageTracerIntegration extends BaseIntegration {
     $('.imagetracerConfig').on('change', () => {
       this.preview(app);
     });
+
+    $('.ui.slider.colours').slider({
+      min: 1,
+      max: 32,
+      start: 16,
+      step: 2,
+      onChange: () => { this.preview(app) }
+    });
   }
 
   preview(app) {
@@ -34,7 +42,7 @@ export default class ImageTracerIntegration extends BaseIntegration {
     });
 
     let preset = $('.preset').find(":selected").text().toLowerCase();
-
+    app.vector.imagetracer.controls.numberofcolors = $('.ui.slider.colours').slider('get value');
 
     // Potrace.setParameter({
     //   alphamax: $('.alphamax').val(),
