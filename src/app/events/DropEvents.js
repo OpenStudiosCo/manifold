@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import BaseEvents from './BaseEvents.js';
-import addImageItem from '../../templates/helpers/add-image__item.pug';
+import addLibraryItem from '../../templates/helpers/library__item.pug';
 
 /**
   * Drop Events class.
@@ -25,7 +25,7 @@ export default class DropEvents extends BaseEvents {
       window.URL = window.URL || window.webkitURL || window.mozURL;
       var url = URL.createObjectURL(file);
       console.log(url);
-      $(addImageItem({ url: url }))
+      $(addLibraryItem({ url: url }))
         .insertBefore('#btnUploadImage');
     };
 

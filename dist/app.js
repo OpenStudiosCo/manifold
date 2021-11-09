@@ -1142,7 +1142,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
 
    var BaseEvents = function BaseEvents () {};
 
-  function addImageItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  function addLibraryItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (url) {
   pug_html = pug_html + "\u003Ca class=\"ui image button\"\u003E";
   pug_html = pug_html + "\u003Cimg" + (" class=\"ui tiny image\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
@@ -1169,7 +1169,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
         window.URL = window.URL || window.webkitURL || window.mozURL;
         var url = URL.createObjectURL(file);
         console.log(url);
-        $__default["default"](addImageItem({ url: url }))
+        $__default["default"](addLibraryItem({ url: url }))
           .insertBefore('#btnUploadImage');
       };
 
@@ -1192,7 +1192,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
     return DropEvents;
   }(BaseEvents));
 
-  function layersToolItem(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  function addLayer(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (active, index, shape) {
   pug_html = pug_html + "\u003Cdiv" + (pug.attr("class", pug.classes(["item",(active ? 'ui label' : '')], [false,true]), false, true)+pug.attr("id", 'item-' + index, true, true)) + "\u003E";
   pug_html = pug_html + "\u003Cdiv class=\"right floated content\"\u003E";
@@ -1252,7 +1252,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
       else {
         type = 'Unknown';
       }
-      returnHtml += layersToolItem( { index: index, shape: type, active: active } );
+      returnHtml += addLayer( { index: index, shape: type, active: active } );
       // Render sub items if a group.
       if (object.type && object.type == 'group' && object.temporary == false) {
         returnHtml += '<div class="item"><div class="list">';
@@ -1318,7 +1318,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
     function LibraryControls( appInstance ) {
       app$1 = appInstance;
       BaseControls.call(this);
-      var el = document.getElementById( 'add-image' );
+      var el = document.getElementById( 'library' );
       if ( !el ) {
         return;
       }
@@ -1332,10 +1332,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, Potrace) {
         .on( 'change', function ( e ) {
           window.URL = window.URL || window.webkitURL || window.mozURL;
           var url = URL.createObjectURL( e.currentTarget.files[ 0 ] );
-          $__default["default"]( addImageItem( { url: url } ) )
+          $__default["default"]( addLibraryItem( { url: url } ) )
             .insertBefore( '#btnUploadImage' );
         } );
-      $__default["default"]( '#add-image' ).on( 'click', 'a.ui.image.button img', function ( e ) {
+      $__default["default"]( '#library' ).on( 'click', 'a.ui.image.button img', function ( e ) {
         var src = $__default["default"]( e.target ).attr( 'src' );
 
         fabric.Image.fromURL( src, function ( img ) {

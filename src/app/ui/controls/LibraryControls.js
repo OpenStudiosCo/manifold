@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
-import addImageItem from '../../../templates/helpers/add-image__item.pug';
+import addLibraryItem from '../../../templates/helpers/library__item.pug';
 
 /**
   * Library controls
@@ -11,7 +11,7 @@ export default class LibraryControls extends BaseControls {
   constructor( appInstance ) {
     app = appInstance;
     super();
-    var el = document.getElementById( 'add-image' );
+    var el = document.getElementById( 'library' );
     if ( !el ) {
       return;
     }
@@ -25,10 +25,10 @@ export default class LibraryControls extends BaseControls {
       .on( 'change', function ( e ) {
         window.URL = window.URL || window.webkitURL || window.mozURL;
         var url = URL.createObjectURL( e.currentTarget.files[ 0 ] );
-        $( addImageItem( { url: url } ) )
+        $( addLibraryItem( { url: url } ) )
           .insertBefore( '#btnUploadImage' );
       } );
-    $( '#add-image' ).on( 'click', 'a.ui.image.button img', function ( e ) {
+    $( '#library' ).on( 'click', 'a.ui.image.button img', function ( e ) {
       var src = $( e.target ).attr( 'src' );
 
       fabric.Image.fromURL( src, function ( img ) {

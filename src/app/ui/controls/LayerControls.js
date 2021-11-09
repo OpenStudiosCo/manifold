@@ -1,6 +1,6 @@
 import $ from 'jQuery';
 import BaseControls from './BaseControls.js';
-import layersToolItem from '../../../templates/helpers/layers-tool-item.pug';
+import addLayer from '../../../templates/helpers/layers__item.pug';
 
 var app = {};
 export default class LayerControls extends BaseControls {
@@ -43,7 +43,7 @@ export default class LayerControls extends BaseControls {
     else {
       type = 'Unknown';
     }
-    returnHtml += layersToolItem( { index: index, shape: type, active: active } );
+    returnHtml += addLayer( { index: index, shape: type, active: active } );
     // Render sub items if a group.
     if (object.type && object.type == 'group' && object.temporary == false) {
       returnHtml += '<div class="item"><div class="list">';
