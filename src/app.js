@@ -36,8 +36,6 @@ export default class App {
 $(() => {
   var app = new App();
 
-  app.fomantic.ready();
-
   // Run all the ready functions
   for (var classInstance in app) {
     if (app[classInstance].ready) {

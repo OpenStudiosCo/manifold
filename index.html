@@ -15,7 +15,7 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnPointTool"><i class="icon map marker vertically flipped grey"></i></a><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
+    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
       <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddCircle"><i class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item" id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i class="corner snowflake outline icon inverted disabled"></i></a>
     </div>
     <div class="ui right vertical visible sidebar menu inverted" id="details">
@@ -64,6 +64,42 @@
     </div>
     <div class="pusher" id="container">
       <canvas id="main-canvas"></canvas>
+      <div class="floating overlay" id="threeD-tool" style="display: none">
+        <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
+        <div class="ui card">
+          <div class="content">
+            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D options</div>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui header tiny">Select method</div>
+            <select class="ui dropdown fluid">
+              <option value="extrude" selected="">Extrude flat plane</option>
+              <option value="project">Project plane with persective</option>
+            </select>
+          </div>
+          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+            <div class="ui header tiny">Extrude Options</div>
+            <div class="ui mini form">
+              <div class="field">
+                <label>Extrude Vector</label>
+                <select class="ui dropdown fluid">
+                  <option>Create volume</option>
+                  <option>Rotate on Y axis</option>
+                  <option>Custom rotation</option>
+                </select>
+              </div>
+              <div class="field inline">
+                <label>Amount</label>
+                <input class="ui input" type="text" placeholder="20">
+              </div>
+              <div class="field inline">
+                <label>Bevel</label>
+                <input class="ui input" type="text" placeholder="1">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="floating overlay" id="fill-tool" style="display: none">
         <div class="ui card">
           <div class="content">
@@ -150,42 +186,6 @@
                   <div class="or"></div>
                   <div class="ui button" id="btnReplaceVector">Replace</div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="floating overlay" id="threeD-tool" style="display: none">
-        <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
-        <div class="ui card">
-          <div class="content">
-            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D options</div>
-          </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
-            <div class="ui header tiny">Select method</div>
-            <select class="ui dropdown fluid">
-              <option value="extrude" selected="">Extrude flat plane</option>
-              <option value="project">Project plane with persective</option>
-            </select>
-          </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
-            <div class="ui header tiny">Extrude Options</div>
-            <div class="ui mini form">
-              <div class="field">
-                <label>Extrude Vector</label>
-                <select class="ui dropdown fluid">
-                  <option>Create volume</option>
-                  <option>Rotate on Y axis</option>
-                  <option>Custom rotation</option>
-                </select>
-              </div>
-              <div class="field inline">
-                <label>Amount</label>
-                <input class="ui input" type="text" placeholder="20">
-              </div>
-              <div class="field inline">
-                <label>Bevel</label>
-                <input class="ui input" type="text" placeholder="1">
               </div>
             </div>
           </div>

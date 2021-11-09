@@ -1,7 +1,6 @@
 import $ from 'jQuery';
 import fabric from 'fabric';
 import BaseControls from './BaseControls.js';
-import addImageItem from '../../../templates/toolbar/add-image__item.pug';
 
 var app = {};
 export default class ToolbarControls extends BaseControls {
@@ -10,32 +9,10 @@ export default class ToolbarControls extends BaseControls {
     super();
     this.setupDefaultMenu();
 
-    $('#add-image').on('click', 'a.ui.image.button img', function(e){
-      var src = $(e.target).attr('src');
-    
-      fabric.Image.fromURL(src, function(img) {
-        app.fabric.model.helpers.addToCenter(img);
-      });
-      
-    });
-
     $(window).on('resize', () => {
       app.fabric.model.helpers.updateCanvasSize();
     });
-
-    $('#btnUploadImage')
-      .on('click', function(e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        $('#image_input').click();
-      });
-    $('#image_input')
-      .on('change', function(e) {
-        window.URL = window.URL || window.webkitURL || window.mozURL;
-        var url = URL.createObjectURL(e.currentTarget.files[0]);
-        $(addImageItem({ url: url }))
-          .insertBefore('#btnUploadImage');
-      });
+   
   }
   
   setupDefaultMenu() {
@@ -53,12 +30,6 @@ export default class ToolbarControls extends BaseControls {
         if ($(this).find('i.icon').hasClass('inverted')) {
           app.fabric.model.canvas.isDrawingMode = true;
         }
-      });
-
-    $('#btnPointTool')
-      .popup({
-        title: 'Manipulate Shapes',
-        position: 'right center'
       });
 
     // @TODO: https://codepen.io/shershen08/pen/JGepQv
