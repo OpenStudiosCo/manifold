@@ -21,24 +21,28 @@ export default class DropEvents extends BaseEvents {
     // Prevent default behavior (Prevent file from being opened)
     event.preventDefault();
 
+    let completeDrop = (file) => {
+      window.URL = window.URL || window.webkitURL || window.mozURL;
+      var url = URL.createObjectURL(file);
+      console.log(url);
+      $(addImageItem({ url: url }))
+        .insertBefore('#btnUploadImage');
+    };
+
     if (event.dataTransfer.items) {
       // Use DataTransferItemList interface to access the file(s)
       for (var i = 0; i < event.dataTransfer.items.length; i++) {
         // If dropped items aren't files, reject them
         if (event.dataTransfer.items[i].kind === 'file') {
-          var file = event.dataTransfer.items[i].getAsFile();
-          window.URL = window.URL || window.webkitURL || window.mozURL;
-          var url = URL.createObjectURL(file);
-          console.log(url);
-          $(addImageItem({ url: url }))
-            .insertBefore('#btnUploadImage');
+          completeDrop(event.dataTransfer.items[i].getAsFile());
         }
       }
     } else {
       // Use DataTransfer interface to access the file(s)
       for (var i = 0; i < event.dataTransfer.files.length; i++) {
-        console.log('... file[' + i + '].name = ' + event.dataTransfer.files[i].name);
+        completeDrop(event.dataTransfer.files[i]);
       }
     }
   }
+  
 }
