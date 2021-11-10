@@ -65,12 +65,6 @@
   margin: 0 0 0 -1.3rem;
   position: relative;
 }
-#logo {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 1;
-}
 #logo img {
   -webkit-user-select: none;
      -moz-user-select: none;

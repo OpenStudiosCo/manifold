@@ -1,6 +1,17 @@
 .ui(class="inverted fluid accordion")
   .title
     i.dropdown.icon
+    | About
+  .content
+    .ui.inverted.segment
+      #logo.ui.fluid.image
+        a(href='#', title='Toggle Toolbars')
+          img(src='/assets/manifold.svg')
+      .ui.text.
+         A hybrid 2D/3D design tool, Manifold is an experimental program to address various multimedia production needs and R&D questions at Open Studios.
+      a(href='https://github.com/paulbrzeski/manifold', title='Github') Github
+  .title
+    i.dropdown.icon
     | Artboards
   .content
   .active.title
@@ -13,6 +24,3 @@
   //-   | Vector conversion
   //- .active.content
   //-   include /src/templates/overlays/vector-tool.pug
-#logo.ui.fluid.image.small(onclick='app.toolbar.toggle();' style="position: absolute; bottom: 0")
-  a(href='#', title='Toggle Toolbars')
-    img(src='/assets/manifold.svg')
