@@ -1,18 +1,13 @@
 .ui(class="inverted fluid accordion")
   .title
     i.dropdown.icon
-    | Artboards
+    | Timeline
   .content
   .active.title
     i.dropdown.icon
-    | Layers
+    | Library
   .active.content
-    include /src/templates/details/layers.pug
-  //- .active.title
-  //-   i.dropdown.icon 
-  //-   | Vector conversion
-  //- .active.content
-  //-   include /src/templates/overlays/vector-tool.pug
+    include /src/templates/footer/library.pug
 #logo.ui.fluid.image.small(onclick='app.toolbar.toggle();' style="position: absolute; bottom: 0")
   a(href='#', title='Toggle Toolbars')
     img(src='/assets/manifold.svg')

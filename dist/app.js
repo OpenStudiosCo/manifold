@@ -964,19 +964,19 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
   var app$4 = {};
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
-    function FabricJSIntegration(appInstance) {
+    function FabricJSIntegration( appInstance ) {
       app$4 = appInstance;
       BaseIntegration.call(this);
       this.el = '#main-canvas';
       this.model = {
-        colourPickerModel: new ColourPickerControls(appInstance),
-        canvas: new fabric__default["default"].Canvas('main-canvas', { preserveObjectStacking: true }),
+        colourPickerModel: new ColourPickerControls( appInstance ),
+        canvas: new fabric__default["default"].Canvas( 'main-canvas', { preserveObjectStacking: true } ),
         attributes: {
           canvas: null,
           transitioning: false
         },
-        helpers: new FabricJSIntegrationHelpers(appInstance),
-        events: new FabricJSIntegrationEvents(appInstance)
+        helpers: new FabricJSIntegrationHelpers( appInstance ),
+        events: new FabricJSIntegrationEvents( appInstance )
       };
     }
 
@@ -987,27 +987,45 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     FabricJSIntegration.prototype.ready = function ready () {
       app$4.fabric.model.events.setupEvents();
       app$4.fabric.model.helpers.updateCanvasSize();
-      
+
       // Default scene.
+      app$4.fabric.demoAnimating();
+    };
+    FabricJSIntegration.prototype.demoAnimating = function demoAnimating () {
+
+      // var gradient = new fabric.Gradient( {
+      //   type: 'linear',
+      //   gradientUnits: 'pixels', // or 'percentage'
+      //   coords: { x1: 0, y1: 0, x2: 0, y2: 50 },
+      //   colorStops: [
+      //     { offset: 0, color: '#F00' },
+      //     { offset: 1, color: '#000' }
+      //   ]
+      // } );
+      var triangle = new fabric__default["default"].Triangle( { width: 200, height: 200, fill: 'blue', left: 50, top: -150 } );
+      app$4.fabric.model.helpers.addToCenter( triangle );
+    };
+    FabricJSIntegration.prototype.demoDrawing = function demoDrawing () {
+      var circle = new fabric__default["default"].Circle( { radius: 100, fill: '  green' } );
+      app$4.fabric.model.helpers.addToCenter( circle );
+      circle.left -= 75;
+      var rect = new fabric__default["default"].Rect( {
+        fill: 'red',
+        width: 200,
+        height: 200
+      } );
+      app$4.fabric.model.helpers.addToCenter( rect );
+      rect.left += 75;
+    };
+    FabricJSIntegration.prototype.demoTracing = function demoTracing () {
       var imgSrc = '/assets/puppies.jpg';
-      fabric__default["default"].Image.fromURL(imgSrc, function(oImg) {
-        app$4.fabric.model.helpers.addToCenter(oImg);
+      fabric__default["default"].Image.fromURL( imgSrc, function ( oImg ) {
+        app$4.fabric.model.helpers.addToCenter( oImg );
         oImg.left -= 7;
         oImg.top += 13;
-        app$4.fabric.model.canvas.setActiveObject(app$4.fabric.model.canvas.item(0));
-        $('#btnToggleVector').click();
-      });
-
-      // var circle = new fabric.Circle({ radius: 100, fill: '  green' });
-      // app.fabric.model.helpers.addToCenter(circle);
-      // circle.left -= 75;
-      // var rect = new fabric.Rect({
-      //   fill: 'red',
-      //   width: 200,
-      //   height: 200
-      // });
-      // app.fabric.model.helpers.addToCenter(rect);
-      // rect.left += 75;
+        app$4.fabric.model.canvas.setActiveObject( app$4.fabric.model.canvas.item( 0 ) );
+        $( '#btnToggleVector' ).click();
+      } );
     };
 
     return FabricJSIntegration;
@@ -1047,7 +1065,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
   function addLibraryItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (url) {
-  pug_html = pug_html + "\u003Ca class=\"ui image button\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"ui secondary button\"\u003E";
   pug_html = pug_html + "\u003Cimg" + (" class=\"ui tiny image\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
@@ -1238,7 +1256,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           $__default["default"]( addLibraryItem( { url: url } ) )
             .insertBefore( '#btnUploadImage' );
         } );
-      $__default["default"]( '#library' ).on( 'click', 'a.ui.image.button img', function ( e ) {
+      $__default["default"]( '#library' ).on( 'click', 'a.ui.button img', function ( e ) {
         var src = $__default["default"]( e.target ).attr( 'src' );
 
         fabric.Image.fromURL( src, function ( img ) {
