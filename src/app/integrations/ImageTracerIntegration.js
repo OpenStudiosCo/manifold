@@ -19,22 +19,31 @@ export default class ImageTracerIntegration extends BaseIntegration {
     super();
 
     $('.imagetracerConfig').on('change', () => {
+      console.log('hiii');
       this.preview(app);
     });
 
-    $('.ui.slider.colours').slider({
+    $('.imagetracer.controls .ui.slider.colours').slider({
       min: 2,
       max: 16,
       start: 4,
       step: 2,
       onChange: () => { this.preview(app) }
     });
+    // $('.imagetracer.controls .ui.slider.mincolorratio').slider({
+    //   min: 0,
+    //   max: 800,
+    //   start: 0,
+    //   step: 100,
+    //   onChange: () => { this.preview(app) }
+    // });
   }
 
   preview(app) {
     let preset = $('.preset').find(":selected").text().toLowerCase();
     app.vector.imagetracer.controls.numberofcolors = $('.ui.slider.colours').slider('get value');
-
+    app.vector.imagetracer.controls.mincolorratio = $('.mincolorratio').val();
+    app.vector.imagetracer.controls.colorquantcycles = $('.colorquantcycles').val();
     // Potrace.setParameter({
     //   alphamax: $('.alphamax').val(),
     //   optcurve: $('.optcurve').is(":checked"),

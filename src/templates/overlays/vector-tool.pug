@@ -47,6 +47,12 @@
             .field
               label Number of Colours
               .ui.labeled.slider.imagetracerConfig.colours
+            .field
+              label Min Color Ratio (total pixels*mincolorratio)
+              input.ui.input.imagetracerConfig.mincolorratio(type='number' step="0.1" value='0')
+            .field
+              label colorquantcycles
+              input.ui.input.imagetracerConfig.colorquantcycles(type='number' step="1" value='3')  
     .content.potrace.controls
       .ui.header.tiny Potrace Options
       .ui.mini.form
