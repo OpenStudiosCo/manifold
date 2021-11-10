@@ -188,7 +188,7 @@
                     <input class="ui input imagetracerConfig mincolorratio" type="number" step="0.1" value="0">
                   </div>
                   <div class="field">
-                    <label>colorquantcycles</label>
+                    <label>Color quantization #</label>
                     <input class="ui input imagetracerConfig colorquantcycles" type="number" step="1" value="3">
                   </div>
                 </div>
@@ -200,15 +200,28 @@
                 <div class="ui mini form">
                   <div class="fields">
                     <div class="field">
-                      <label>Error thresholds</label>
+                      <label> </label>
                     </div>
                     <div class="field">
-                      <label>Straight lines.</label>
-                      <input class="ui input imagetracerConfig ltres" type="number" step="1" value="1">
+                      <label>Blur Radius</label>
+                      <input class="ui input imagetracerConfig blurradius" type="number" step="1" value="0">
                     </div>
                     <div class="field">
-                      <label>Quadratic splines.</label>
-                      <input class="ui input imagetracerConfig qtres" type="number" step="1" value="1">
+                      <label>Blur delta threshold.</label>
+                      <input class="ui input imagetracerConfig blurdelta" type="number" step="1" value="20">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Tolerance</label>
+                    <div class="two fields">
+                      <div class="field">
+                        <label>Straight lines.</label>
+                        <input class="ui input imagetracerConfig ltres" type="number" step="1" value="1">
+                      </div>
+                      <div class="field">
+                        <label>Quadratic splines.</label>
+                        <input class="ui input imagetracerConfig qtres" type="number" step="1" value="1">
+                      </div>
                     </div>
                   </div>
                   <div class="field">

@@ -51,7 +51,7 @@
               label Min Color Ratio (total pixels*mincolorratio)
               input.ui.input.imagetracerConfig.mincolorratio(type='number' step="0.1" value='0')
             .field
-              label colorquantcycles
+              label Color quantization #
               input.ui.input.imagetracerConfig.colorquantcycles(type='number' step="1" value='3')
         .active.title
           i.dropdown.icon
@@ -60,13 +60,22 @@
           .ui.mini.form
             .fields
               .field
-                label Error thresholds
+                label 
               .field
-                label Straight lines.
-                input.ui.input.imagetracerConfig.ltres(type='number' step="1" value='1')
+                label Blur Radius
+                input.ui.input.imagetracerConfig.blurradius(type='number' step="1" value='0')
               .field
-                label Quadratic splines.
-                input.ui.input.imagetracerConfig.qtres(type='number' step="1" value='1')
+                label Blur delta threshold.
+                input.ui.input.imagetracerConfig.blurdelta(type='number' step="1" value='20')
+            .field
+              label Tolerance
+              .two.fields
+                .field
+                  label Straight lines.
+                  input.ui.input.imagetracerConfig.ltres(type='number' step="1" value='1')
+                .field
+                  label Quadratic splines.
+                  input.ui.input.imagetracerConfig.qtres(type='number' step="1" value='1')
             .field
               label Minimum path length
               input.ui.input.imagetracerConfig.pathomit(type='number' step="1" value='8')

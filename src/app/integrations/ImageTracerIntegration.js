@@ -49,6 +49,8 @@ export default class ImageTracerIntegration extends BaseIntegration {
     app.vector.imagetracer.controls.pathomit = $('.pathomit').val();
     app.vector.imagetracer.controls.rightangleenhance =  $('.rightangleenhance').is(":checked");
     app.vector.imagetracer.controls.layering =  $('.layering').is(":checked");
+    app.vector.imagetracer.controls.blurradius =  $('.blurradius').val();
+    app.vector.imagetracer.controls.blurdelta =  $('.blurdelta').val();
     // Potrace.setParameter({
     //   alphamax: $('.alphamax').val(),
     //   optcurve: $('.optcurve').is(":checked"),

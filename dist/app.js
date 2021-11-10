@@ -1450,6 +1450,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       app.vector.imagetracer.controls.pathomit = $('.pathomit').val();
       app.vector.imagetracer.controls.rightangleenhance =  $('.rightangleenhance').is(":checked");
       app.vector.imagetracer.controls.layering =  $('.layering').is(":checked");
+      app.vector.imagetracer.controls.blurradius =  $('.blurradius').val();
+      app.vector.imagetracer.controls.blurdelta =  $('.blurdelta').val();
       // Potrace.setParameter({
       //   alphamax: $('.alphamax').val(),
       //   optcurve: $('.optcurve').is(":checked"),
