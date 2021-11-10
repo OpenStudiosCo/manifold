@@ -39,10 +39,10 @@
             option artistic2
             option artistic3
             option artistic4
-        .active.title
+        .title
           i.dropdown.icon
           label Colour options
-        .active.content
+        .content
           .ui.mini.form
             .field
               label Number of Colours
@@ -52,7 +52,32 @@
               input.ui.input.imagetracerConfig.mincolorratio(type='number' step="0.1" value='0')
             .field
               label colorquantcycles
-              input.ui.input.imagetracerConfig.colorquantcycles(type='number' step="1" value='3')  
+              input.ui.input.imagetracerConfig.colorquantcycles(type='number' step="1" value='3')
+        .active.title
+          i.dropdown.icon
+          label Tracing options
+        .active.content
+          .ui.mini.form
+            .fields
+              .field
+                label Error thresholds
+              .field
+                label Straight lines.
+                input.ui.input.imagetracerConfig.ltres(type='number' step="1" value='1')
+              .field
+                label Quadratic splines.
+                input.ui.input.imagetracerConfig.qtres(type='number' step="1" value='1')
+            .field
+              label Minimum path length
+              input.ui.input.imagetracerConfig.pathomit(type='number' step="1" value='8')
+            .field
+              .ui.toggle.checkbox.checked
+                input.imagetracerConfig.rightangleenhance(type='checkbox' checked)
+                label Enhance right angle corners.
+            .field
+              .ui.toggle.checkbox
+                input.imagetracerConfig.layering(type='checkbox')
+                label Layer Sequentially
     .content.potrace.controls
       .ui.header.tiny Potrace Options
       .ui.mini.form

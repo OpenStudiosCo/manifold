@@ -174,10 +174,10 @@
                   <option>artistic4</option>
                 </select>
               </div>
-              <div class="active title"><i class="dropdown icon"></i>
+              <div class="title"><i class="dropdown icon"></i>
                 <label>Colour options</label>
               </div>
-              <div class="active content">
+              <div class="content">
                 <div class="ui mini form">
                   <div class="field">
                     <label>Number of Colours</label>
@@ -190,6 +190,42 @@
                   <div class="field">
                     <label>colorquantcycles</label>
                     <input class="ui input imagetracerConfig colorquantcycles" type="number" step="1" value="3">
+                  </div>
+                </div>
+              </div>
+              <div class="active title"><i class="dropdown icon"></i>
+                <label>Tracing options</label>
+              </div>
+              <div class="active content">
+                <div class="ui mini form">
+                  <div class="fields">
+                    <div class="field">
+                      <label>Error thresholds</label>
+                    </div>
+                    <div class="field">
+                      <label>Straight lines.</label>
+                      <input class="ui input imagetracerConfig ltres" type="number" step="1" value="1">
+                    </div>
+                    <div class="field">
+                      <label>Quadratic splines.</label>
+                      <input class="ui input imagetracerConfig qtres" type="number" step="1" value="1">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Minimum path length</label>
+                    <input class="ui input imagetracerConfig pathomit" type="number" step="1" value="8">
+                  </div>
+                  <div class="field">
+                    <div class="ui toggle checkbox checked">
+                      <input class="imagetracerConfig rightangleenhance" type="checkbox" checked>
+                      <label>Enhance right angle corners.</label>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="ui toggle checkbox">
+                      <input class="imagetracerConfig layering" type="checkbox">
+                      <label>Layer Sequentially</label>
+                    </div>
                   </div>
                 </div>
               </div>
