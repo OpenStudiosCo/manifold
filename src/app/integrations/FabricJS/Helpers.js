@@ -15,6 +15,17 @@ export default class FabricJSIntegrationHelpers {
       objects.forEach((object, index) => {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
+      if (temporary) {
+        // Remove other previews
+        // @todo: Expand when other things are set to temporary
+        let existing_objects = app.fabric.model.canvas.getObjects();
+        existing_objects.forEach((object) => {
+          if (object.temporary) {
+            app.fabric.model.canvas.remove(object);  
+          }
+        });
+      }
+      
       this.addToCenter(group, temporary);
 
       if (callbackFn) {

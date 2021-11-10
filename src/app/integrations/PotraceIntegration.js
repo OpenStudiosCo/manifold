@@ -63,15 +63,6 @@ export default class PotraceIntegration extends BaseIntegration {
   }
 
   preview(app) {
-    // Remove other previews
-    // @todo: Expand when other things are set to temporary
-    let objects = app.fabric.model.canvas.getObjects();
-    objects.forEach((object) => {
-      if (object.temporary) {
-        app.fabric.model.canvas.remove(object);  
-      }
-    });
-
     Potrace.setParameter({
       alphamax: $('.alphamax').val(),
       optcurve: $('.optcurve').is(":checked"),

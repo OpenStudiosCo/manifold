@@ -150,9 +150,11 @@
           </div>
           <div class="content imagetracer controls">
             <div class="ui header tiny">ImageTracer Options</div>
-            <div class="ui mini form">
-              <div class="field">
+            <div class="ui accordion">
+              <div class="title"><i class="dropdown icon"></i>
                 <label>Preset</label>
+              </div>
+              <div class="content">
                 <select class="ui dropdown fluid imagetracerConfig preset">
                   <option>default</option>
                   <option>posterized1</option>
@@ -172,9 +174,16 @@
                   <option>artistic4</option>
                 </select>
               </div>
-              <div class="field">
-                <label>Number of Colours</label>
-                <div class="ui labeled slider imagetracerConfig colours"></div>
+              <div class="active title"><i class="dropdown icon"></i>
+                <label>Colour options</label>
+              </div>
+              <div class="active content">
+                <div class="ui mini form">
+                  <div class="field">
+                    <label>Number of Colours</label>
+                    <div class="ui labeled slider imagetracerConfig colours"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

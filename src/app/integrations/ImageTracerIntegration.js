@@ -24,23 +24,14 @@ export default class ImageTracerIntegration extends BaseIntegration {
 
     $('.ui.slider.colours').slider({
       min: 2,
-      max: 32,
-      start: 6,
-      step: 4,
+      max: 16,
+      start: 4,
+      step: 2,
       onChange: () => { this.preview(app) }
     });
   }
 
   preview(app) {
-    // Remove other previews
-    // @todo: Expand when other things are set to temporary
-    let objects = app.fabric.model.canvas.getObjects();
-    objects.forEach((object) => {
-      if (object.temporary) {
-        app.fabric.model.canvas.remove(object);  
-      }
-    });
-
     let preset = $('.preset').find(":selected").text().toLowerCase();
     app.vector.imagetracer.controls.numberofcolors = $('.ui.slider.colours').slider('get value');
 

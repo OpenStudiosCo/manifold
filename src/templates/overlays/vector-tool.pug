@@ -17,9 +17,11 @@
           label(for="vctMthPo") Potrace
     .content.imagetracer.controls
       .ui.header.tiny ImageTracer Options
-      .ui.mini.form
-        .field
+      .ui.accordion
+        .title
+          i.dropdown.icon
           label Preset
+        .content
           select.ui.dropdown.fluid.imagetracerConfig.preset
             option default
             option posterized1
@@ -37,9 +39,14 @@
             option artistic2
             option artistic3
             option artistic4
-        .field
-          label Number of Colours
-          .ui.labeled.slider.imagetracerConfig.colours
+        .active.title
+          i.dropdown.icon
+          label Colour options
+        .active.content
+          .ui.mini.form
+            .field
+              label Number of Colours
+              .ui.labeled.slider.imagetracerConfig.colours
     .content.potrace.controls
       .ui.header.tiny Potrace Options
       .ui.mini.form

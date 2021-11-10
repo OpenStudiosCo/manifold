@@ -898,6 +898,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       objects.forEach(function (object, index) {
         object.id = object.type + '-' + Math.floor(Date.now() / 1000) + index;    
       });
+      if (temporary) {
+        // Remove other previews
+        // @todo: Expand when other things are set to temporary
+        var existing_objects = app$5.fabric.model.canvas.getObjects();
+        existing_objects.forEach(function (object) {
+          if (object.temporary) {
+            app$5.fabric.model.canvas.remove(object);  
+          }
+        });
+      }
+        
       this.addToCenter(group, temporary);
 
       if (callbackFn) {
@@ -1410,9 +1421,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
       $('.ui.slider.colours').slider({
         min: 2,
-        max: 32,
-        start: 6,
-        step: 4,
+        max: 16,
+        start: 4,
+        step: 2,
         onChange: function () { this$1$1.preview(app); }
       });
     }
@@ -1422,15 +1433,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     ImageTracerIntegration.prototype.constructor = ImageTracerIntegration;
 
     ImageTracerIntegration.prototype.preview = function preview (app) {
-      // Remove other previews
-      // @todo: Expand when other things are set to temporary
-      var objects = app.fabric.model.canvas.getObjects();
-      objects.forEach(function (object) {
-        if (object.temporary) {
-          app.fabric.model.canvas.remove(object);  
-        }
-      });
-
       var preset = $('.preset').find(":selected").text().toLowerCase();
       app.vector.imagetracer.controls.numberofcolors = $('.ui.slider.colours').slider('get value');
 
@@ -1534,15 +1536,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     };
 
     PotraceIntegration.prototype.preview = function preview (app) {
-      // Remove other previews
-      // @todo: Expand when other things are set to temporary
-      var objects = app.fabric.model.canvas.getObjects();
-      objects.forEach(function (object) {
-        if (object.temporary) {
-          app.fabric.model.canvas.remove(object);  
-        }
-      });
-
       Potrace__default["default"].setParameter({
         alphamax: $__default["default"]('.alphamax').val(),
         optcurve: $__default["default"]('.optcurve').is(":checked"),
