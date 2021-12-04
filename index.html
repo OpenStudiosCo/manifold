@@ -189,7 +189,13 @@
         </div>
         <div class="active title"><i class="dropdown icon"></i>Library</div>
         <div class="active content">
-          <div id="library"><a class="ui secondary button"><img class="ui tiny image" src="/assets/puppies.jpg"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/tux.png"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/demo.jpg"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/demo2.jpg"></a><a class="ui secondary button" id="btnUploadImage"><i class="add icon"></i></a>
+          <div id="library">
+            <div class="ui link cards">
+              <div class="ui card" style="overflow: hidden"><a class="image" href="#"><img src="/assets/puppies.jpg" style="margin: -20% 0"></a></div>
+              <div class="ui card"><a class="image" href="#"><img src="/assets/tux.png"></a></div>
+              <div class="ui card"><a class="image" href="#"><img src="/assets/demo.jpg"></a></div>
+              <div class="ui card"><a class="image" href="#"><img src="/assets/demo2.jpg"></a></div><a class="ui button" id="btnUploadImage"><i class="add icon"></i>Add Files</a>
+            </div>
             <input id="image_input" type="file" accept="image/*">
           </div>
         </div>

@@ -28,7 +28,7 @@ export default class LibraryControls extends BaseControls {
         $( addLibraryItem( { url: url } ) )
           .insertBefore( '#btnUploadImage' );
       } );
-    $( '#library' ).on( 'click', 'a.ui.button img', function ( e ) {
+    $( '#library' ).on( 'click', 'a', function ( e ) {
       var src = $( e.target ).attr( 'src' );
 
       fabric.Image.fromURL( src, function ( img ) {

@@ -1065,8 +1065,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
   function addLibraryItem(locals) {var pug_html = "";var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (url) {
-  pug_html = pug_html + "\u003Ca class=\"ui secondary button\"\u003E";
-  pug_html = pug_html + "\u003Cimg" + (" class=\"ui tiny image\""+pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E";
+  pug_html = pug_html + "\u003Cdiv class=\"ui card\"\u003E";
+  pug_html = pug_html + "\u003Ca class=\"image\" href=\"#\"\u003E";
+  pug_html = pug_html + "\u003Cimg" + (pug.attr("src", url, true, true)) + "\u003E\u003C\u002Fa\u003E\u003C\u002Fdiv\u003E";
   }.call(this,"url" in locals_for_with?locals_for_with.url:typeof url!=="undefined"?url:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
 
   var DropEvents = /*@__PURE__*/(function (BaseEvents) {
@@ -1319,7 +1320,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           $__default["default"]( addLibraryItem( { url: url } ) )
             .insertBefore( '#btnUploadImage' );
         } );
-      $__default["default"]( '#library' ).on( 'click', 'a.ui.button img', function ( e ) {
+      $__default["default"]( '#library' ).on( 'click', 'a', function ( e ) {
         var src = $__default["default"]( e.target ).attr( 'src' );
 
         fabric.Image.fromURL( src, function ( img ) {

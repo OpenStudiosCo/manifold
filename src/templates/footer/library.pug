@@ -1,12 +1,19 @@
 #library
-  a.ui.secondary.button
-    img.ui.tiny.image(src='/assets/puppies.jpg')
-  a.ui.secondary.button
-    img.ui.tiny.image(src='/assets/tux.png')
-  a.ui.secondary.button
-    img.ui.tiny.image(src='/assets/demo.jpg')
-  a.ui.secondary.button
-    img.ui.tiny.image(src='/assets/demo2.jpg')
-  a.ui.secondary.button#btnUploadImage
-    i.add.icon
+  .ui.link.cards
+    .ui.card(style="overflow: hidden")
+      a.image(href='#')
+        img(src='/assets/puppies.jpg' style="margin: -20% 0")
+    .ui.card
+      a.image(href='#')
+        img(src='/assets/tux.png')
+    .ui.card
+      a.image(href='#')
+        img(src='/assets/demo.jpg')
+    .ui.card
+      a.image(href='#')
+        img(src='/assets/demo2.jpg')
+
+    a.ui.button#btnUploadImage
+      i.add.icon
+      | Add Files
   input#image_input(type='file',accept='image/*')
