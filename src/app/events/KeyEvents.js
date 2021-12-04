@@ -9,6 +9,19 @@ export default class KeyEvents extends BaseEvents {
   constructor( appInstance ) {
     app = appInstance;
     super();
+    document.addEventListener("keydown", function (event) {
+      if (event.ctrlKey && event.keyCode === 65) {
+          event.preventDefault();
+
+          // Has to fire here because it is being preventDefaulted to block regular select all behaviour
+          app.fabric.model.canvas.discardActiveObject();
+          var sel = new fabric.ActiveSelection(app.fabric.model.canvas.getObjects(), {
+            canvas: app.fabric.model.canvas,
+          });
+          app.fabric.model.canvas.setActiveObject(sel);
+          app.fabric.model.canvas.requestRenderAll();
+      }   
+  });
 
     document.addEventListener('keyup', ({ keyCode, ctrlKey } = event) => {
       // Check pressed button is Z - Ctrl+Z.
@@ -49,6 +62,7 @@ export default class KeyEvents extends BaseEvents {
           console.log('post redo');
         });
       }
+
     })
   }
 
