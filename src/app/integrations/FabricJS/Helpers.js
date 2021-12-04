@@ -59,8 +59,14 @@ export default class FabricJSIntegrationHelpers {
       canvasWidth -= $('#details').width();
     }
     var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    
-    object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
+
+    if (object.width > canvasWidth || object.height > canvasHeight) {
+      object.scaleToWidth(app.fabric.model.canvas.getWidth() / 2);
+      object.set({ left: (canvasWidth / 2) - (object.width * object.scaleX / 2), top: ((canvasHeight /2) - (object.height * object.scaleY / 2)) });
+    }
+    else {
+      object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
+    }
     
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
     object.temporary = temporary;
@@ -72,4 +78,5 @@ export default class FabricJSIntegrationHelpers {
       app.layers.updateLayers();
     }
   }
+  
 }

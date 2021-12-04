@@ -944,8 +944,14 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       canvasWidth -= $__default["default"]('#details').width();
     }
     var canvasHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      
-    object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
+
+    if (object.width > canvasWidth || object.height > canvasHeight) {
+      object.scaleToWidth(app$6.fabric.model.canvas.getWidth() / 2);
+      object.set({ left: (canvasWidth / 2) - (object.width * object.scaleX / 2), top: ((canvasHeight /2) - (object.height * object.scaleY / 2)) });
+    }
+    else {
+      object.set({ left: (canvasWidth / 2) - (object.width / 2), top: ((canvasHeight /2) - (object.height / 2)) });
+    }
       
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
     object.temporary = temporary;
@@ -1123,6 +1129,19 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     function KeyEvents( appInstance ) {
       app$4 = appInstance;
       BaseEvents.call(this);
+      document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && event.keyCode === 65) {
+            event.preventDefault();
+
+            // Has to fire here because it is being preventDefaulted to block regular select all behaviour
+            app$4.fabric.model.canvas.discardActiveObject();
+            var sel = new fabric.ActiveSelection(app$4.fabric.model.canvas.getObjects(), {
+              canvas: app$4.fabric.model.canvas,
+            });
+            app$4.fabric.model.canvas.setActiveObject(sel);
+            app$4.fabric.model.canvas.requestRenderAll();
+        }   
+    });
 
       document.addEventListener('keyup', function (ref) {
         if ( ref === void 0 ) ref = event;
@@ -1167,6 +1186,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
             console.log('post redo');
           });
         }
+
       });
     }
 
