@@ -15,7 +15,7 @@
     <link href="./dist/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
+    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnRedo"><i class="icon redo grey"></i></a><a class="item" id="btnUndo"><i class="icon undo grey"></i></a><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
       <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddCircle"><i class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item" id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i class="corner snowflake outline icon inverted disabled"></i></a>
     </div>
     <div class="ui right vertical visible sidebar menu inverted" id="details">
@@ -70,7 +70,9 @@
             <table class="ui inverted structured celled compact small table">
               <thead>
                 <tr>
-                  <th colspan="2">Frame</th>
+                  <th>
+                    <div class="ui compact mini icon button"><i class="icon play"></i></div>
+                  </th>
                   <th>0</th>
                   <th>1</th>
                   <th>2</th>
@@ -126,58 +128,58 @@
               </thead>
               <tbody>
                 <tr>
-                  <td colspan="2">Timeline 1</td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
-                  <td class="selectable"></td>
+                  <th></th>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
+                  <td class="selectable">&nbsp;</td>
                 </tr>
               </tbody>
             </table>
@@ -431,6 +433,7 @@
   <script src="./vendor/SVGRenderer.js"></script>
   <script src="./vendor/potrace.js"></script>
   <script src="./vendor/imagetracer_v1.2.6.js"></script>
+  <script src="./vendor/fabrichistory.js"></script>
   <script src="./dist/app.js"></script>
   <script>
     // Google Analytics

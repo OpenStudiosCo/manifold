@@ -3,13 +3,15 @@
     thead
       - var n = 0;
       tr
-        th(colspan=2) Frame
+        th
+          .ui.compact.mini.icon.button
+            i.icon.play
         while n < 51
           th= n++
     tbody
       - n = 0;
       tr
-        td(colspan=2) Timeline 1
+        th
         while n < 51
-          td.selectable
+          td.selectable &nbsp;
           - n++

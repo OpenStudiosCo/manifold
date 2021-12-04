@@ -16,6 +16,28 @@ export default class ToolbarControls extends BaseControls {
   }
   
   setupDefaultMenu() {
+    $('#btnRedo')
+    .popup({
+      title: 'Redo',
+      position: 'right center'
+    })
+    .on('click', function(){
+      app.fabric.model.canvas.redo(function() { 
+        console.log('post redo');
+      });
+    });
+    $('#btnUndo')
+    .popup({
+      title: 'Undo',
+      position: 'right center'
+    })
+    .on('click', function(){
+      app.fabric.model.canvas.undo(function() { 
+        console.log('post undo');
+      });
+      
+      
+    });
     $('#btnDrawTool')
       .popup({
         title: 'Draw',

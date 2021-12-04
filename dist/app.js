@@ -1292,6 +1292,28 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     ToolbarControls.prototype.constructor = ToolbarControls;
     
     ToolbarControls.prototype.setupDefaultMenu = function setupDefaultMenu () {
+      $__default["default"]('#btnRedo')
+      .popup({
+        title: 'Redo',
+        position: 'right center'
+      })
+      .on('click', function(){
+        app$1.fabric.model.canvas.redo(function() { 
+          console.log('post redo');
+        });
+      });
+      $__default["default"]('#btnUndo')
+      .popup({
+        title: 'Undo',
+        position: 'right center'
+      })
+      .on('click', function(){
+        app$1.fabric.model.canvas.undo(function() { 
+          console.log('post undo');
+        });
+        
+        
+      });
       $__default["default"]('#btnDrawTool')
         .popup({
           title: 'Draw',
