@@ -4,6 +4,7 @@ import $ from 'jQuery';
 import FabricJSIntegration from './app/integrations/FabricJSIntegration.js';
 import FomanticIntegration from './app/integrations/FomanticIntegration.js';
 import DropEvents from './app/events/DropEvents.js';
+import KeyEvents from './app/events/KeyEvents.js';
 import LayerControls from './app/ui/controls/LayerControls.js';
 import LibraryControls from './app/ui/controls/LibraryControls.js';
 import ToolbarControls from './app/ui/controls/ToolbarControls.js';
@@ -23,6 +24,7 @@ export default class App {
     // Events
     this.events = {};
     this.events.drop = new DropEvents(this);
+    this.events.key = new KeyEvents(this);
 
     // UI    
     this.layers = new LayerControls(this);

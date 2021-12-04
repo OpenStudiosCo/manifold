@@ -70,66 +70,68 @@
             <table class="ui inverted structured celled compact small table">
               <thead>
                 <tr>
-                  <th>
-                    <div class="ui compact mini icon button"><i class="icon play"></i></div>
-                  </th>
-                  <th>0</th>
-                  <th>1</th>
-                  <th>2</th>
-                  <th>3</th>
-                  <th>4</th>
-                  <th>5</th>
-                  <th>6</th>
-                  <th>7</th>
-                  <th>8</th>
-                  <th>9</th>
-                  <th>10</th>
-                  <th>11</th>
-                  <th>12</th>
-                  <th>13</th>
-                  <th>14</th>
-                  <th>15</th>
-                  <th>16</th>
-                  <th>17</th>
-                  <th>18</th>
-                  <th>19</th>
-                  <th>20</th>
-                  <th>21</th>
-                  <th>22</th>
-                  <th>23</th>
-                  <th>24</th>
-                  <th>25</th>
-                  <th>26</th>
-                  <th>27</th>
-                  <th>28</th>
-                  <th>29</th>
-                  <th>30</th>
-                  <th>31</th>
-                  <th>32</th>
-                  <th>33</th>
-                  <th>34</th>
-                  <th>35</th>
-                  <th>36</th>
-                  <th>37</th>
-                  <th>38</th>
-                  <th>39</th>
-                  <th>40</th>
-                  <th>41</th>
-                  <th>42</th>
-                  <th>43</th>
-                  <th>44</th>
-                  <th>45</th>
-                  <th>46</th>
-                  <th>47</th>
-                  <th>48</th>
-                  <th>49</th>
-                  <th>50</th>
+                  <th style="display: flex; justify-content: space-evenly;">&nbsp;</th>
+                  <th style="text-align: center;">0</th>
+                  <th style="text-align: center;">1</th>
+                  <th style="text-align: center;">2</th>
+                  <th style="text-align: center;">3</th>
+                  <th style="text-align: center;">4</th>
+                  <th style="text-align: center;">5</th>
+                  <th style="text-align: center;">6</th>
+                  <th style="text-align: center;">7</th>
+                  <th style="text-align: center;">8</th>
+                  <th style="text-align: center;">9</th>
+                  <th style="text-align: center;">10</th>
+                  <th style="text-align: center;">11</th>
+                  <th style="text-align: center;">12</th>
+                  <th style="text-align: center;">13</th>
+                  <th style="text-align: center;">14</th>
+                  <th style="text-align: center;">15</th>
+                  <th style="text-align: center;">16</th>
+                  <th style="text-align: center;">17</th>
+                  <th style="text-align: center;">18</th>
+                  <th style="text-align: center;">19</th>
+                  <th style="text-align: center;">20</th>
+                  <th style="text-align: center;">21</th>
+                  <th style="text-align: center;">22</th>
+                  <th style="text-align: center;">23</th>
+                  <th style="text-align: center;">24</th>
+                  <th style="text-align: center;">25</th>
+                  <th style="text-align: center;">26</th>
+                  <th style="text-align: center;">27</th>
+                  <th style="text-align: center;">28</th>
+                  <th style="text-align: center;">29</th>
+                  <th style="text-align: center;">30</th>
+                  <th style="text-align: center;">31</th>
+                  <th style="text-align: center;">32</th>
+                  <th style="text-align: center;">33</th>
+                  <th style="text-align: center;">34</th>
+                  <th style="text-align: center;">35</th>
+                  <th style="text-align: center;">36</th>
+                  <th style="text-align: center;">37</th>
+                  <th style="text-align: center;">38</th>
+                  <th style="text-align: center;">39</th>
+                  <th style="text-align: center;">40</th>
+                  <th style="text-align: center;">41</th>
+                  <th style="text-align: center;">42</th>
+                  <th style="text-align: center;">43</th>
+                  <th style="text-align: center;">44</th>
+                  <th style="text-align: center;">45</th>
+                  <th style="text-align: center;">46</th>
+                  <th style="text-align: center;">47</th>
+                  <th style="text-align: center;">48</th>
+                  <th style="text-align: center;">49</th>
+                  <th style="text-align: center;">50</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <th></th>
-                  <td class="selectable">&nbsp;</td>
+                  <td style="display: flex; justify-content: space-evenly;">
+                    <button class="ui compact mini icon button">1x</button>
+                    <button class="ui compact mini icon button"><i class="icon fast backward"></i></button>
+                    <button class="ui compact mini icon button"><i class="icon play"></i><i class="icon pause"></i></button>
+                  </td>
+                  <td class="selectable  active">&nbsp;</td>
                   <td class="selectable">&nbsp;</td>
                   <td class="selectable">&nbsp;</td>
                   <td class="selectable">&nbsp;</td>
@@ -185,8 +187,8 @@
             </table>
           </div>
         </div>
-        <div class="title"><i class="dropdown icon"></i>Library</div>
-        <div class="content">
+        <div class="active title"><i class="dropdown icon"></i>Library</div>
+        <div class="active content">
           <div id="library"><a class="ui secondary button"><img class="ui tiny image" src="/assets/puppies.jpg"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/tux.png"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/demo.jpg"></a><a class="ui secondary button"><img class="ui tiny image" src="/assets/demo2.jpg"></a><a class="ui secondary button" id="btnUploadImage"><i class="add icon"></i></a>
             <input id="image_input" type="file" accept="image/*">
           </div>

@@ -3,15 +3,20 @@
     thead
       - var n = 0;
       tr
-        th
-          .ui.compact.mini.icon.button
-            i.icon.play
+        th(style="display: flex; justify-content: space-evenly;") &nbsp;
         while n < 51
-          th= n++
+          th(style="text-align: center;")= n++
     tbody
       - n = 0;
       tr
-        th
+        td(style="display: flex; justify-content: space-evenly;")
+          button.ui.compact.mini.icon.button 1x
+          button.ui.compact.mini.icon.button
+            i.icon.fast.backward
+          button.ui.compact.mini.icon.button
+            i.icon.play
+            i.icon.pause
         while n < 51
-          td.selectable &nbsp;
+          - active = n == 0 ? ' active' : ''
+          td.selectable(class=active) &nbsp;
           - n++

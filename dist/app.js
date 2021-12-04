@@ -26,10 +26,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     * Credit - https://www.webdesignerdepot.com/2013/03/how-to-create-a-color-picker-with-html5-canvas/
     */
 
-  var app$8 = {};
+  var app$9 = {};
   var ColourPickerControls = /*@__PURE__*/(function (BaseControls) {
     function ColourPickerControls(appInstance) {
-      app$8 = appInstance;
+      app$9 = appInstance;
       BaseControls.call(this);
       var el = document.getElementById('colour-picker');
       if (!el) {
@@ -88,10 +88,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       $__default["default"]('input#hex').val('#' + hex);
       $__default["default"]('#colour-picker-preview').css('background-color', '#' + hex);
 
-      if (app$8.fabric.model.canvas) {
+      if (app$9.fabric.model.canvas) {
         $__default["default"]('#btnFillActive .icon').css('color', '#' + hex);
-        app$8.fabric.model.canvas.getActiveObject().set("fill", '#' + hex);
-        app$8.fabric.model.canvas.renderAll();
+        app$9.fabric.model.canvas.getActiveObject().set("fill", '#' + hex);
+        app$9.fabric.model.canvas.renderAll();
       }
     };
 
@@ -517,9 +517,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     * Three Canvas model.
     */
 
-  var app$7 = {};
+  var app$8 = {};
   var ThreeJSIntegrationExtras = function ThreeJSIntegrationExtras(appInstance) {
-    app$7 = appInstance;
+    app$8 = appInstance;
     this.attributes = {
       animationId: null,
       renderer: null,
@@ -602,8 +602,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     // this.attributes.scene.add( this.attributes.highlighter );
     // }
 
-    if (app$7 && app$7.fabric && app$7.fabric.model.canvas) {
-      app$7.fabric.model.canvas.renderAll();
+    if (app$8 && app$8.fabric && app$8.fabric.model.canvas) {
+      app$8.fabric.model.canvas.renderAll();
     }
   };
 
@@ -616,14 +616,14 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     this.attributes.renderer.setSize( this.attributes.width, this.attributes.height );
   };
 
-  var app$6 = {};
+  var app$7 = {};
   var FabricJSIntegrationEvents = function FabricJSIntegrationEvents(appInstance) {
-    app$6 = appInstance;
+    app$7 = appInstance;
   };
 
   FabricJSIntegrationEvents.prototype.setupEvents = function setupEvents () {
     // Credit - https://stackoverflow.com/a/24238960
-    app$6.fabric.model.canvas.on('object:moving', function (e) {
+    app$7.fabric.model.canvas.on('object:moving', function (e) {
       var obj = e.target;
        // if object is too big ignore
       if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
@@ -650,10 +650,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       $__default["default"]('#fill-tool').hide();
 
       // Remove any objects added to the canvas by tools, i.e. previews
-      var objects = app$6.fabric.model.canvas.getObjects();
+      var objects = app$7.fabric.model.canvas.getObjects();
       objects.forEach(function (object) {
         if (object.temporary) {
-          app$6.fabric.model.canvas.remove(object);  
+          app$7.fabric.model.canvas.remove(object);  
         }
       });
     };
@@ -685,7 +685,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       if (!e.target._element && !e.target._objects) {
         $__default["default"]('#btnFillActive').removeClass('disabled');
         $__default["default"]('#btnFillActive .icon').css('color', e.target.fill);
-        app$6.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
+        app$7.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
       }
       // Is group.
       if (e.target._objects) {
@@ -701,7 +701,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
       // Events
       $__default["default"]('#btnGroupActive').click(function() {
-        var activeObject = app$6.fabric.model.canvas.getActiveObject();
+        var activeObject = app$7.fabric.model.canvas.getActiveObject();
         if (activeObject.type == 'group') {
           activeObject.toActiveSelection();
         }
@@ -709,12 +709,12 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           activeObject.toGroup();
         }
           
-        app$6.fabric.model.canvas.discardActiveObject();
-        app$6.fabric.model.canvas.requestRenderAll();
+        app$7.fabric.model.canvas.discardActiveObject();
+        app$7.fabric.model.canvas.requestRenderAll();
 
         // Update layers tool
-        if (app$6.layers) {
-          app$6.layers.updateLayers();
+        if (app$7.layers) {
+          app$7.layers.updateLayers();
         }
       });
         
@@ -723,20 +723,20 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         $__default["default"]('#fill-tool').toggle();
       });
       $__default["default"]('#btnDeleteActive').click(function() {
-        var selectedObjects = app$6.fabric.model.canvas.getActiveObjects();
+        var selectedObjects = app$7.fabric.model.canvas.getActiveObjects();
         for (var i = 0; i < selectedObjects.length; i++) {
-          app$6.fabric.model.canvas.remove(selectedObjects[i]);  
+          app$7.fabric.model.canvas.remove(selectedObjects[i]);  
         }
-        app$6.fabric.model.canvas.discardActiveObject();
+        app$7.fabric.model.canvas.discardActiveObject();
         $__default["default"]('.active-object-context').remove();
         // Update layers tool
-        if (app$6.layers) {
-          app$6.layers.updateLayers();
+        if (app$7.layers) {
+          app$7.layers.updateLayers();
         }
       });
       $__default["default"]('#btnSaveSVG').click(function() {
         var a = document.createElement("a");
-        a.href = window.URL.createObjectURL(new Blob([app$6.fabric.model.canvas.toSVG()], {type: "text/plain"}));
+        a.href = window.URL.createObjectURL(new Blob([app$7.fabric.model.canvas.toSVG()], {type: "text/plain"}));
         a.download = prompt("Please enter a filename", "Manifold-Download.svg");
         if (a.download != 'null') {
           if (a.download.indexOf('.svg') < 0) {
@@ -752,17 +752,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         })
         .on('click', function (e) {
           $__default["default"]('#vector-tool').toggle();
-          app$6.vector.preview(app$6);
+          app$7.vector.preview(app$7);
         });
       // @todo: Move these vector tool event handlers somewhere better
       $__default["default"]('#btnCreateVector').on('click', function () {
-        app$6.vector.create(app$6);
+        app$7.vector.create(app$7);
       });
       $__default["default"]('#btnReplaceVector').on('click', function () {
-        app$6.vector.create(app$6, true);
+        app$7.vector.create(app$7, true);
       });
       $__default["default"]('#btnMake3D:not(.disabled)').click(function() {
-        var selectedObjects = app$6.fabric.model.canvas.getActiveObjects();
+        var selectedObjects = app$7.fabric.model.canvas.getActiveObjects();
 
         for (var i = 0; i < selectedObjects.length; i++) {
           if (selectedObjects[i].toSVG) {
@@ -786,37 +786,37 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
               var threeD = new fabric__default["default"].Image(threeCanvas.$el.find('canvas')[0]);
               threeD.left = selectedObjects[i].left;
               threeD.top = selectedObjects[i].top;
-              app$6.fabric.model.canvas.add(threeD);
+              app$7.fabric.model.canvas.add(threeD);
             };
-            app$6.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
+            app$7.ThreeCanvasModel.push(new ThreeJSIntegrationExtras({
               height: obj_height,
               width: obj_width
             }));
             var ThreeFabricObject = new ThreeIntegration({ 
-              model: app$6.ThreeCanvasModel[app$6.ThreeCanvasModel.length-1],
+              model: app$7.ThreeCanvasModel[app$7.ThreeCanvasModel.length-1],
               svg: svgElements,
               width: obj_width,
               height: obj_height
             });
-            app$6.ThreeCanvasView.push( ThreeFabricObject );
-            create3DObject(app$6.ThreeCanvasView[app$6.ThreeCanvasView.length-1]);
-            app$6.fabric.model.canvas.remove(selectedObjects[i]);
+            app$7.ThreeCanvasView.push( ThreeFabricObject );
+            create3DObject(app$7.ThreeCanvasView[app$7.ThreeCanvasView.length-1]);
+            app$7.fabric.model.canvas.remove(selectedObjects[i]);
           }
           else {
             console.log('not convertible!');
           }
         }
-        app$6.fabric.model.canvas.discardActiveObject();
+        app$7.fabric.model.canvas.discardActiveObject();
         $__default["default"]('.active-object-context').remove();
       });
-      app$6.layers.updateLayers();
+      app$7.layers.updateLayers();
     };
 
     // Separated for Fabric's On not supporting multiple.
-    app$6.fabric.model.canvas.on('selection:created', selectionCallback);
-    app$6.fabric.model.canvas.on('selection:updated', selectionCallback);
+    app$7.fabric.model.canvas.on('selection:created', selectionCallback);
+    app$7.fabric.model.canvas.on('selection:updated', selectionCallback);
 
-    app$6.fabric.model.canvas.on('mouse:dblclick', function(e){
+    app$7.fabric.model.canvas.on('mouse:dblclick', function(e){
       if (e.target && e.target._element) {
         var $el = $__default["default"](e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -829,16 +829,16 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       }
     });
 
-    app$6.fabric.model.canvas.on('selection:cleared', function(){
+    app$7.fabric.model.canvas.on('selection:cleared', function(){
       clearOverlays();
 
-      if (app$6.layers) {
-        app$6.layers.updateLayers();
+      if (app$7.layers) {
+        app$7.layers.updateLayers();
       }
     });
 
     // @TODO: Don't follow if user moved the toolbar.
-    app$6.fabric.model.canvas.on('object:moving', function(e) {
+    app$7.fabric.model.canvas.on('object:moving', function(e) {
       var $menu = $__default["default"]('.active-object-context');
       var offsetX = e.target.left+ ((e.target.width / 2) - ($menu.width() / 2));
       var offsetY = e.target.top - ($menu.height()) - 50;
@@ -846,8 +846,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       if (offsetX < toolbarWidth) {
         offsetX = 0;
       }
-      if (offsetX > app$6.fabric.model.canvas.width - toolbarWidth - $menu.width()) {
-        offsetX = app$6.fabric.model.canvas.width - $menu.width(); 
+      if (offsetX > app$7.fabric.model.canvas.width - toolbarWidth - $menu.width()) {
+        offsetX = app$7.fabric.model.canvas.width - $menu.width(); 
       }
       if (offsetY < 0) {
         offsetY = 0;
@@ -857,9 +857,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     });
 
     // Update 3D canvas if it's that type of element.
-    app$6.fabric.model.canvas.on('object:modified', function(e) {
+    app$7.fabric.model.canvas.on('object:modified', function(e) {
       if (e.target._element) {
-        app$6.fabric.model.events.updateModelPreviewViewPort(e.target);
+        app$7.fabric.model.events.updateModelPreviewViewPort(e.target);
       }
     });
   };
@@ -875,17 +875,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       $container.css('transform', 'rotateZ(' + rotateY + 'deg)');
 
       var id = $container.attr('id').replace('model-preview-','');
-      app$6.ThreeCanvasModel[id].attributes.width = scaledWidth;
-      app$6.ThreeCanvasModel[id].attributes.height = scaledHeight;
-      app$6.ThreeCanvasModel[id].resize();
+      app$7.ThreeCanvasModel[id].attributes.width = scaledWidth;
+      app$7.ThreeCanvasModel[id].attributes.height = scaledHeight;
+      app$7.ThreeCanvasModel[id].resize();
         
       target._resetWidthHeight();
     }
   };
 
-  var app$5 = {};
+  var app$6 = {};
   var FabricJSIntegrationHelpers = function FabricJSIntegrationHelpers(appInstance) {
-    app$5 = appInstance;
+    app$6 = appInstance;
   };
 
   // Loads an SVG string and splits up objects so they're loaded in the right position.
@@ -901,10 +901,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       if (temporary) {
         // Remove other previews
         // @todo: Expand when other things are set to temporary
-        var existing_objects = app$5.fabric.model.canvas.getObjects();
+        var existing_objects = app$6.fabric.model.canvas.getObjects();
         existing_objects.forEach(function (object) {
           if (object.temporary) {
-            app$5.fabric.model.canvas.remove(object);  
+            app$6.fabric.model.canvas.remove(object);  
           }
         });
       }
@@ -927,8 +927,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       width -= $__default["default"]('#details').width();
     }
     var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    app$5.fabric.model.canvas.setHeight( height );
-    app$5.fabric.model.canvas.setWidth( width );
+    app$6.fabric.model.canvas.setHeight( height );
+    app$6.fabric.model.canvas.setWidth( width );
   };
 
   // Add an object to the center of the canvas.
@@ -950,11 +950,11 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     object.id = object.type + '-' + Math.floor(Date.now() / 1000);
     object.temporary = temporary;
 
-    app$5.fabric.model.canvas.add(object);
-    app$5.fabric.model.canvas.moveTo(object, app$5.fabric.model.canvas.getObjects().length);
+    app$6.fabric.model.canvas.add(object);
+    app$6.fabric.model.canvas.moveTo(object, app$6.fabric.model.canvas.getObjects().length);
     // Update layers tool
-    if (app$5.layers) {
-      app$5.layers.updateLayers();
+    if (app$6.layers) {
+      app$6.layers.updateLayers();
     }
   };
 
@@ -962,10 +962,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     * Fabric JS Integration.
     */
 
-  var app$4 = {};
+  var app$5 = {};
   var FabricJSIntegration = /*@__PURE__*/(function (BaseIntegration) {
     function FabricJSIntegration( appInstance ) {
-      app$4 = appInstance;
+      app$5 = appInstance;
       BaseIntegration.call(this);
       this.el = '#main-canvas';
       this.model = {
@@ -985,11 +985,11 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     FabricJSIntegration.prototype.constructor = FabricJSIntegration;
 
     FabricJSIntegration.prototype.ready = function ready () {
-      app$4.fabric.model.events.setupEvents();
-      app$4.fabric.model.helpers.updateCanvasSize();
+      app$5.fabric.model.events.setupEvents();
+      app$5.fabric.model.helpers.updateCanvasSize();
 
       // Default scene.
-      app$4.fabric.demoAnimating();
+      app$5.fabric.demoAnimating();
     };
     FabricJSIntegration.prototype.demoAnimating = function demoAnimating () {
 
@@ -1003,27 +1003,27 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       //   ]
       // } );
       var triangle = new fabric__default["default"].Triangle( { width: 200, height: 200, fill: 'blue', left: 50, top: -150 } );
-      app$4.fabric.model.helpers.addToCenter( triangle );
+      app$5.fabric.model.helpers.addToCenter( triangle );
     };
     FabricJSIntegration.prototype.demoDrawing = function demoDrawing () {
       var circle = new fabric__default["default"].Circle( { radius: 100, fill: '  green' } );
-      app$4.fabric.model.helpers.addToCenter( circle );
+      app$5.fabric.model.helpers.addToCenter( circle );
       circle.left -= 75;
       var rect = new fabric__default["default"].Rect( {
         fill: 'red',
         width: 200,
         height: 200
       } );
-      app$4.fabric.model.helpers.addToCenter( rect );
+      app$5.fabric.model.helpers.addToCenter( rect );
       rect.left += 75;
     };
     FabricJSIntegration.prototype.demoTracing = function demoTracing () {
       var imgSrc = '/assets/puppies.jpg';
       fabric__default["default"].Image.fromURL( imgSrc, function ( oImg ) {
-        app$4.fabric.model.helpers.addToCenter( oImg );
+        app$5.fabric.model.helpers.addToCenter( oImg );
         oImg.left -= 7;
         oImg.top += 13;
-        app$4.fabric.model.canvas.setActiveObject( app$4.fabric.model.canvas.item( 0 ) );
+        app$5.fabric.model.canvas.setActiveObject( app$5.fabric.model.canvas.item( 0 ) );
         $( '#btnToggleVector' ).click();
       } );
     };
@@ -1111,6 +1111,69 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     };
 
     return DropEvents;
+  }(BaseEvents));
+
+  /**
+    * Drop Events class.
+    */
+
+  var app$4 = {};
+  var KeyEvents = /*@__PURE__*/(function (BaseEvents) {
+    function KeyEvents( appInstance ) {
+      app$4 = appInstance;
+      BaseEvents.call(this);
+
+      document.addEventListener('keyup', function (ref) {
+        if ( ref === void 0 ) ref = event;
+        var keyCode = ref.keyCode;
+        var ctrlKey = ref.ctrlKey;
+
+        // Check pressed button is Z - Ctrl+Z.
+        if (keyCode === 46) {
+          // @todo: Remove duplication with code in integrations/FabricJS/Events.js
+          var selectedObjects = app$4.fabric.model.canvas.getActiveObjects();
+          for (var i = 0; i < selectedObjects.length; i++) {
+            app$4.fabric.model.canvas.remove(selectedObjects[i]);  
+          }
+          app$4.fabric.model.canvas.discardActiveObject();
+
+          // Update layers tool
+          if (app$4.layers) {
+            app$4.layers.updateLayers();
+          }
+        }
+        
+        
+        // Check Ctrl key is pressed.
+        if (!ctrlKey) {
+          return
+        }           
+
+        // CTRL combos past this line -----------
+
+        // Check pressed button is Z - Ctrl+Z.
+        if (keyCode === 90) {
+          app$4.fabric.model.canvas.undo(function() { 
+            // @todo: Make a common helper.
+            // - https://github.com/alimozdemir/fabric-history
+            console.log('post undo');
+          });
+        }
+      
+        // Check pressed button is Y - Ctrl+Y.
+        if (keyCode === 89) {
+          app$4.fabric.model.canvas.redo(function() { 
+            console.log('post redo');
+          });
+        }
+      });
+    }
+
+    if ( BaseEvents ) KeyEvents.__proto__ = BaseEvents;
+    KeyEvents.prototype = Object.create( BaseEvents && BaseEvents.prototype );
+    KeyEvents.prototype.constructor = KeyEvents;
+
+    return KeyEvents;
   }(BaseEvents));
 
   function addLayer(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
@@ -1685,6 +1748,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     // Events
     this.events = {};
     this.events.drop = new DropEvents(this);
+    this.events.key = new KeyEvents(this);
 
     // UI    
     this.layers = new LayerControls(this);
