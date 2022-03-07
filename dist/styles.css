@@ -98,9 +98,22 @@
 .ui.white.button:active {
   box-shadow: 0 0 5px #fff;
 }
-#timeline * {
+#timeline th,
+#timeline td {
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+}
+#timeline #seeker {
+  height: 80px;
+  width: 50px;
+  position: absolute;
+  z-index: 2;
+  border: solid 1px #f00;
+  left: 215px;
+}
+#timeline #seeker:hover {
+  background-color: rgba(255,0,0,0.25);
+  cursor: pointer;
 }

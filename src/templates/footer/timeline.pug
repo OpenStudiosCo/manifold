@@ -1,14 +1,15 @@
+#seeker
 table.ui.inverted.structured.celled.compact.small.table
   thead
     - var n = 0;
     tr
-      th(style="display: flex; justify-content: space-evenly;") &nbsp;
+      th( style="display: flex; justify-content: space-evenly;" ) &nbsp;
       while n < frameLimit
-        th.selectable(style="text-align: center;")= n++
+        th( style="text-align: center;"  data-frame-position=n )= n++
   tbody
     - n = 0;
     tr
-      td(style="display: flex; justify-content: space-evenly;")
+      td( style="display: flex; justify-content: space-evenly;" )
         button.ui.compact.mini.icon.button 1x
         button.ui.compact.mini.icon.button
           i.icon.fast.backward
@@ -17,5 +18,5 @@ table.ui.inverted.structured.celled.compact.small.table
           i.icon.pause
       while n < frameLimit
         - active = n == 0 ? ' active' : ''
-        td.selectable(class=active) &nbsp;
+        td.selectable( class=active data-frame-position=n ) &nbsp;
         - n++
