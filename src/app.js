@@ -7,6 +7,7 @@ import DropEvents from './app/events/DropEvents.js';
 import KeyEvents from './app/events/KeyEvents.js';
 import LayerControls from './app/ui/controls/LayerControls.js';
 import LibraryControls from './app/ui/controls/LibraryControls.js';
+import TimelineControls from './app/ui/controls/TimelineControls.js';
 import ToolbarControls from './app/ui/controls/ToolbarControls.js';
 import VectorControls from './app/ui/controls/VectorControls.js';
 
@@ -29,6 +30,7 @@ export default class App {
     // UI    
     this.layers = new LayerControls(this);
     this.library = new LibraryControls(this);
+    this.timeline = new TimelineControls(this);
     this.toolbar = new ToolbarControls(this);
     this.vector = new VectorControls(this);
   }

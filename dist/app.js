@@ -1358,6 +1358,69 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     return LibraryControls;
   }(BaseControls));
 
+  function timelineTemplate(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
+  ;var locals_for_with = (locals || {});(function (active, frameLimit) {
+  pug_html = pug_html + "\u003Ctable class=\"ui inverted structured celled compact small table\"\u003E";
+  pug_html = pug_html + "\u003Cthead\u003E";
+  var n = 0;
+  pug_html = pug_html + "\u003Ctr\u003E";
+  pug_html = pug_html + "\u003Cth style=\"display: flex; justify-content: space-evenly;\"\u003E";
+  pug_html = pug_html + "&nbsp;\u003C\u002Fth\u003E";
+  while (n < frameLimit) {
+  pug_html = pug_html + "\u003Cth class=\"selectable\" style=\"text-align: center;\"\u003E";
+  pug_html = pug_html + (pug.escape(null == (pug_interp = n++) ? "" : pug_interp)) + "\u003C\u002Fth\u003E";
+  }
+  pug_html = pug_html + "\u003C\u002Ftr\u003E\u003C\u002Fthead\u003E";
+  pug_html = pug_html + "\u003Ctbody\u003E";
+  n = 0;
+  pug_html = pug_html + "\u003Ctr\u003E";
+  pug_html = pug_html + "\u003Ctd style=\"display: flex; justify-content: space-evenly;\"\u003E";
+  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
+  pug_html = pug_html + "1x\u003C\u002Fbutton\u003E";
+  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon fast backward\"\u003E\u003C\u002Fi\u003E\u003C\u002Fbutton\u003E";
+  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon play\"\u003E\u003C\u002Fi\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon pause\"\u003E\u003C\u002Fi\u003E\u003C\u002Fbutton\u003E\u003C\u002Ftd\u003E";
+  while (n < frameLimit) {
+  active = n == 0 ? ' active' : '';
+  pug_html = pug_html + "\u003Ctd" + (pug.attr("class", pug.classes(["selectable",active], [false,true]), false, true)) + "\u003E";
+  pug_html = pug_html + "&nbsp;\u003C\u002Ftd\u003E";
+  n++;
+  }
+  pug_html = pug_html + "\u003C\u002Ftr\u003E\u003C\u002Ftbody\u003E\u003C\u002Ftable\u003E";}.call(this,"active" in locals_for_with?locals_for_with.active:typeof active!=="undefined"?active:undefined,"frameLimit" in locals_for_with?locals_for_with.frameLimit:typeof frameLimit!=="undefined"?frameLimit:undefined));} catch (err) {pug.rethrow(err, pug_debug_filename, pug_debug_line, pug_debug_sources[pug_debug_filename]);}return pug_html;}
+
+  var TimelineControls = /*@__PURE__*/(function (BaseControls) {
+    function TimelineControls( appInstance ) {
+      BaseControls.call(this);
+
+      this.el = document.getElementById( 'timeline' );
+      if ( !this.el ) {
+        return;
+      }
+      
+      this.frameLimit = 30;
+
+      this.el.innerHTML = timelineTemplate({
+        frameLimit: this.frameLimit
+      });
+
+      this.el
+        .querySelectorAll( 'td.selectable' ).forEach(function( frame_cell ) {
+          frame_cell.addEventListener( 'click', function ( e ) {
+            alert('hiii');
+          } );
+        } );
+      
+    }
+
+    if ( BaseControls ) TimelineControls.__proto__ = BaseControls;
+    TimelineControls.prototype = Object.create( BaseControls && BaseControls.prototype );
+    TimelineControls.prototype.constructor = TimelineControls;
+
+    return TimelineControls;
+  }(BaseControls));
+
   var app$1 = {};
   var ToolbarControls = /*@__PURE__*/(function (BaseControls) {
     function ToolbarControls(appInstance) {
@@ -1774,6 +1837,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     // UI    
     this.layers = new LayerControls(this);
     this.library = new LibraryControls(this);
+    this.timeline = new TimelineControls(this);
     this.toolbar = new ToolbarControls(this);
     this.vector = new VectorControls(this);
   };

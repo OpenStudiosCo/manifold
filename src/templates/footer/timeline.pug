@@ -1,22 +1,21 @@
-#timeline
-  table.ui.inverted.structured.celled.compact.small.table
-    thead
-      - var n = 0;
-      tr
-        th(style="display: flex; justify-content: space-evenly;") &nbsp;
-        while n < 51
-          th(style="text-align: center;")= n++
-    tbody
-      - n = 0;
-      tr
-        td(style="display: flex; justify-content: space-evenly;")
-          button.ui.compact.mini.icon.button 1x
-          button.ui.compact.mini.icon.button
-            i.icon.fast.backward
-          button.ui.compact.mini.icon.button
-            i.icon.play
-            i.icon.pause
-        while n < 51
-          - active = n == 0 ? ' active' : ''
-          td.selectable(class=active) &nbsp;
-          - n++
+table.ui.inverted.structured.celled.compact.small.table
+  thead
+    - var n = 0;
+    tr
+      th(style="display: flex; justify-content: space-evenly;") &nbsp;
+      while n < frameLimit
+        th.selectable(style="text-align: center;")= n++
+  tbody
+    - n = 0;
+    tr
+      td(style="display: flex; justify-content: space-evenly;")
+        button.ui.compact.mini.icon.button 1x
+        button.ui.compact.mini.icon.button
+          i.icon.fast.backward
+        button.ui.compact.mini.icon.button
+          i.icon.play
+          i.icon.pause
+      while n < frameLimit
+        - active = n == 0 ? ' active' : ''
+        td.selectable(class=active) &nbsp;
+        - n++

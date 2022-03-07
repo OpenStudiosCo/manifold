@@ -98,3 +98,9 @@
 .ui.white.button:active {
   box-shadow: 0 0 5px #fff;
 }
+#timeline * {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
