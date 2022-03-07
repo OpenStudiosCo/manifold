@@ -16,6 +16,7 @@ export default class TimelineControls extends BaseControls {
       return;
     }
     
+    this.currentFrame = 0;
     this.frameLimit = 30;
     this.frames = [];
 
@@ -24,21 +25,26 @@ export default class TimelineControls extends BaseControls {
       frameLimit: this.frameLimit
     });
 
-    // this.el
-    //   .querySelectorAll( 'td.selectable' ).forEach(( frame_cell ) => {
-    //     frame_cell.addEventListener( 'click', ( event ) => {
-    //       event.target.classList.add('active');
-    //       this.addKeyFrame( event.target.dataset.framePosition );
-    //     } );
-    //   } );
+    this.el
+      .querySelectorAll( 'th, td' ).forEach(( frame_cell ) => {
+        frame_cell.addEventListener( 'click', ( event ) => {
+          if ( event.target.dataset.framePosition ) {
+            let seeker = document.getElementById("seeker");
+            var rect = event.target.getBoundingClientRect();
+            seeker.style.left = rect.left + "px";
+            let framePosition = event.target.getBoundingClientRect();
+            seeker.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
+
+            this.currentFrame = event.target.dataset.framePosition;
+          }
+        } );
+      } );
 
     // Make the DIV element draggable:
     setupSeeker(document.getElementById("seeker"));
 
     function setupSeeker(elmnt) {
       var rect = elmnt.getBoundingClientRect();
-      console.log(rect.top, rect.right, rect.bottom, rect.left);
-
 
       let originalOffset = elmnt.offsetLeft;
       var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -59,6 +65,7 @@ export default class TimelineControls extends BaseControls {
         document.onmouseup = closeDragElement;
         // call a function whenever the cursor moves:
         document.onmousemove = elementDrag;
+        elmnt.classList.add('active');
       }
 
       function elementDrag(e) {
@@ -86,12 +93,15 @@ export default class TimelineControls extends BaseControls {
             elmnt.style.left = (framePosition.left) + "px";
             elmnt.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
             matched = true;
-            console.log(matched);
+            this.currentFrame = closestElement.dataset.framePosition;
           }
         });
         if ( !matched ) {
           elmnt.style.left = originalOffset + "px";
+          elmnt.style.width = "50px";
         }
+
+        elmnt.classList.remove('active');
       
       }
     }

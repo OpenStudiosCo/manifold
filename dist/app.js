@@ -1393,6 +1393,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
   var TimelineControls = /*@__PURE__*/(function (BaseControls) {
     function TimelineControls( appInstance ) {
+      var this$1$1 = this;
       BaseControls.call(this);
 
       this.el = document.getElementById( 'timeline' );
@@ -1400,6 +1401,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         return;
       }
       
+      this.currentFrame = 0;
       this.frameLimit = 30;
       this.frames = [];
 
@@ -1408,21 +1410,26 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         frameLimit: this.frameLimit
       });
 
-      // this.el
-      //   .querySelectorAll( 'td.selectable' ).forEach(( frame_cell ) => {
-      //     frame_cell.addEventListener( 'click', ( event ) => {
-      //       event.target.classList.add('active');
-      //       this.addKeyFrame( event.target.dataset.framePosition );
-      //     } );
-      //   } );
+      this.el
+        .querySelectorAll( 'th, td' ).forEach(function ( frame_cell ) {
+          frame_cell.addEventListener( 'click', function ( event ) {
+            if ( event.target.dataset.framePosition ) {
+              var seeker = document.getElementById("seeker");
+              var rect = event.target.getBoundingClientRect();
+              seeker.style.left = rect.left + "px";
+              var framePosition = event.target.getBoundingClientRect();
+              seeker.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
+
+              this$1$1.currentFrame = event.target.dataset.framePosition;
+            }
+          } );
+        } );
 
       // Make the DIV element draggable:
       setupSeeker(document.getElementById("seeker"));
 
       function setupSeeker(elmnt) {
         var rect = elmnt.getBoundingClientRect();
-        console.log(rect.top, rect.right, rect.bottom, rect.left);
-
 
         var originalOffset = elmnt.offsetLeft;
         var pos1 = 0, pos3 = 0, pos4 = 0;
@@ -1443,6 +1450,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           document.onmouseup = closeDragElement;
           // call a function whenever the cursor moves:
           document.onmousemove = elementDrag;
+          elmnt.classList.add('active');
         }
 
         function elementDrag(e) {
@@ -1459,6 +1467,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         }
 
         function closeDragElement() {
+          var this$1$1 = this;
+
           // stop moving when mouse button is released:
           document.onmouseup = null;
           document.onmousemove = null;
@@ -1470,12 +1480,15 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
               elmnt.style.left = (framePosition.left) + "px";
               elmnt.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
               matched = true;
-              console.log(matched);
+              this$1$1.currentFrame = closestElement.dataset.framePosition;
             }
           });
           if ( !matched ) {
             elmnt.style.left = originalOffset + "px";
+            elmnt.style.width = "50px";
           }
+
+          elmnt.classList.remove('active');
         
         }
       }
