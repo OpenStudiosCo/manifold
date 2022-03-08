@@ -1364,7 +1364,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
   function timelineTemplate(locals) {var pug_html = "", pug_interp;var pug_debug_filename, pug_debug_line;try {var pug_debug_sources = {};
   ;var locals_for_with = (locals || {});(function (active, frameLimit) {
   pug_html = pug_html + "\u003Cdiv id=\"seeker\"\u003E\u003C\u002Fdiv\u003E";
-  pug_html = pug_html + "\u003Ctable class=\"ui inverted structured celled compact small table\"\u003E";
+  pug_html = pug_html + "\u003Ctable class=\"ui inverted structured celled compact small table\" id=\"timeline\"\u003E";
   pug_html = pug_html + "\u003Cthead\u003E";
   var n = 0;
   pug_html = pug_html + "\u003Ctr\u003E";
@@ -1381,11 +1381,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
   pug_html = pug_html + "\u003Ctd style=\"display: flex; justify-content: space-evenly;\"\u003E";
   pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
   pug_html = pug_html + "1x\u003C\u002Fbutton\u003E";
-  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
+  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\" id=\"rewind\"\u003E";
   pug_html = pug_html + "\u003Ci class=\"icon fast backward\"\u003E\u003C\u002Fi\u003E\u003C\u002Fbutton\u003E";
-  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\"\u003E";
-  pug_html = pug_html + "\u003Ci class=\"icon play\"\u003E\u003C\u002Fi\u003E";
-  pug_html = pug_html + "\u003Ci class=\"icon pause\"\u003E\u003C\u002Fi\u003E\u003C\u002Fbutton\u003E\u003C\u002Ftd\u003E";
+  pug_html = pug_html + "\u003Cbutton class=\"ui compact mini icon button\" id=\"play\"\u003E";
+  pug_html = pug_html + "\u003Ci class=\"icon play\"\u003E\u003C\u002Fi\u003E\u003C\u002Fbutton\u003E\u003C\u002Ftd\u003E";
   while (n < frameLimit) {
   active = n == 0 ? ' active' : '';
   pug_html = pug_html + "\u003Ctd" + (pug.attr("class", pug.classes(["selectable",active], [false,true]), false, true)+pug.attr("data-frame-position", n, true, true)) + "\u003E";
@@ -1411,10 +1410,12 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         return;
       }
 
+      this.playing = false;
       this.currentFrame = 0;
       this.frameLimit = 30;
       this.frames = {};
-      this.animation = false;
+      this.frameElapsed = 0;
+      this.frameLength = 50; // ms per frame.
 
       this.el.innerHTML = timelineTemplate( {
         frameLimit: this.frameLimit
@@ -1425,7 +1426,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           frame_cell.addEventListener( 'click', function ( event ) {
             if ( event.target.dataset.framePosition ) {
               var seekerElement = document.getElementById( "seeker" );
-              this$1$1.selectFrame( seekerElement, event.target );
+              this$1$1.selectFrameByElement( seekerElement, event.target );
             }
           } );
         } );
@@ -1434,13 +1435,65 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       this.setupSeeker( document.getElementById( "seeker" ) );
 
       // Select the first frame.
-      this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+      this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+
+      // Play button.
+      $('#timeline #play')
+        .on('click', function () {
+          // Toggle the icon
+          var $icon = $('#timeline #play i');
+          if ($icon.hasClass('play')) {
+            $icon.removeClass('play');
+            $icon.addClass('pause');
+            this$1$1.playing = performance.now();
+          }
+          else {
+            $icon.addClass('play');
+            $icon.removeClass('pause');
+            this$1$1.playing = false;
+          }
+        });
       
     }
 
     if ( BaseControls ) TimelineControls.__proto__ = BaseControls;
     TimelineControls.prototype = Object.create( BaseControls && BaseControls.prototype );
     TimelineControls.prototype.constructor = TimelineControls;
+
+    TimelineControls.prototype.animate = function animate (timestamp) {
+      var this$1$1 = this;
+
+      if (this.playing) {
+        this.frameElapsed += timestamp - this.playing;
+        if (this.frameElapsed >= this.frameLength) {
+          this.currentFrame = parseInt(this.currentFrame + 1);
+          var seekerElement = document.getElementById( "seeker" );
+          var targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
+          var framePosition = targetElement.getBoundingClientRect();
+          seekerElement.style.left = ( framePosition.left ) + "px";
+          seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
+      
+          this.frameElapsed = 0;
+        }
+
+        // Check how many keyframes to play after this tween.
+        var keyframesLeft = 0;
+        Object.keys(this.frames).forEach(function (framePosition){
+          if (framePosition > this$1$1.currentFrame) {
+            keyframesLeft++;
+          }
+        });
+        // Loop back if not frames left.
+        if (keyframesLeft == 0) {
+          this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+        }
+
+        this.playing = performance.now();  
+
+      }
+
+      window.requestAnimationFrame(this.animate.bind(this));
+    };
 
     TimelineControls.prototype.ready = function ready () {
       var this$1$1 = this;
@@ -1450,8 +1503,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
       // Animation demo
       // 1. Select frame 10
-      this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
-      console.log(this.frames[0][0].left);
+      this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
       app$2.fabric.model.canvas.getObjects().map( function (object) {
         object.set('left', parseInt(object.left + 200, 10)).setCoords();
         object.set('top', parseInt(object.top + 200, 10)).setCoords();
@@ -1460,7 +1512,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         console.log('Modified frame #' , this$1$1.currentFrame);
         console.log(this$1$1.frames);
       });
-      console.log(this.currentFrame, this.frames[0][0].left);
 
       // Make the 10th frame active
       document.querySelector('td[data-frame-position="10"]').classList.add('active');
@@ -1469,13 +1520,15 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       app$2.fabric.model.canvas.on( 'history:append' , function (json) {
         
       });
+
+      this.animate();
     };
 
     TimelineControls.prototype.addKeyFrame = function addKeyFrame ( frameIndex ) {
       console.log( 'Added ', frameIndex );
     };
 
-    TimelineControls.prototype.selectFrame = function selectFrame ( seekerElement, targetElement ) {
+    TimelineControls.prototype.selectFrameByElement = function selectFrameByElement ( seekerElement, targetElement ) {
       var framePosition = targetElement.getBoundingClientRect();
       seekerElement.style.left = ( framePosition.left ) + "px";
       seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
@@ -1535,7 +1588,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         closestElements.forEach( function ( closestElement ) {
           if ( closestElement.tagName == 'TH' && closestElement.dataset.framePosition ) {
             matched = true;
-            self.selectFrame( seekerElement, closestElement );
+            self.selectFrameByElement( seekerElement, closestElement );
           }
         } );
         if ( !matched ) {

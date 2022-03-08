@@ -1,5 +1,5 @@
 #seeker
-table.ui.inverted.structured.celled.compact.small.table
+table#timeline.ui.inverted.structured.celled.compact.small.table
   thead
     - var n = 0;
     tr
@@ -11,11 +11,10 @@ table.ui.inverted.structured.celled.compact.small.table
     tr
       td( style="display: flex; justify-content: space-evenly;" )
         button.ui.compact.mini.icon.button 1x
-        button.ui.compact.mini.icon.button
+        button#rewind.ui.compact.mini.icon.button
           i.icon.fast.backward
-        button.ui.compact.mini.icon.button
+        button#play.ui.compact.mini.icon.button
           i.icon.play
-          i.icon.pause
       while n < frameLimit
         - active = n == 0 ? ' active' : ''
         td.selectable( class=active data-frame-position=n ) &nbsp;

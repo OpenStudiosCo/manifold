@@ -16,10 +16,12 @@ export default class TimelineControls extends BaseControls {
       return;
     }
 
+    this.playing = false;
     this.currentFrame = 0;
     this.frameLimit = 30;
     this.frames = {};
-    this.animation = false;
+    this.frameElapsed = 0;
+    this.frameLength = 50; // ms per frame.
 
     this.el.innerHTML = timelineTemplate( {
       frameLimit: this.frameLimit
@@ -30,7 +32,7 @@ export default class TimelineControls extends BaseControls {
         frame_cell.addEventListener( 'click', ( event ) => {
           if ( event.target.dataset.framePosition ) {
             let seekerElement = document.getElementById( "seeker" );
-            this.selectFrame( seekerElement, event.target )
+            this.selectFrameByElement( seekerElement, event.target )
           }
         } );
       } );
@@ -39,8 +41,58 @@ export default class TimelineControls extends BaseControls {
     this.setupSeeker( document.getElementById( "seeker" ) );
 
     // Select the first frame.
-    this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+    this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+
+    // Play button.
+    $('#timeline #play')
+      .on('click', () => {
+        // Toggle the icon
+        let $icon = $('#timeline #play i');
+        if ($icon.hasClass('play')) {
+          $icon.removeClass('play');
+          $icon.addClass('pause');
+          this.playing = performance.now();
+        }
+        else {
+          $icon.addClass('play');
+          $icon.removeClass('pause');
+          this.playing = false;
+        }
+      })
     
+  }
+
+  animate (timestamp) {
+    if (this.playing) {
+      this.frameElapsed += timestamp - this.playing;
+      if (this.frameElapsed >= this.frameLength) {
+        this.currentFrame = parseInt(this.currentFrame + 1);
+        let seekerElement = document.getElementById( "seeker" );
+        let targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
+        let framePosition = targetElement.getBoundingClientRect();
+        seekerElement.style.left = ( framePosition.left ) + "px";
+        seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
+    
+        this.frameElapsed = 0;
+      }
+
+      // Check how many keyframes to play after this tween.
+      let keyframesLeft = 0;
+      Object.keys(this.frames).forEach((framePosition)=>{
+        if (framePosition > this.currentFrame) {
+          keyframesLeft++;
+        }
+      });
+      // Loop back if not frames left.
+      if (keyframesLeft == 0) {
+        this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+      }
+
+      this.playing = performance.now();  
+
+    }
+
+    window.requestAnimationFrame(this.animate.bind(this));
   }
 
   ready () {
@@ -49,8 +101,7 @@ export default class TimelineControls extends BaseControls {
 
     // Animation demo
     // 1. Select frame 10
-    this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
-    console.log(this.frames[0][0].left);
+    this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
     app.fabric.model.canvas.getObjects().map( object => {
       object.set('left', parseInt(object.left + 200, 10)).setCoords();
       object.set('top', parseInt(object.top + 200, 10)).setCoords();
@@ -59,7 +110,6 @@ export default class TimelineControls extends BaseControls {
       console.log('Modified frame #' , this.currentFrame);
       console.log(this.frames);
     });
-    console.log(this.currentFrame, this.frames[0][0].left);
 
     // Make the 10th frame active
     document.querySelector('td[data-frame-position="10"]').classList.add('active')
@@ -68,13 +118,15 @@ export default class TimelineControls extends BaseControls {
     app.fabric.model.canvas.on( 'history:append' , (json) => {
       
     });
+
+    this.animate();
   }
 
   addKeyFrame( frameIndex ) {
     console.log( 'Added ', frameIndex );
   }
 
-  selectFrame( seekerElement, targetElement ) {
+  selectFrameByElement( seekerElement, targetElement ) {
     let framePosition = targetElement.getBoundingClientRect();
     seekerElement.style.left = ( framePosition.left ) + "px";
     seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
@@ -134,7 +186,7 @@ export default class TimelineControls extends BaseControls {
       closestElements.forEach( ( closestElement ) => {
         if ( closestElement.tagName == 'TH' && closestElement.dataset.framePosition ) {
           matched = true;
-          self.selectFrame( seekerElement, closestElement );
+          self.selectFrameByElement( seekerElement, closestElement );
         }
       } );
       if ( !matched ) {
