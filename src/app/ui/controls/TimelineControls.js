@@ -58,7 +58,9 @@ export default class TimelineControls extends BaseControls {
     let self = this;
     var rect = seekerElement.getBoundingClientRect();
 
-    let originalOffset = seekerElement.offsetLeft;
+    let initialOffset = 0;
+    let initialWidth = 50;
+
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     if ( document.getElementById( seekerElement.id + "header" ) ) {
       // if present, the header is where you move the DIV from:
@@ -78,6 +80,8 @@ export default class TimelineControls extends BaseControls {
       // call a function whenever the cursor moves:
       document.onmousemove = elementDrag;
       seekerElement.classList.add( 'active' );
+      initialOffset = seekerElement.offsetLeft;
+      initialWidth = seekerElement.offsetWidth;
     }
 
     function elementDrag( e ) {
@@ -106,8 +110,9 @@ export default class TimelineControls extends BaseControls {
         }
       } );
       if ( !matched ) {
-        seekerElement.style.left = originalOffset + "px";
-        seekerElement.style.width = "50px";
+
+        seekerElement.style.left = initialOffset + "px";
+        seekerElement.style.width = initialWidth + "px";
       }
 
       seekerElement.classList.remove( 'active' );

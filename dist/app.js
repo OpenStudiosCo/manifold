@@ -1447,7 +1447,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       var self = this;
       var rect = seekerElement.getBoundingClientRect();
 
-      var originalOffset = seekerElement.offsetLeft;
+      var initialOffset = 0;
+      var initialWidth = 50;
+
       var pos1 = 0, pos3 = 0, pos4 = 0;
       if ( document.getElementById( seekerElement.id + "header" ) ) {
         // if present, the header is where you move the DIV from:
@@ -1467,6 +1469,8 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         // call a function whenever the cursor moves:
         document.onmousemove = elementDrag;
         seekerElement.classList.add( 'active' );
+        initialOffset = seekerElement.offsetLeft;
+        initialWidth = seekerElement.offsetWidth;
       }
 
       function elementDrag( e ) {
@@ -1495,8 +1499,9 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           }
         } );
         if ( !matched ) {
-          seekerElement.style.left = originalOffset + "px";
-          seekerElement.style.width = "50px";
+
+          seekerElement.style.left = initialOffset + "px";
+          seekerElement.style.width = initialWidth + "px";
         }
 
         seekerElement.classList.remove( 'active' );
