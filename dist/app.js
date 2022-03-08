@@ -1400,98 +1400,31 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       if ( !this.el ) {
         return;
       }
-      
+
       this.currentFrame = 0;
       this.frameLimit = 30;
       this.frames = [];
 
 
-      this.el.innerHTML = timelineTemplate({
+      this.el.innerHTML = timelineTemplate( {
         frameLimit: this.frameLimit
-      });
+      } );
 
       this.el
-        .querySelectorAll( 'th, td' ).forEach(function ( frame_cell ) {
+        .querySelectorAll( 'th, td' ).forEach( function ( frame_cell ) {
           frame_cell.addEventListener( 'click', function ( event ) {
             if ( event.target.dataset.framePosition ) {
-              var seeker = document.getElementById("seeker");
-              var rect = event.target.getBoundingClientRect();
-              seeker.style.left = rect.left + "px";
-              var framePosition = event.target.getBoundingClientRect();
-              seeker.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
-
-              this$1$1.currentFrame = event.target.dataset.framePosition;
+              var seekerElement = document.getElementById( "seeker" );
+              this$1$1.selectFrame( seekerElement, event.target );
             }
           } );
         } );
 
       // Make the DIV element draggable:
-      setupSeeker(document.getElementById("seeker"));
+      this.setupSeeker( document.getElementById( "seeker" ) );
 
-      function setupSeeker(elmnt) {
-        var rect = elmnt.getBoundingClientRect();
+      this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
 
-        var originalOffset = elmnt.offsetLeft;
-        var pos1 = 0, pos3 = 0, pos4 = 0;
-        if (document.getElementById(elmnt.id + "header")) {
-          // if present, the header is where you move the DIV from:
-          document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-        } else {
-          // otherwise, move the DIV from anywhere inside the DIV:
-          elmnt.onmousedown = dragMouseDown;
-        }
-
-        function dragMouseDown(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // get the mouse cursor position at startup:
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          document.onmouseup = closeDragElement;
-          // call a function whenever the cursor moves:
-          document.onmousemove = elementDrag;
-          elmnt.classList.add('active');
-        }
-
-        function elementDrag(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // calculate the new cursor position:
-          pos1 = pos3 - e.clientX;
-          pos4 - e.clientY;
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          // set the element's new position:
-          //elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-          elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-        }
-
-        function closeDragElement() {
-          var this$1$1 = this;
-
-          // stop moving when mouse button is released:
-          document.onmouseup = null;
-          document.onmousemove = null;
-          var closestElements = document.elementsFromPoint(elmnt.offsetLeft, rect.top);
-          var matched = false;
-          closestElements.forEach(function (closestElement) {
-            if ( closestElement.tagName == 'TH' && closestElement.dataset.framePosition ) {
-              var framePosition = closestElement.getBoundingClientRect();
-              elmnt.style.left = (framePosition.left) + "px";
-              elmnt.style.width = (1 + framePosition.right - framePosition.left) + "px"; 
-              matched = true;
-              this$1$1.currentFrame = closestElement.dataset.framePosition;
-            }
-          });
-          if ( !matched ) {
-            elmnt.style.left = originalOffset + "px";
-            elmnt.style.width = "50px";
-          }
-
-          elmnt.classList.remove('active');
-        
-        }
-      }
     }
 
     if ( BaseControls ) TimelineControls.__proto__ = BaseControls;
@@ -1499,7 +1432,76 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     TimelineControls.prototype.constructor = TimelineControls;
 
     TimelineControls.prototype.addKeyFrame = function addKeyFrame ( frameIndex ) {
-      console.log('Added ', frameIndex);
+      console.log( 'Added ', frameIndex );
+    };
+
+    TimelineControls.prototype.selectFrame = function selectFrame ( seekerElement, targetElement ) {
+      var framePosition = targetElement.getBoundingClientRect();
+      seekerElement.style.left = ( framePosition.left ) + "px";
+      seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
+
+      this.currentFrame = targetElement.dataset.framePosition;
+    };
+
+    TimelineControls.prototype.setupSeeker = function setupSeeker ( seekerElement ) {
+      var self = this;
+      var rect = seekerElement.getBoundingClientRect();
+
+      var originalOffset = seekerElement.offsetLeft;
+      var pos1 = 0, pos3 = 0, pos4 = 0;
+      if ( document.getElementById( seekerElement.id + "header" ) ) {
+        // if present, the header is where you move the DIV from:
+        document.getElementById( seekerElement.id + "header" ).onmousedown = dragMouseDown;
+      } else {
+        // otherwise, move the DIV from anywhere inside the DIV:
+        seekerElement.onmousedown = dragMouseDown;
+      }
+
+      function dragMouseDown( e ) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        document.onmousemove = elementDrag;
+        seekerElement.classList.add( 'active' );
+      }
+
+      function elementDrag( e ) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // set the element's new position:
+        //seekerElement.style.top = (seekerElement.offsetTop - pos2) + "px";
+        seekerElement.style.left = ( seekerElement.offsetLeft - pos1 ) + "px";
+      }
+
+      function closeDragElement() {
+        // stop moving when mouse button is released:
+        document.onmouseup = null;
+        document.onmousemove = null;
+        var closestElements = document.elementsFromPoint( seekerElement.offsetLeft, rect.top );
+        var matched = false;
+        closestElements.forEach( function ( closestElement ) {
+          if ( closestElement.tagName == 'TH' && closestElement.dataset.framePosition ) {
+            matched = true;
+            self.selectFrame( seekerElement, closestElement );
+          }
+        } );
+        if ( !matched ) {
+          seekerElement.style.left = originalOffset + "px";
+          seekerElement.style.width = "50px";
+        }
+
+        seekerElement.classList.remove( 'active' );
+
+      }
     };
 
     return TimelineControls;
