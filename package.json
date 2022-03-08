@@ -45,6 +45,6 @@
     "rollup-plugin-pug": "^1.1.1",
     "rollup-plugin-uglify": "^6.0.4",
     "standard": "^16.0.3",
-    "three": "^0.126.1"
+    "three": "^0.137.0"
   }
 }
