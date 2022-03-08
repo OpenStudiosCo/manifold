@@ -1465,29 +1465,55 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
       if (this.playing) {
         this.frameElapsed += timestamp - this.playing;
+
+        // Check how many keyframes to play after this tween.
+        var nextKeyframe = 0;
+        var thisKeyframe = 0;
+        Object.keys(this.frames).forEach(function (framePosition){
+          // This will keep updating until it stops on the break later.
+          if (framePosition <= this$1$1.currentFrame ) {
+            thisKeyframe = framePosition;
+          }
+
+          if (framePosition > this$1$1.currentFrame) {
+            nextKeyframe = framePosition;
+            return;
+          }
+        });
+        console.log(this.currentFrame, nextKeyframe, thisKeyframe);
+        // Loop back if no frames left.
+        if (nextKeyframe == 0) {
+          this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+        }
+
+        // Iterate Frames if enough time has passed
         if (this.frameElapsed >= this.frameLength) {
           this.currentFrame = parseInt(this.currentFrame + 1);
+          this.frameElapsed = 0;
+
+          // Modify the timeline UI controls
           var seekerElement = document.getElementById( "seeker" );
           var targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
           var framePosition = targetElement.getBoundingClientRect();
           seekerElement.style.left = ( framePosition.left ) + "px";
           seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
-      
-          this.frameElapsed = 0;
-        }
 
-        // Check how many keyframes to play after this tween.
-        var keyframesLeft = 0;
-        Object.keys(this.frames).forEach(function (framePosition){
-          if (framePosition > this$1$1.currentFrame) {
-            keyframesLeft++;
-          }
-        });
-        // Loop back if not frames left.
-        if (keyframesLeft == 0) {
-          this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
-        }
+          
+          // Move objects on the canvas.
+          app$2.fabric.model.canvas.getObjects().map( function (object) {
+            var props = ['left', 'top'];
+            props.forEach( function (prop) {
+              var propChange = this$1$1.frames[nextKeyframe][0][prop] - this$1$1.frames[thisKeyframe][0][prop];
+              var numberOfFrames = nextKeyframe - thisKeyframe;
+              var propIteration = propChange * ( this$1$1.currentFrame / numberOfFrames);
 
+              object.set(prop, parseInt(this$1$1.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+            });
+
+          });
+
+        }
+        app$2.fabric.model.canvas.requestRenderAll();
         this.playing = performance.now();  
 
       }
@@ -1505,7 +1531,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       // 1. Select frame 10
       this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
       app$2.fabric.model.canvas.getObjects().map( function (object) {
-        object.set('left', parseInt(object.left + 200, 10)).setCoords();
+        object.set('left', parseInt(object.left + 400, 10)).setCoords();
         object.set('top', parseInt(object.top + 200, 10)).setCoords();
 
         this$1$1.frames[this$1$1.currentFrame] = JSON.parse(JSON.stringify(app$2.fabric.model.canvas.getObjects()));

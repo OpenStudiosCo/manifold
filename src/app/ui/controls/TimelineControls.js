@@ -65,29 +65,55 @@ export default class TimelineControls extends BaseControls {
   animate (timestamp) {
     if (this.playing) {
       this.frameElapsed += timestamp - this.playing;
+
+      // Check how many keyframes to play after this tween.
+      let nextKeyframe = 0;
+      let thisKeyframe = 0;
+      Object.keys(this.frames).forEach((framePosition)=>{
+        // This will keep updating until it stops on the break later.
+        if (framePosition <= this.currentFrame ) {
+          thisKeyframe = framePosition;
+        }
+
+        if (framePosition > this.currentFrame) {
+          nextKeyframe = framePosition;
+          return;
+        }
+      });
+      console.log(this.currentFrame, nextKeyframe, thisKeyframe);
+      // Loop back if no frames left.
+      if (nextKeyframe == 0) {
+        this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+      }
+
+      // Iterate Frames if enough time has passed
       if (this.frameElapsed >= this.frameLength) {
         this.currentFrame = parseInt(this.currentFrame + 1);
+        this.frameElapsed = 0;
+
+        // Modify the timeline UI controls
         let seekerElement = document.getElementById( "seeker" );
         let targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
         let framePosition = targetElement.getBoundingClientRect();
         seekerElement.style.left = ( framePosition.left ) + "px";
         seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
-    
-        this.frameElapsed = 0;
-      }
 
-      // Check how many keyframes to play after this tween.
-      let keyframesLeft = 0;
-      Object.keys(this.frames).forEach((framePosition)=>{
-        if (framePosition > this.currentFrame) {
-          keyframesLeft++;
-        }
-      });
-      // Loop back if not frames left.
-      if (keyframesLeft == 0) {
-        this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
-      }
+        
+        // Move objects on the canvas.
+        app.fabric.model.canvas.getObjects().map( object => {
+          let props = ['left', 'top'];
+          props.forEach( prop => {
+            let propChange = this.frames[nextKeyframe][0][prop] - this.frames[thisKeyframe][0][prop];
+            let numberOfFrames = nextKeyframe - thisKeyframe;
+            let propIteration = propChange * ( this.currentFrame / numberOfFrames);
 
+            object.set(prop, parseInt(this.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+          });
+
+        });
+
+      }
+      app.fabric.model.canvas.requestRenderAll();
       this.playing = performance.now();  
 
     }
@@ -103,7 +129,7 @@ export default class TimelineControls extends BaseControls {
     // 1. Select frame 10
     this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
     app.fabric.model.canvas.getObjects().map( object => {
-      object.set('left', parseInt(object.left + 200, 10)).setCoords();
+      object.set('left', parseInt(object.left + 400, 10)).setCoords();
       object.set('top', parseInt(object.top + 200, 10)).setCoords();
 
       this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
