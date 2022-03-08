@@ -50,41 +50,43 @@ export default class FabricJSIntegrationEvents {
     var selectionCallback = function(e) {
       clearOverlays();
 
+      let target = e.selected.shift();
+
       var $menu = $(activeObjectContext());
       $('#container').append($menu);
-      var offsetX = e.target.left + ((e.target.width / 2) - ($menu.width() / 2));
-      var offsetY = e.target.top - ($menu.height()) - 50;
+      var offsetX = target.left + ((target.width / 2) - ($menu.width() / 2));
+      var offsetY = target.top - ($menu.height()) - 50;
       $menu.css('left', offsetX);
       $menu.css('top', offsetY);
 
       // Set the menu to be draggable
       $('.floating.overlay').draggable();
 
-      switch(e.target.type) {
+      switch(target.type) {
         case 'image':
           $('#btnToggleVector').removeClass('disabled');
           break;
       }
 
       // Not 3D, not text, not group
-      if (!e.target._element && !e.target.text && !e.target._objects) {
+      if (!target._element && !target.text && !target._objects) {
         $('#btnMake3D').removeClass('disabled');
       }
       // Not 3D, not group
-      if (!e.target._element && !e.target._objects) {
+      if (!target._element && !target._objects) {
         $('#btnFillActive').removeClass('disabled');
-        $('#btnFillActive .icon').css('color', e.target.fill);
-        app.fabric.model.colourPickerModel.lookupAndSetColour(e.target.fill);
+        $('#btnFillActive .icon').css('color', target.fill);
+        app.fabric.model.colourPickerModel.lookupAndSetColour(target.fill);
       }
       // Is group.
-      if (e.target._objects) {
+      if (target._objects) {
 
         $('#btnGroupActive').removeClass('disabled');
-        if (e.target.type == 'activeSelection') {
-          $('#btnGroupActive span').html('Group (' + e.target._objects.length + ')');
+        if (target.type == 'activeSelection') {
+          $('#btnGroupActive span').html('Group (' + target._objects.length + ')');
         }
         else {
-          $('#btnGroupActive span').html('Ungroup (' + e.target._objects.length + ')');
+          $('#btnGroupActive span').html('Ungroup (' + target._objects.length + ')');
         }
       }
 
@@ -206,6 +208,7 @@ export default class FabricJSIntegrationEvents {
     app.fabric.model.canvas.on('selection:updated', selectionCallback);
 
     app.fabric.model.canvas.on('mouse:dblclick', function(e){
+      let target = e.selected.shift();
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
