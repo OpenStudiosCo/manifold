@@ -18,8 +18,8 @@ export default class TimelineControls extends BaseControls {
 
     this.currentFrame = 0;
     this.frameLimit = 30;
-    this.frames = [];
-
+    this.frames = {};
+    this.animation = false;
 
     this.el.innerHTML = timelineTemplate( {
       frameLimit: this.frameLimit
@@ -35,11 +35,39 @@ export default class TimelineControls extends BaseControls {
         } );
       } );
 
-    // Make the DIV element draggable:
+    // Make the DIV element draggable.
     this.setupSeeker( document.getElementById( "seeker" ) );
 
+    // Select the first frame.
     this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
+    
+  }
 
+  ready () {
+    // Initialise frame 0
+    this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
+
+    // Animation demo
+    // 1. Select frame 10
+    this.selectFrame ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
+    console.log(this.frames[0][0].left);
+    app.fabric.model.canvas.getObjects().map( object => {
+      object.set('left', parseInt(object.left + 200, 10)).setCoords();
+      object.set('top', parseInt(object.top + 200, 10)).setCoords();
+
+      this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
+      console.log('Modified frame #' , this.currentFrame);
+      console.log(this.frames);
+    });
+    console.log(this.currentFrame, this.frames[0][0].left);
+
+    // Make the 10th frame active
+    document.querySelector('td[data-frame-position="10"]').classList.add('active')
+
+    // Handle changes to the canvas.
+    app.fabric.model.canvas.on( 'history:append' , (json) => {
+      
+    });
   }
 
   addKeyFrame( frameIndex ) {
