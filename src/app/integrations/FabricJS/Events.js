@@ -208,7 +208,6 @@ export default class FabricJSIntegrationEvents {
     app.fabric.model.canvas.on('selection:updated', selectionCallback);
 
     app.fabric.model.canvas.on('mouse:dblclick', function(e){
-      let target = e.selected.shift();
       if (e.target && e.target._element) {
         var $el = $(e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
