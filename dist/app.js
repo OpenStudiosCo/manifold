@@ -1442,6 +1442,10 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
                 }
               });
 
+              if (nextKeyframe == 0 && thisKeyframe == 0) {
+                return;
+              }
+
               // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
               if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
                 nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
@@ -1507,15 +1511,16 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         var thisKeyframe = 0;
         Object.keys(this.frames).forEach(function (framePosition){
           // This will keep updating until it stops on the break later.
-          if (framePosition <= this$1$1.currentFrame ) {
+          if ( parseInt(framePosition) <= parseInt(this$1$1.currentFrame) ) {
             thisKeyframe = framePosition;
           }
 
-          if (framePosition > this$1$1.currentFrame) {
+          if ( parseInt(framePosition) > parseInt(this$1$1.currentFrame) ) {
             nextKeyframe = framePosition;
             return;
           }
         });
+
         console.log(this.currentFrame, nextKeyframe, thisKeyframe);
         // Loop back if no frames left.
         if (nextKeyframe == 0) {
@@ -1563,24 +1568,26 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       // Initialise frame 0
       this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app$2.fabric.model.canvas.getObjects()));
 
-      // Animation demo
-      // 1. Select frame 10
-      this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
-      app$2.fabric.model.canvas.getObjects().map( function (object) {
-        object.set('left', parseInt(object.left + 400, 10)).setCoords();
-        object.set('top', parseInt(object.top + 200, 10)).setCoords();
+      // // Animation demo
+      // // 1. Select frame 10
+      // this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
+      // app.fabric.model.canvas.getObjects().map( object => {
+      //   object.set('left', parseInt(object.left + 400, 10)).setCoords();
+      //   object.set('top', parseInt(object.top + 200, 10)).setCoords();
 
-        this$1$1.frames[this$1$1.currentFrame] = JSON.parse(JSON.stringify(app$2.fabric.model.canvas.getObjects()));
-        console.log('Modified frame #' , this$1$1.currentFrame);
-        console.log(this$1$1.frames);
-      });
+      //   this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
+      //   console.log('Modified frame #' , this.currentFrame);
+      //   console.log(this.frames);
+      // });
 
-      // Make the 10th frame active
-      document.querySelector('td[data-frame-position="10"]').classList.add('active');
+      // // Make the 10th frame active
+      // document.querySelector('td[data-frame-position="10"]').classList.add('active')
 
       // Handle changes to the canvas.
       app$2.fabric.model.canvas.on( 'history:append' , function (json) {
-        
+        this$1$1.frames[this$1$1.currentFrame] = JSON.parse(JSON.stringify(app$2.fabric.model.canvas.getObjects()));
+        document.querySelector('td[data-frame-position="' + this$1$1.currentFrame + '"]').classList.add('active');
+        console.log(this$1$1.frames);
       });
 
       this.animate(performance.now());

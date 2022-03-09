@@ -48,6 +48,10 @@ export default class TimelineControls extends BaseControls {
               }
             });
 
+            if (nextKeyframe == 0 && thisKeyframe == 0) {
+              return;
+            }
+
             // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
             if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
               nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
@@ -107,15 +111,16 @@ export default class TimelineControls extends BaseControls {
       let thisKeyframe = 0;
       Object.keys(this.frames).forEach((framePosition)=>{
         // This will keep updating until it stops on the break later.
-        if (framePosition <= this.currentFrame ) {
+        if ( parseInt(framePosition) <= parseInt(this.currentFrame) ) {
           thisKeyframe = framePosition;
         }
 
-        if (framePosition > this.currentFrame) {
+        if ( parseInt(framePosition) > parseInt(this.currentFrame) ) {
           nextKeyframe = framePosition;
           return;
         }
       });
+
       console.log(this.currentFrame, nextKeyframe, thisKeyframe);
       // Loop back if no frames left.
       if (nextKeyframe == 0) {
@@ -161,24 +166,26 @@ export default class TimelineControls extends BaseControls {
     // Initialise frame 0
     this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
 
-    // Animation demo
-    // 1. Select frame 10
-    this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
-    app.fabric.model.canvas.getObjects().map( object => {
-      object.set('left', parseInt(object.left + 400, 10)).setCoords();
-      object.set('top', parseInt(object.top + 200, 10)).setCoords();
+    // // Animation demo
+    // // 1. Select frame 10
+    // this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="10"]') );
+    // app.fabric.model.canvas.getObjects().map( object => {
+    //   object.set('left', parseInt(object.left + 400, 10)).setCoords();
+    //   object.set('top', parseInt(object.top + 200, 10)).setCoords();
 
-      this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
-      console.log('Modified frame #' , this.currentFrame);
-      console.log(this.frames);
-    });
+    //   this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
+    //   console.log('Modified frame #' , this.currentFrame);
+    //   console.log(this.frames);
+    // });
 
-    // Make the 10th frame active
-    document.querySelector('td[data-frame-position="10"]').classList.add('active')
+    // // Make the 10th frame active
+    // document.querySelector('td[data-frame-position="10"]').classList.add('active')
 
     // Handle changes to the canvas.
     app.fabric.model.canvas.on( 'history:append' , (json) => {
-      
+      this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
+      document.querySelector('td[data-frame-position="' + this.currentFrame + '"]').classList.add('active')
+      console.log(this.frames);
     });
 
     this.animate(performance.now());
