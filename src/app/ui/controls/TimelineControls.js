@@ -32,7 +32,37 @@ export default class TimelineControls extends BaseControls {
         frame_cell.addEventListener( 'click', ( event ) => {
           if ( event.target.dataset.framePosition ) {
             let seekerElement = document.getElementById( "seeker" );
+                        
             this.selectFrameByElement( seekerElement, event.target )
+            let nextKeyframe = 0;
+            let thisKeyframe = 0;
+            Object.keys(this.frames).forEach((framePosition)=>{
+              // This will keep updating until it stops on the break later.
+              if ( parseInt(framePosition) <= parseInt(this.currentFrame) ) {
+                thisKeyframe = framePosition;
+              }
+      
+              if ( parseInt(framePosition) > parseInt(this.currentFrame) ) {
+                nextKeyframe = framePosition;
+                return;
+              }
+            });
+            // Move objects on the canvas.
+            app.fabric.model.canvas.getObjects().map( object => {
+              
+              let props = ['left', 'top'];
+              props.forEach( prop => {
+
+                let propChange = this.frames[nextKeyframe][0][prop] - this.frames[thisKeyframe][0][prop];
+                let numberOfFrames = nextKeyframe - thisKeyframe;
+                let propIteration = propChange * (this.currentFrame / numberOfFrames) ;
+
+                object.set(prop, parseInt(this.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+              });
+
+            });
+            app.fabric.model.canvas.requestRenderAll();
+            
           }
         } );
       } );
@@ -62,6 +92,7 @@ export default class TimelineControls extends BaseControls {
     
   }
 
+  // Determines whether or not to execute actions this loop.
   animate (timestamp) {
     if (this.playing) {
       this.frameElapsed += timestamp - this.playing;
@@ -145,7 +176,7 @@ export default class TimelineControls extends BaseControls {
       
     });
 
-    this.animate();
+    this.animate(performance.now());
   }
 
   addKeyFrame( frameIndex ) {

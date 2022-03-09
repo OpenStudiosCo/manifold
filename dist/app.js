@@ -1426,7 +1426,37 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           frame_cell.addEventListener( 'click', function ( event ) {
             if ( event.target.dataset.framePosition ) {
               var seekerElement = document.getElementById( "seeker" );
+                          
               this$1$1.selectFrameByElement( seekerElement, event.target );
+              var nextKeyframe = 0;
+              var thisKeyframe = 0;
+              Object.keys(this$1$1.frames).forEach(function (framePosition){
+                // This will keep updating until it stops on the break later.
+                if ( parseInt(framePosition) <= parseInt(this$1$1.currentFrame) ) {
+                  thisKeyframe = framePosition;
+                }
+        
+                if ( parseInt(framePosition) > parseInt(this$1$1.currentFrame) ) {
+                  nextKeyframe = framePosition;
+                  return;
+                }
+              });
+              // Move objects on the canvas.
+              app$2.fabric.model.canvas.getObjects().map( function (object) {
+                
+                var props = ['left', 'top'];
+                props.forEach( function (prop) {
+
+                  var propChange = this$1$1.frames[nextKeyframe][0][prop] - this$1$1.frames[thisKeyframe][0][prop];
+                  var numberOfFrames = nextKeyframe - thisKeyframe;
+                  var propIteration = propChange * (this$1$1.currentFrame / numberOfFrames) ;
+
+                  object.set(prop, parseInt(this$1$1.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+                });
+
+              });
+              app$2.fabric.model.canvas.requestRenderAll();
+              
             }
           } );
         } );
@@ -1460,6 +1490,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     TimelineControls.prototype = Object.create( BaseControls && BaseControls.prototype );
     TimelineControls.prototype.constructor = TimelineControls;
 
+    // Determines whether or not to execute actions this loop.
     TimelineControls.prototype.animate = function animate (timestamp) {
       var this$1$1 = this;
 
@@ -1547,7 +1578,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         
       });
 
-      this.animate();
+      this.animate(performance.now());
     };
 
     TimelineControls.prototype.addKeyFrame = function addKeyFrame ( frameIndex ) {
