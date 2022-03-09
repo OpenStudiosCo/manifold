@@ -1484,7 +1484,7 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           if ($icon.hasClass('play')) {
             $icon.removeClass('play');
             $icon.addClass('pause');
-            this$1$1.playing = performance.now();
+            Object.keys(this$1$1.frames).length > 1 ? this$1$1.playing = performance.now() : $icon.click();
           }
           else {
             $icon.addClass('play');
@@ -1504,8 +1504,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       var this$1$1 = this;
 
       if (this.playing) {
-        this.frameElapsed += timestamp - this.playing;
-
         // Check how many keyframes to play after this tween.
         var nextKeyframe = 0;
         var thisKeyframe = 0;
@@ -1521,11 +1519,16 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
           }
         });
 
-        console.log(this.currentFrame, nextKeyframe, thisKeyframe);
+        if (nextKeyframe != 0 && thisKeyframe != 0) {
+          return;
+        }
+
         // Loop back if no frames left.
         if (nextKeyframe == 0) {
           this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
         }
+
+        this.frameElapsed += timestamp - this.playing;
 
         // Iterate Frames if enough time has passed
         if (this.frameElapsed >= this.frameLength) {

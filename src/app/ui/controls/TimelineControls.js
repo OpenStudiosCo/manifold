@@ -90,7 +90,7 @@ export default class TimelineControls extends BaseControls {
         if ($icon.hasClass('play')) {
           $icon.removeClass('play');
           $icon.addClass('pause');
-          this.playing = performance.now();
+          Object.keys(this.frames).length > 1 ? this.playing = performance.now() : $icon.click();
         }
         else {
           $icon.addClass('play');
@@ -104,8 +104,6 @@ export default class TimelineControls extends BaseControls {
   // Determines whether or not to execute actions this loop.
   animate (timestamp) {
     if (this.playing) {
-      this.frameElapsed += timestamp - this.playing;
-
       // Check how many keyframes to play after this tween.
       let nextKeyframe = 0;
       let thisKeyframe = 0;
@@ -121,11 +119,16 @@ export default class TimelineControls extends BaseControls {
         }
       });
 
-      console.log(this.currentFrame, nextKeyframe, thisKeyframe);
+      if (nextKeyframe != 0 && thisKeyframe != 0) {
+        return;
+      }
+
       // Loop back if no frames left.
       if (nextKeyframe == 0) {
         this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
       }
+
+      this.frameElapsed += timestamp - this.playing;
 
       // Iterate Frames if enough time has passed
       if (this.frameElapsed >= this.frameLength) {
