@@ -18,10 +18,14 @@ export default class TimelineControls extends BaseControls {
 
     this.playing = false;
     this.currentFrame = 0;
+    this.thisKeyframe = 0;
+    this.nextKeyframe = 0;
+
     this.frameLimit = 30;
     this.frames = {};
     this.frameElapsed = 0;
     this.frameLength = 50; // ms per frame.
+    
 
     this.el.innerHTML = timelineTemplate( {
       frameLimit: this.frameLimit
@@ -34,43 +38,17 @@ export default class TimelineControls extends BaseControls {
             let seekerElement = document.getElementById( "seeker" );
                         
             this.selectFrameByElement( seekerElement, event.target )
-            let nextKeyframe = 0;
-            let thisKeyframe = 0;
-            Object.keys(this.frames).forEach((framePosition)=>{
-              // This will keep updating until it stops on the break later.
-              if ( parseInt(framePosition) <= parseInt(this.currentFrame) ) {
-                thisKeyframe = framePosition;
-              }
-      
-              if ( parseInt(framePosition) > parseInt(this.currentFrame) ) {
-                nextKeyframe = framePosition;
-                return;
-              }
-            });
+            this.determinePosition();
 
-            if (nextKeyframe == 0 && thisKeyframe == 0) {
+            if (this.nextKeyframe == 0 && this.thisKeyframe == 0) {
               return;
             }
 
             // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
-            if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
-              nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+            if (parseInt(this.nextKeyframe) < parseInt(this.thisKeyframe)) {
+              this.nextKeyframe = [this.thisKeyframe, this.thisKeyframe = this.nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
             }
-            // Move objects on the canvas.
-            app.fabric.model.canvas.getObjects().map( object => {
-              
-              let props = ['left', 'top'];
-              props.forEach( prop => {
-
-                let propChange = this.frames[nextKeyframe][0][prop] - this.frames[thisKeyframe][0][prop];
-                let numberOfFrames = nextKeyframe - thisKeyframe;
-                let propIteration = propChange * (this.currentFrame / numberOfFrames) ;
-
-                object.set(prop, parseInt(this.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
-              });
-
-            });
-            app.fabric.model.canvas.requestRenderAll();
+            this.setFrame();
             
           }
         } );
@@ -103,28 +81,17 @@ export default class TimelineControls extends BaseControls {
 
   // Determines whether or not to execute actions this loop.
   animate (timestamp) {
+    console.log(this.currentFrame, this.thisKeyframe, this.nextKeyframe);
     if (this.playing) {
-      // Check how many keyframes to play after this tween.
-      let nextKeyframe = 0;
-      let thisKeyframe = 0;
-      Object.keys(this.frames).forEach((framePosition)=>{
-        // This will keep updating until it stops on the break later.
-        if ( parseInt(framePosition) <= parseInt(this.currentFrame) ) {
-          thisKeyframe = framePosition;
-        }
+      
+      this.determinePosition();
 
-        if ( parseInt(framePosition) > parseInt(this.currentFrame) ) {
-          nextKeyframe = framePosition;
-          return;
-        }
-      });
-
-      if (nextKeyframe != 0 && thisKeyframe != 0) {
+      if (this.nextKeyframe != 0 && this.thisKeyframe != 0) {
         return;
       }
 
       // Loop back if no frames left.
-      if (nextKeyframe == 0) {
+      if (this.nextKeyframe == 0) {
         this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
       }
 
@@ -134,35 +101,29 @@ export default class TimelineControls extends BaseControls {
       if (this.frameElapsed >= this.frameLength) {
         this.currentFrame = parseInt(this.currentFrame + 1);
         this.frameElapsed = 0;
-
-        // Modify the timeline UI controls
-        let seekerElement = document.getElementById( "seeker" );
-        let targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
-        let framePosition = targetElement.getBoundingClientRect();
-        seekerElement.style.left = ( framePosition.left ) + "px";
-        seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
-
-        
-        // Move objects on the canvas.
-        app.fabric.model.canvas.getObjects().map( object => {
-          let props = ['left', 'top'];
-          props.forEach( prop => {
-            let propChange = this.frames[nextKeyframe][0][prop] - this.frames[thisKeyframe][0][prop];
-            let numberOfFrames = nextKeyframe - thisKeyframe;
-            let propIteration = propChange * ( this.currentFrame / numberOfFrames);
-
-            object.set(prop, parseInt(this.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
-          });
-
-        });
-
+        this.determinePosition();
+        this.setFrame( );
       }
-      app.fabric.model.canvas.requestRenderAll();
+      
       this.playing = performance.now();  
 
     }
 
     window.requestAnimationFrame(this.animate.bind(this));
+  }
+
+  determinePosition() {
+    Object.keys(this.frames).forEach((framePosition)=>{
+      // This will keep updating until it stops on the break later.
+      if ( parseInt(framePosition) <= parseInt(this.currentFrame) ) {
+        this.thisKeyframe = framePosition;
+      }
+
+      if ( parseInt(framePosition) > parseInt(this.currentFrame) ) {
+        this.nextKeyframe = framePosition;
+        return;
+      }
+    });
   }
 
   ready () {
@@ -188,7 +149,6 @@ export default class TimelineControls extends BaseControls {
     app.fabric.model.canvas.on( 'history:append' , (json) => {
       this.frames[this.currentFrame] = JSON.parse(JSON.stringify(app.fabric.model.canvas.getObjects()))
       document.querySelector('td[data-frame-position="' + this.currentFrame + '"]').classList.add('active')
-      console.log(this.frames);
     });
 
     this.animate(performance.now());
@@ -204,6 +164,30 @@ export default class TimelineControls extends BaseControls {
     seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
 
     this.currentFrame = targetElement.dataset.framePosition;
+  }
+
+  // Activates the currentFrame into view by moving things according to where it is in the tweens.
+  setFrame ( ) {
+    // Modify the timeline UI controls
+    let seekerElement = document.getElementById( "seeker" );
+    let targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
+    let framePosition = targetElement.getBoundingClientRect();
+    seekerElement.style.left = ( framePosition.left ) + "px";
+    seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
+
+    // Move objects on the canvas.
+    app.fabric.model.canvas.getObjects().map( object => {
+      let props = ['left', 'top'];
+      props.forEach( prop => {
+        let propChange = this.frames[this.nextKeyframe][0][prop] - this.frames[this.thisKeyframe][0][prop];
+        let numberOfFrames = this.nextKeyframe - this.thisKeyframe;
+        let propIteration = propChange * ( this.currentFrame / numberOfFrames);
+
+        object.set(prop, parseInt(this.frames[this.thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+      });
+
+    });
+    app.fabric.model.canvas.requestRenderAll();
   }
 
   setupSeeker( seekerElement ) {

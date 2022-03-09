@@ -819,7 +819,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
     app$8.fabric.model.canvas.on('selection:updated', selectionCallback);
 
     app$8.fabric.model.canvas.on('mouse:dblclick', function(e){
-      e.selected.shift();
       if (e.target && e.target._element) {
         var $el = $__default["default"](e.target._element).parent();
         var scaledWidth = e.target.width * e.target.scaleX;
@@ -1412,10 +1411,14 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
       this.playing = false;
       this.currentFrame = 0;
+      this.thisKeyframe = 0;
+      this.nextKeyframe = 0;
+
       this.frameLimit = 30;
       this.frames = {};
       this.frameElapsed = 0;
       this.frameLength = 50; // ms per frame.
+      
 
       this.el.innerHTML = timelineTemplate( {
         frameLimit: this.frameLimit
@@ -1428,43 +1431,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
               var seekerElement = document.getElementById( "seeker" );
                           
               this$1$1.selectFrameByElement( seekerElement, event.target );
-              var nextKeyframe = 0;
-              var thisKeyframe = 0;
-              Object.keys(this$1$1.frames).forEach(function (framePosition){
-                // This will keep updating until it stops on the break later.
-                if ( parseInt(framePosition) <= parseInt(this$1$1.currentFrame) ) {
-                  thisKeyframe = framePosition;
-                }
-        
-                if ( parseInt(framePosition) > parseInt(this$1$1.currentFrame) ) {
-                  nextKeyframe = framePosition;
-                  return;
-                }
-              });
+              this$1$1.determinePosition();
 
-              if (nextKeyframe == 0 && thisKeyframe == 0) {
+              if (this$1$1.nextKeyframe == 0 && this$1$1.thisKeyframe == 0) {
                 return;
               }
 
               // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
-              if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
-                nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+              if (parseInt(this$1$1.nextKeyframe) < parseInt(this$1$1.thisKeyframe)) {
+                this$1$1.nextKeyframe = [this$1$1.thisKeyframe, this$1$1.thisKeyframe = this$1$1.nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
               }
-              // Move objects on the canvas.
-              app$2.fabric.model.canvas.getObjects().map( function (object) {
-                
-                var props = ['left', 'top'];
-                props.forEach( function (prop) {
-
-                  var propChange = this$1$1.frames[nextKeyframe][0][prop] - this$1$1.frames[thisKeyframe][0][prop];
-                  var numberOfFrames = nextKeyframe - thisKeyframe;
-                  var propIteration = propChange * (this$1$1.currentFrame / numberOfFrames) ;
-
-                  object.set(prop, parseInt(this$1$1.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
-                });
-
-              });
-              app$2.fabric.model.canvas.requestRenderAll();
+              this$1$1.setFrame();
               
             }
           } );
@@ -1501,30 +1478,17 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
 
     // Determines whether or not to execute actions this loop.
     TimelineControls.prototype.animate = function animate (timestamp) {
-      var this$1$1 = this;
-
+      console.log(this.currentFrame, this.thisKeyframe, this.nextKeyframe);
       if (this.playing) {
-        // Check how many keyframes to play after this tween.
-        var nextKeyframe = 0;
-        var thisKeyframe = 0;
-        Object.keys(this.frames).forEach(function (framePosition){
-          // This will keep updating until it stops on the break later.
-          if ( parseInt(framePosition) <= parseInt(this$1$1.currentFrame) ) {
-            thisKeyframe = framePosition;
-          }
+        
+        this.determinePosition();
 
-          if ( parseInt(framePosition) > parseInt(this$1$1.currentFrame) ) {
-            nextKeyframe = framePosition;
-            return;
-          }
-        });
-
-        if (nextKeyframe != 0 && thisKeyframe != 0) {
+        if (this.nextKeyframe != 0 && this.thisKeyframe != 0) {
           return;
         }
 
         // Loop back if no frames left.
-        if (nextKeyframe == 0) {
+        if (this.nextKeyframe == 0) {
           this.selectFrameByElement ( document.getElementById( "seeker" ) , document.querySelector('[data-frame-position="0"]') );
         }
 
@@ -1534,35 +1498,31 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
         if (this.frameElapsed >= this.frameLength) {
           this.currentFrame = parseInt(this.currentFrame + 1);
           this.frameElapsed = 0;
-
-          // Modify the timeline UI controls
-          var seekerElement = document.getElementById( "seeker" );
-          var targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
-          var framePosition = targetElement.getBoundingClientRect();
-          seekerElement.style.left = ( framePosition.left ) + "px";
-          seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
-
-          
-          // Move objects on the canvas.
-          app$2.fabric.model.canvas.getObjects().map( function (object) {
-            var props = ['left', 'top'];
-            props.forEach( function (prop) {
-              var propChange = this$1$1.frames[nextKeyframe][0][prop] - this$1$1.frames[thisKeyframe][0][prop];
-              var numberOfFrames = nextKeyframe - thisKeyframe;
-              var propIteration = propChange * ( this$1$1.currentFrame / numberOfFrames);
-
-              object.set(prop, parseInt(this$1$1.frames[thisKeyframe][0][prop] + propIteration, 10)).setCoords();
-            });
-
-          });
-
+          this.determinePosition();
+          this.setFrame( );
         }
-        app$2.fabric.model.canvas.requestRenderAll();
+        
         this.playing = performance.now();  
 
       }
 
       window.requestAnimationFrame(this.animate.bind(this));
+    };
+
+    TimelineControls.prototype.determinePosition = function determinePosition () {
+      var this$1$1 = this;
+
+      Object.keys(this.frames).forEach(function (framePosition){
+        // This will keep updating until it stops on the break later.
+        if ( parseInt(framePosition) <= parseInt(this$1$1.currentFrame) ) {
+          this$1$1.thisKeyframe = framePosition;
+        }
+
+        if ( parseInt(framePosition) > parseInt(this$1$1.currentFrame) ) {
+          this$1$1.nextKeyframe = framePosition;
+          return;
+        }
+      });
     };
 
     TimelineControls.prototype.ready = function ready () {
@@ -1590,7 +1550,6 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       app$2.fabric.model.canvas.on( 'history:append' , function (json) {
         this$1$1.frames[this$1$1.currentFrame] = JSON.parse(JSON.stringify(app$2.fabric.model.canvas.getObjects()));
         document.querySelector('td[data-frame-position="' + this$1$1.currentFrame + '"]').classList.add('active');
-        console.log(this$1$1.frames);
       });
 
       this.animate(performance.now());
@@ -1606,6 +1565,32 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
       seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
 
       this.currentFrame = targetElement.dataset.framePosition;
+    };
+
+    // Activates the currentFrame into view by moving things according to where it is in the tweens.
+    TimelineControls.prototype.setFrame = function setFrame ( ) {
+      var this$1$1 = this;
+
+      // Modify the timeline UI controls
+      var seekerElement = document.getElementById( "seeker" );
+      var targetElement = document.querySelector('td[data-frame-position="' + this.currentFrame + '"]');
+      var framePosition = targetElement.getBoundingClientRect();
+      seekerElement.style.left = ( framePosition.left ) + "px";
+      seekerElement.style.width = ( 1 + framePosition.right - framePosition.left ) + "px";
+
+      // Move objects on the canvas.
+      app$2.fabric.model.canvas.getObjects().map( function (object) {
+        var props = ['left', 'top'];
+        props.forEach( function (prop) {
+          var propChange = this$1$1.frames[this$1$1.nextKeyframe][0][prop] - this$1$1.frames[this$1$1.thisKeyframe][0][prop];
+          var numberOfFrames = this$1$1.nextKeyframe - this$1$1.thisKeyframe;
+          var propIteration = propChange * ( this$1$1.currentFrame / numberOfFrames);
+
+          object.set(prop, parseInt(this$1$1.frames[this$1$1.thisKeyframe][0][prop] + propIteration, 10)).setCoords();
+        });
+
+      });
+      app$2.fabric.model.canvas.requestRenderAll();
     };
 
     TimelineControls.prototype.setupSeeker = function setupSeeker ( seekerElement ) {
