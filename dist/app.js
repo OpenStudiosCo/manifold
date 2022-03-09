@@ -1441,6 +1441,11 @@ var ManifoldApplication = (function ($$1, fabric$1, THREE, ImageTracer, Potrace)
                   return;
                 }
               });
+
+              // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
+              if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
+                nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+              }
               // Move objects on the canvas.
               app$2.fabric.model.canvas.getObjects().map( function (object) {
                 

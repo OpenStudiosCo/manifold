@@ -47,6 +47,11 @@ export default class TimelineControls extends BaseControls {
                 return;
               }
             });
+
+            // If we are on the final keyframe, flip the values as the stored keyframe value is the final number.
+            if (parseInt(nextKeyframe) < parseInt(thisKeyframe)) {
+              nextKeyframe = [thisKeyframe, thisKeyframe = nextKeyframe][0]; // https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+            }
             // Move objects on the canvas.
             app.fabric.model.canvas.getObjects().map( object => {
               
