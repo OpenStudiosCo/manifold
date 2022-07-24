@@ -13,7 +13,7 @@ class TraceOperator(bpy.types.Operator):
         print(CURDIR)
 
         filepath = bpy.data.images["shapes.png"].filepath_from_user()        
-        svg = trace(filepath, mode = 'artistic2')
+        svg = trace(filepath, mode = 'posterized3')
         #print(svg)
         
         tmpfile = f"{CURDIR}\\tmp.svg"
@@ -29,7 +29,7 @@ class TraceOperator(bpy.types.Operator):
             obj.location[1] = -0.8
             obj.location[2] = 0.5
 
-        self.report({'INFO'}, "The custom operator actually worked!")
+        self.report({'INFO'}, "The custom operator actually worked!!!")
         return {'FINISHED'}
 
 class OBJECT_MT_sub_menu(bpy.types.Menu):
