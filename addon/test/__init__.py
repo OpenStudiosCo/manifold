@@ -49,25 +49,15 @@ class TraceOperator(bpy.types.Operator):
     bl_options = {'INTERNAL'}
 
     def execute(self, context):
-        CURDIR = str(Path(__file__).resolve().parent)
+        CURDIR = str(Path(__file__).resolve().parent.parent)
         print(CURDIR)
 
-        filepath = bpy.data.images["demo2.jpg"].filepath
-        print(filepath)
-
-        THISDIR = str(Path(__file__).parent.parent.absolute())
-        print(THISDIR)
+        filepath = bpy.data.images["demo2.jpg"].filepath_from_user()
         
-        THISDIRSTR = f"{THISDIR}\\{filepath}"
-        print(THISDIRSTR)
-##        
-#        # @see https://stackoverflow.com/questions/36085313/python-abspath-returning-path-twice
-#        absolute_path = os.path.normpath(os.path.join(base_path, filepath))
-#        print(absolute_path)
-##        
-##        print(f"{THISDIRSTR}demo2.jpg")
-#        
-#        Path(f"{THISDIRSTR}demo2.svg").write_text(trace(f"{THISDIRSTR}demo2.jpg"), encoding="utf-8")
+        svg = trace(filepath)
+        #print(svg)
+
+        Path(f"{CURDIR}\\demo2.svg").write_text(svg, encoding="utf-8")
 
         self.report({'INFO'}, "The custom operator actually worked!")
         return {'FINISHED'}
