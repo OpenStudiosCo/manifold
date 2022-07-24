@@ -1,47 +1,7 @@
-#this is the addon info for when you choose to install it
-#NOTE: for more information, see addon tutorial in the documentation
-bl_info={
-        "name":"Manifold",
-        "version": (1, 0),
-        "category":"Object",
-        "description": "Bitmap to Vector Add-on",
-        "author": "Paul Brzeski",
-        "version": (1, 0),
-        "blender": (2, 80, 0),
-        "location": "Properties > Object > Trace Options",
-        "warning": "", # used for warning icon and text in add-ons panel
-        "wiki_url": "https://github.com/paulbrzeski/manifold/wiki",
-        "tracker_url": "https://github.com/paulbrzeski/manifold/issues",
-        "support": "COMMUNITY",
-    }
-
 import bpy
-
-
-#import pip
-#pip.main(['install', 'svgtrace', '--user'])
-
-import sys
-packages_path = "C:\\Users\\Paul\\AppData\\Roaming\\Python\\Python39\\site-packages" # the path you see in console
-sys.path.insert(0, packages_path )
-
-import os
-
 
 from pathlib import Path
 from svgtrace import trace
-
-
-def setup_demo():
-    bpy.data.objects['Cube'].select_set(True)
-    bpy.ops.object.delete()
-    bpy.ops.import_image.to_plane(files=[{"name":"demo2.jpg", "name":"demo2.jpg"}], directory="C:\\Users\\Paul\\Pictures\\", relative=False)
-    for window in bpy.context.window_manager.windows:
-        for area in window.screen.areas: # iterate through areas in current screen
-            if area.type == 'VIEW_3D':
-                for space in area.spaces: # iterate through spaces in current VIEW_3D area
-                    if space.type == 'VIEW_3D': # check if space is a 3D view
-                        space.shading.type = 'RENDERED'
 
 class TraceOperator(bpy.types.Operator):
     bl_idname = 'manifold.trace'
@@ -52,9 +12,8 @@ class TraceOperator(bpy.types.Operator):
         CURDIR = str(Path(__file__).resolve().parent.parent)
         print(CURDIR)
 
-        filepath = bpy.data.images["shapes.png"].filepath_from_user()
-        
-        svg = trace(filepath)
+        filepath = bpy.data.images["shapes.png"].filepath_from_user()        
+        svg = trace(filepath, mode = 'artistic2')
         #print(svg)
         
         tmpfile = f"{CURDIR}\\tmp.svg"
@@ -72,7 +31,6 @@ class TraceOperator(bpy.types.Operator):
 
         self.report({'INFO'}, "The custom operator actually worked!")
         return {'FINISHED'}
-
 
 class OBJECT_MT_sub_menu(bpy.types.Menu):
     bl_label = "Imagetrace"
@@ -117,17 +75,7 @@ classes = (
 
 )
 
-
-def register():
-    from bpy.utils import register_class
-    for cls in classes:
-        register_class(cls)
-    # setup_demo()
-
-def unregister():
-    from bpy.utils import unregister_class
-    for cls in reversed(classes):
-        unregister_class(cls)
+register, unregister = bpy.utils.register_classes_factory(classes)
 
 if __name__ == "__main__":
     register()
