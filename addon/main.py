@@ -12,7 +12,33 @@ def setup_demo():
                 for space in area.spaces: # iterate through spaces in current VIEW_3D area
                     if space.type == 'VIEW_3D': # check if space is a 3D view
                         space.shading.type = 'RENDERED'
-    
+
+#in order to make a button do custom behavior we need to register and make an operator, a basic
+#custom operator that does not take any property and just runs is easily made like so        
+class TraceOperator(bpy.types.Operator):
+    #the id variable by which we can invoke the operator in blender
+    #usually its good practice to have SOMETHING.other_thing as style so we can group
+    #many id's together by SOMETHING and we have less chance of overriding existing op's
+    bl_idname = 'manifold.trace'
+    #this is the label that essentially is the text displayed on the button
+    bl_label = 'Trace'
+    #these are the options for the operator, this one makes it not appear
+    #in the search bar and only accessible by script, useful
+    #NOTE: it's a list of strings in {} braces, see blender documentation on types.operator
+    bl_options = {'INTERNAL'}
+
+    #this is the cream of the entire operator class, this one's the function that gets
+    #executed when the button is pressed
+    def execute(self, context):
+        #just do the logic here
+        
+        #this is a report, it pops up in the area defined in the word
+        #in curly braces {} which is the first argument, second is the actual displayed text
+        self.report({'INFO'}, "The custom operator actually worked!")
+        #return value tells blender wether the operation finished sueccessfully
+        #needs to be in curly braces also {}
+        return {'FINISHED'}
+
 class OBJECT_MT_sub_menu(bpy.types.Menu):
     bl_label = "Imagetrace"
     bl_idname = "OBJECT_MT_sub_menu"
@@ -46,12 +72,14 @@ class OBJECT_PT_trace(bpy.types.Panel):
         layout.label(text="Big Button:")
         row = layout.row()
         row.scale_y = 3.0
-        row.operator("render.render")
+        row.operator("manifold.trace")
 
 
 classes = (
+    TraceOperator,
     OBJECT_MT_sub_menu,
     OBJECT_PT_trace,
+
 )
 
 
@@ -59,13 +87,9 @@ def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
-    setup_demo()
+#    setup_demo()
 
 def unregister():
     from bpy.utils import unregister_class
     for cls in reversed(classes):
         unregister_class(cls)
-
-
-if __name__ == "__main__":
-    register()
