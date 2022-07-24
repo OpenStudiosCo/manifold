@@ -18,12 +18,14 @@ bl_info={
 import bpy
 
 
-import pip
-pip.main(['install', 'svgtrace', '--user'])
+#import pip
+#pip.main(['install', 'svgtrace', '--user'])
 
 import sys
 packages_path = "C:\\Users\\Paul\\AppData\\Roaming\\Python\\Python39\\site-packages" # the path you see in console
 sys.path.insert(0, packages_path )
+
+import os
 
 
 from pathlib import Path
@@ -47,17 +49,29 @@ class TraceOperator(bpy.types.Operator):
     bl_options = {'INTERNAL'}
 
     def execute(self, context):
-        self.report({'INFO'}, "The custom operator actually worked!")
+        CURDIR = str(Path(__file__).resolve().parent)
+        print(CURDIR)
 
-        """Test the image tracer."""
-        THISDIR = str(Path(__file__).resolve().parent)
-        logoFile = f"{THISDIR}\\"
+        filepath = bpy.data.images["demo2.jpg"].filepath
+        print(filepath)
+
+        THISDIR = str(Path(__file__).parent.parent.absolute())
+        print(THISDIR)
         
-        print(logoFile)
+        THISDIRSTR = f"{THISDIR}\\{filepath}"
+        print(THISDIRSTR)
+##        
+#        # @see https://stackoverflow.com/questions/36085313/python-abspath-returning-path-twice
+#        absolute_path = os.path.normpath(os.path.join(base_path, filepath))
+#        print(absolute_path)
+##        
+##        print(f"{THISDIRSTR}demo2.jpg")
+#        
+#        Path(f"{THISDIRSTR}demo2.svg").write_text(trace(f"{THISDIRSTR}demo2.jpg"), encoding="utf-8")
 
-        Path(f"{logoFile}demo2.svg").write_text(trace(f"{logoFile}demo2.jpg"), encoding="utf-8")
-
+        self.report({'INFO'}, "The custom operator actually worked!")
         return {'FINISHED'}
+
 
 class OBJECT_MT_sub_menu(bpy.types.Menu):
     bl_label = "Imagetrace"
