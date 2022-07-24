@@ -56,8 +56,12 @@ class TraceOperator(bpy.types.Operator):
         
         svg = trace(filepath)
         #print(svg)
+        
+        tmpfile = f"{CURDIR}\\demo2.svg"
+        print(tmpfile)
 
-        Path(f"{CURDIR}\\demo2.svg").write_text(svg, encoding="utf-8")
+        Path(tmpfile).write_text(svg, encoding="utf-8")
+        bpy.ops.import_curve.svg(tmpfile)
 
         self.report({'INFO'}, "The custom operator actually worked!")
         return {'FINISHED'}
