@@ -1,5 +1,4 @@
 import bpy
-import importlib
 import pip
 
 import site
@@ -10,6 +9,7 @@ sys.path.insert(0, packages_path )
 pip.main(['install', 'svgtrace', '--user'])
 
 from pathlib import Path
+from pathlib import PurePath
 from svgtrace import trace
 
 class TraceOperator(bpy.types.Operator):
@@ -25,7 +25,7 @@ class TraceOperator(bpy.types.Operator):
         svg = trace(filepath, mode = 'posterized3')
         #print(svg)
         
-        tmpfile = f"{CURDIR}\\tmp.svg"
+        tmpfile = PurePath(CURDIR, "tmp.svg")
         print(tmpfile)
 
         Path(tmpfile).write_text(svg, encoding="utf-8")
