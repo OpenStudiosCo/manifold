@@ -25,7 +25,7 @@ class TraceOperator(bpy.types.Operator):
         svg = trace(filepath, mode = 'posterized3')
         #print(svg)
         
-        tmpfile = PurePath(CURDIR, "tmp.svg")
+        tmpfile = str(PurePath(CURDIR, "tmp.svg"))
         print(tmpfile)
 
         Path(tmpfile).write_text(svg, encoding="utf-8")
