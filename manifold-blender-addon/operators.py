@@ -1,16 +1,23 @@
+# Import Blender base
 import bpy
-import pip
 
+# Import user site packages
 import site
 import sys
 packages_path = site.getusersitepackages()
 sys.path.insert(0, packages_path )
 
-pip.main(['install', 'svgtrace', '--user'])
-
+# Path helpers
 from pathlib import Path
 from pathlib import PurePath
-from svgtrace import trace
+
+# Import svgtrace, install if needed.
+try:
+    from svgtrace import trace
+except ImportError as e:
+    import pip
+    pip.main(['install', 'svgtrace', '--user'])
+    from svgtrace import trace
 
 class TraceOperator(bpy.types.Operator):
     bl_idname = 'manifold.trace'
@@ -25,13 +32,13 @@ class TraceOperator(bpy.types.Operator):
         svg = trace(filepath, mode = 'posterized3')
         #print(svg)
         
-        tmpfile = str(PurePath(CURDIR, "tmp.svg"))
+        tmpfile = str(PurePath(CURDIR, "Manifold Preview"))
         print(tmpfile)
 
         Path(tmpfile).write_text(svg, encoding="utf-8")
         bpy.ops.import_curve.svg(filepath=tmpfile)
         scale = 10.
-        for obj in bpy.data.collections['tmp.svg'].all_objects:
+        for obj in bpy.data.collections['Manifold Preview'].all_objects:
             obj.scale = ( scale, scale, scale)
             obj.rotation_euler[0] = 1.5708
             obj.rotation_euler[2] = 1.5708
