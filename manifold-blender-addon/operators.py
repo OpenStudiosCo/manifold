@@ -14,11 +14,12 @@ def attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist(pac
         importlib.import_module(moduleName)
         # from PIL import Image
     except Exception as error:
-        print(putTextInBox(f"{addonName}Error: ---\n{error}\n---\nwhen attempting to import {moduleName}, we're assuming that you dont have {packageName} installed and will try to install it for you!"))
+        print(f"Error: ---\n{error}\n---\nwhen attempting to import {moduleName}, we're assuming that you dont have {packageName} installed and will try to install it for you!")
         installPackage(packageName)
         importlib.import_module(moduleName) # Doesnt actually work? 
 
 attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist('svgtrace', 'svgtrace')
+import svgtrace
 
 from pathlib import Path
 from svgtrace import trace
