@@ -3,9 +3,9 @@ import importlib
 import pip
 def installPackage(package):
     if hasattr(pip, 'main'):
-        pip.main(['install', package])
+        pip.main(['install', '--user', package])
     else:
-        pip._internal.main(['install', package])
+        pip._internal.main(['install', '--user', package])
 
 # Running installPackage is a slow operation, therefore we want to make sure that we only run it when necessary
 def attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist(packageName, moduleName): 
