@@ -19,7 +19,10 @@ def attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist(pac
         importlib.import_module(moduleName) # Doesnt actually work? 
 
 attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist('svgtrace', 'svgtrace')
-import svgtrace
+
+import site
+packages_path = site.getusersitepackages()[0]
+sys.path.insert(0, packages_path )
 
 from pathlib import Path
 from svgtrace import trace
