@@ -1,28 +1,14 @@
 import bpy
 import importlib
 import pip
-def installPackage(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', '--user', package])
-    else:
-        pip._internal.main(['install', '--user', package])
-
-# Running installPackage is a slow operation, therefore we want to make sure that we only run it when necessary
-def attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist(packageName, moduleName): 
-    print("Attempting")
-    try:
-        importlib.import_module(moduleName)
-        # from PIL import Image
-    except Exception as error:
-        print(f"Error: ---\n{error}\n---\nwhen attempting to import {moduleName}, we're assuming that you dont have {packageName} installed and will try to install it for you!")
-        installPackage(packageName)
-        importlib.import_module(moduleName) # Doesnt actually work? 
-
-attemptToImportModuleAndInstallItIfItIfTheCorespondingPackageDoesntExist('svgtrace', 'svgtrace')
 
 import site
+import sys
 packages_path = site.getusersitepackages()[0]
+print(packages_path)
 sys.path.insert(0, packages_path )
+
+pip.main(['install', 'svgtrace', '--user'])
 
 from pathlib import Path
 from svgtrace import trace
