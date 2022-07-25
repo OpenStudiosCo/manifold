@@ -14,10 +14,13 @@ from pathlib import PurePath
 # Import svgtrace, install if needed.
 try:
     from svgtrace import trace
+    import potrace
 except ImportError as e:
     import pip
     pip.main(['install', 'svgtrace', '--user'])
+    pip.main(['install', 'potracer', '--user'])
     from svgtrace import trace
+    import potrace
 
 class TraceOperator(bpy.types.Operator):
     bl_idname = 'manifold.trace'
