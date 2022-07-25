@@ -5,47 +5,6 @@ import pip
 import site
 import sys
 packages_path = site.getusersitepackages()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 sys.path.insert(0, packages_path )
 
 pip.main(['install', 'svgtrace', '--user'])
