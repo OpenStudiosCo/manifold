@@ -18,7 +18,7 @@ class TraceOperator(bpy.types.Operator):
         CURDIR = str(Path(__file__).resolve().parent.parent)
         print(CURDIR)
 
-        filepath = bpy.data.images["shapes.png"].filepath_from_user()        
+        filepath = bpy.context.active_object.active_material.node_tree.nodes["Image Texture"].image.filepath_from_user()        
         svg = trace(filepath, mode = 'posterized3')
         #print(svg)
         
