@@ -1,337 +1,380 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Manifold | A hybrid 2D/3D design tool by Paul Brzeski
-    </title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
-    <link href="./vendor/jquery-ui.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css" rel="stylesheet">
-    <link href="./dist/styles.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnRedo"><i class="icon redo grey"></i></a><a class="item" id="btnUndo"><i class="icon undo grey"></i></a><a class="item" id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i class="font icon grey"></i></a>
-      <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddCircle"><i class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item" id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i class="corner snowflake outline icon inverted disabled"></i></a>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manifold | A hybrid 2D/3D design tool by Paul Brzeski
+  </title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <link href="./vendor/jquery-ui.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css" rel="stylesheet">
+  <link href="./dist/styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="ui very thin left vertical visible sidebar icon menu" id="toolbar"><a class="item" id="btnRedo"><i
+        class="icon redo grey"></i></a><a class="item" id="btnUndo"><i class="icon undo grey"></i></a><a class="item"
+      id="btnDrawTool"><i class="icon pencil grey"></i></a><a class="item" id="btnAddText"><i
+        class="font icon grey"></i></a>
+    <div class="ui horizontal divider fitted inverted"></div><a class="item" id="btnAddCircle"><i
+        class="circle icon green"></i></a><a class="item" id="btnAddSquare"><i class="square icon red"></i></a><a
+      class="item" id="btnAddTriangle"><i class="play icon blue counterclockwise rotated"></i></a><a class="item"
+      id="btnToggleOverlays"><i class="eye icon grey"></i></a><a class="item" id="btnToggle3DOptions"><i
+        class="corner snowflake outline icon inverted disabled"></i></a>
+  </div>
+  <div class="ui right vertical visible sidebar menu inverted" id="details">
+    <div class="ui inverted fluid accordion">
+      <div class="title"><i class="dropdown icon"></i>About</div>
+      <div class="content">
+        <div class="ui inverted segment">
+          <div class="ui fluid image" id="logo"><a href="#" title="Toggle Toolbars"><img src="/assets/manifold.svg"></a>
+          </div>
+          <div class="ui text">A hybrid 2D/3D design tool, Manifold is an experimental program to address various
+            multimedia production needs and R&D questions at Open Studios.</div><a
+            href="https://github.com/paulbrzeski/manifold" title="Github">Github</a>
+        </div>
+      </div>
+      <div class="title"><i class="dropdown icon"></i>Artboards</div>
+      <div class="content"></div>
+      <div class="active title"><i class="dropdown icon"></i>Layers</div>
+      <div class="active content">
+        <div id="layers-tool">
+          <div class="ui divided inverted list" id="layers" style="box-shadow: inset 0 0 5px #ccc; padding: 1em; ">
+            <div class="item">
+              <div class="content"><a class="description"><i class="object group outline icon"></i>Example Group</a>
+              </div>
+            </div>
+            <div class="item">
+              <div class="right floated content"><a class="ui link"><i class="minus icon black"></i></a></div>
+              <div class="content"><a class="description"><i class="image outline icon"></i>Vector Image</a></div>
+              <div class="list">
+                <div class="item"><i class="circle icon"></i>
+                  <div class="content"><a class="header">Circle</a></div>
+                </div>
+                <div class="item"><i class="square icon"></i>
+                  <div class="content"><a class="description">Rectangle</a></div>
+                </div>
+                <div class="item"><i class="play counterclockwise rotated icon"></i>
+                  <div class="content"><a class="description">Triangle</a></div>
+                </div>
+                <div class="item"><i class="cube icon"></i>
+                  <div class="content"><a class="description">3D Shape</a></div>
+                </div>
+                <div class="item"><i class="i cursor icon"></i>
+                  <div class="content"><a class="description">Textbox</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="ui right vertical visible sidebar menu inverted" id="details">
-      <div class="ui inverted fluid accordion">
-        <div class="title"><i class="dropdown icon"></i>About</div>
+  </div>
+  <div class="ui bottom visible sidebar menu inverted" id="footer">
+    <div class="ui inverted fluid accordion">
+      <div class="active title"><i class="dropdown icon"></i>Timeline</div>
+      <div class="active content">
+        <div id="timeline"></div>
+      </div>
+      <div class="title"><i class="dropdown icon"></i>Library</div>
+      <div class="content">
+        <div id="library">
+          <div class="ui link cards">
+            <div class="ui card" style="overflow: hidden"><a class="image" href="#"><img src="/assets/puppies.jpg"
+                  style="margin: -20% 0"></a></div>
+            <div class="ui card"><a class="image" href="#"><img src="/assets/tux.png"></a></div>
+            <div class="ui card"><a class="image" href="#"><img src="/assets/demo.jpg"></a></div>
+            <div class="ui card"><a class="image" href="#"><img src="/assets/demo2.jpg"></a></div><a class="ui button"
+              id="btnUploadImage"><i class="add icon"></i>Add Files</a>
+          </div>
+          <input id="image_input" type="file" accept="image/*">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pusher" id="container">
+    <canvas id="main-canvas"></canvas>
+    <div class="floating overlay" id="threeD-tool" style="display: none">
+      <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
+      <div class="ui card">
         <div class="content">
-          <div class="ui inverted segment">
-            <div class="ui fluid image" id="logo"><a href="#" title="Toggle Toolbars"><img src="/assets/manifold.svg"></a></div>
-            <div class="ui text">A hybrid 2D/3D design tool, Manifold is an experimental program to address various multimedia production needs and R&D questions at Open Studios.</div><a href="https://github.com/paulbrzeski/manifold" title="Github">Github</a>
-          </div>
+          <div class="ui header tiny"><i class="snowflake outline icon"></i>3D options</div>
         </div>
-        <div class="title"><i class="dropdown icon"></i>Artboards</div>
-        <div class="content"></div>
-        <div class="active title"><i class="dropdown icon"></i>Layers</div>
-        <div class="active content">
-          <div id="layers-tool">
-            <div class="ui divided inverted list" id="layers" style="box-shadow: inset 0 0 5px #ccc; padding: 1em; ">
-              <div class="item">
-                <div class="content"><a class="description"><i class="object group outline icon"></i>Example Group</a></div>
-              </div>
-              <div class="item">
-                <div class="right floated content"><a class="ui link"><i class="minus icon black"></i></a></div>
-                <div class="content"><a class="description"><i class="image outline icon"></i>Vector Image</a></div>
-                <div class="list">
-                  <div class="item"><i class="circle icon"></i>
-                    <div class="content"><a class="header">Circle</a></div>
-                  </div>
-                  <div class="item"><i class="square icon"></i>
-                    <div class="content"><a class="description">Rectangle</a></div>
-                  </div>
-                  <div class="item"><i class="play counterclockwise rotated icon"></i>
-                    <div class="content"><a class="description">Triangle</a></div>
-                  </div>
-                  <div class="item"><i class="cube icon"></i>
-                    <div class="content"><a class="description">3D Shape</a></div>
-                  </div>
-                  <div class="item"><i class="i cursor icon"></i>
-                    <div class="content"><a class="description">Textbox</a></div>
-                  </div>
-                </div>
-              </div>
+        <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+          <div class="ui header tiny">Select method</div>
+          <select class="ui dropdown fluid">
+            <option value="extrude" selected="">Extrude flat plane</option>
+            <option value="project">Project plane with persective</option>
+          </select>
+        </div>
+        <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
+          <div class="ui header tiny">Extrude Options</div>
+          <div class="ui mini form">
+            <div class="field">
+              <label>Extrude Vector</label>
+              <select class="ui dropdown fluid">
+                <option>Create volume</option>
+                <option>Rotate on Y axis</option>
+                <option>Custom rotation</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label>Amount</label>
+              <input class="ui input" type="text" placeholder="20">
+            </div>
+            <div class="field inline">
+              <label>Bevel</label>
+              <input class="ui input" type="text" placeholder="1">
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="ui bottom visible sidebar menu inverted" id="footer">
-      <div class="ui inverted fluid accordion">
-        <div class="active title"><i class="dropdown icon"></i>Timeline</div>
-        <div class="active content">
-          <div id="timeline"></div>
-        </div>
-        <div class="title"><i class="dropdown icon"></i>Library</div>
+    <div class="floating overlay" id="fill-tool" style="display: none">
+      <div class="ui card">
         <div class="content">
-          <div id="library">
-            <div class="ui link cards">
-              <div class="ui card" style="overflow: hidden"><a class="image" href="#"><img src="/assets/puppies.jpg" style="margin: -20% 0"></a></div>
-              <div class="ui card"><a class="image" href="#"><img src="/assets/tux.png"></a></div>
-              <div class="ui card"><a class="image" href="#"><img src="/assets/demo.jpg"></a></div>
-              <div class="ui card"><a class="image" href="#"><img src="/assets/demo2.jpg"></a></div><a class="ui button" id="btnUploadImage"><i class="add icon"></i>Add Files</a>
+          <div class="ui header tiny"><i class="tint icon"></i>Fill options</div>
+        </div>
+        <div class="content" id="colour-picker-preview"
+          style="box-shadow: inset 0 0 5px rgba(0,0,0,0.3); padding: 1em;">
+          <div class="ui form mini">
+            <div class="fields">
+              <div class="field eight wide">
+                <label style="color: white; mix-blend-mode: difference;">Hex</label>
+                <div class="ui input">
+                  <input id="hex" type="text" value="#FFFFFF">
+                </div>
+              </div>
+              <div class="field eight wide">
+                <label style="color: white; mix-blend-mode: difference;">RGB</label>
+                <div class="ui input">
+                  <input id="rgb" type="text" value="255, 255, 255">
+                </div>
+              </div>
             </div>
-            <input id="image_input" type="file" accept="image/*">
+          </div>
+        </div>
+        <div class="content" style="overflow:hidden">
+          <canvas id="colour-picker"
+            style="border: solid 1px #eee; cursor: crosshair; margin: -2em; width:120%"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="floating overlay" id="vector-tool" style="display: none">
+      <div class="ui header tiny grey">Options for converting image to vector</div>
+      <div class="ui card">
+        <div class="content">
+          <div class="ui header tiny"><i class="paper plane outline icon"></i>Image to Vector</div>
+        </div>
+        <div class="content">
+          <div class="ui header tiny">Select method</div>
+          <div class="method">
+            <div class="ui radio checkbox">
+              <input id="vctMthImg" type="radio" name="vector-method" value="imagetracer" checked="true">
+              <label for="vctMthImg">Imagetracer</label>
+            </div>
+            <hr>
+            <div class="ui radio checkbox">
+              <input id="vctMthPo" type="radio" name="vector-method" value="potrace">
+              <label for="vctMthPo">Potrace</label>
+            </div>
+          </div>
+        </div>
+        <div class="content imagetracer controls">
+          <div class="ui header tiny">ImageTracer Options</div>
+          <div class="ui accordion">
+            <div class="title"><i class="dropdown icon"></i>
+              <label>Preset</label>
+            </div>
+            <div class="content">
+              <select class="ui dropdown fluid imagetracerConfig preset">
+                <option>default</option>
+                <option>posterized1</option>
+                <option>posterized2</option>
+                <option>posterized3</option>
+                <option>curvy</option>
+                <option>sharp</option>
+                <option>detailed</option>
+                <option>smoothed</option>
+                <option>grayscale</option>
+                <option>fixedpalette</option>
+                <option>randomsampling1</option>
+                <option>randomsampling2</option>
+                <option>artistic1</option>
+                <option>artistic2</option>
+                <option>artistic3</option>
+                <option>artistic4</option>
+              </select>
+            </div>
+            <div class="title"><i class="dropdown icon"></i>
+              <label>Colour options</label>
+            </div>
+            <div class="content">
+              <div class="ui mini form">
+                <div class="field">
+                  <label>Number of Colours</label>
+                  <div class="ui labeled slider imagetracerConfig colours"></div>
+                </div>
+                <div class="field">
+                  <label>Min Color Ratio (total pixels*mincolorratio)</label>
+                  <input class="ui input imagetracerConfig mincolorratio" type="number" step="0.1" value="0">
+                </div>
+                <div class="field">
+                  <label>Color quantization #</label>
+                  <input class="ui input imagetracerConfig colorquantcycles" type="number" step="1" value="3">
+                </div>
+              </div>
+            </div>
+            <div class="active title"><i class="dropdown icon"></i>
+              <label>Tracing options</label>
+            </div>
+            <div class="active content">
+              <div class="ui mini form">
+                <div class="fields">
+                  <div class="field">
+                    <label> </label>
+                  </div>
+                  <div class="field">
+                    <label>Blur Radius</label>
+                    <input class="ui input imagetracerConfig blurradius" type="number" step="1" value="0">
+                  </div>
+                  <div class="field">
+                    <label>Blur delta threshold.</label>
+                    <input class="ui input imagetracerConfig blurdelta" type="number" step="1" value="20">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Tolerance</label>
+                  <div class="two fields">
+                    <div class="field">
+                      <label>Straight lines.</label>
+                      <input class="ui input imagetracerConfig ltres" type="number" step="1" value="1">
+                    </div>
+                    <div class="field">
+                      <label>Quadratic splines.</label>
+                      <input class="ui input imagetracerConfig qtres" type="number" step="1" value="1">
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Minimum path length</label>
+                  <input class="ui input imagetracerConfig pathomit" type="number" step="1" value="8">
+                </div>
+                <div class="field">
+                  <div class="ui toggle checkbox checked">
+                    <input class="imagetracerConfig rightangleenhance" type="checkbox" checked>
+                    <label>Enhance right angle corners.</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui toggle checkbox">
+                    <input class="imagetracerConfig layering" type="checkbox">
+                    <label>Layer Sequentially</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content potrace controls">
+          <div class="ui header tiny">Potrace Options</div>
+          <div class="ui mini form">
+            <div class="field">
+              <label>Turn Policy</label>
+              <select class="ui dropdown fluid potraceConfig turnpolicy">
+                <option>Black</option>
+                <option>White</option>
+                <option>Left</option>
+                <option>Right</option>
+                <option>Majority</option>
+                <option>Minority</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label>Turd Size</label>
+              <input class="ui input potraceConfig turdsize" type="number" value="100">
+            </div>
+            <div class="field inline">
+              <label>Corner Threshold</label>
+              <input class="ui input potraceConfig alphamax" type="number" value="1">
+            </div>
+            <div class="field inline">
+              <label>Curve Tolerance</label>
+              <input class="ui input potraceConfig opttolerance" type="number" step="0.1" value="0.2">
+            </div>
+            <div class="field inline">
+              <div class="ui checkbox">
+                <input class="potraceConfig optcurve" type="checkbox">
+                <label>Curve Optimisation</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="extra content">
+          <div class="ui buttons">
+            <div class="ui button" id="btnCreateVector">Create</div>
+            <div class="or"></div>
+            <div class="ui button" id="btnReplaceVector">Replace</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="pusher" id="container">
-      <canvas id="main-canvas"></canvas>
-      <div class="floating overlay" id="threeD-tool" style="display: none">
-        <div class="ui header tiny grey">Options for creating 3D objects from 2D</div>
-        <div class="ui card">
-          <div class="content">
-            <div class="ui header tiny"><i class="snowflake outline icon"></i>3D options</div>
-          </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
-            <div class="ui header tiny">Select method</div>
-            <select class="ui dropdown fluid">
-              <option value="extrude" selected="">Extrude flat plane</option>
-              <option value="project">Project plane with persective</option>
-            </select>
-          </div>
-          <div class="content" style="box-shadow: inset 0 0 5px #ccc; padding: 1em;">
-            <div class="ui header tiny">Extrude Options</div>
-            <div class="ui mini form">
-              <div class="field">
-                <label>Extrude Vector</label>
-                <select class="ui dropdown fluid">
-                  <option>Create volume</option>
-                  <option>Rotate on Y axis</option>
-                  <option>Custom rotation</option>
-                </select>
-              </div>
-              <div class="field inline">
-                <label>Amount</label>
-                <input class="ui input" type="text" placeholder="20">
-              </div>
-              <div class="field inline">
-                <label>Bevel</label>
-                <input class="ui input" type="text" placeholder="1">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="floating overlay" id="fill-tool" style="display: none">
-        <div class="ui card">
-          <div class="content">
-            <div class="ui header tiny"><i class="tint icon"></i>Fill options</div>
-          </div>
-          <div class="content" id="colour-picker-preview" style="box-shadow: inset 0 0 5px rgba(0,0,0,0.3); padding: 1em;">
-            <div class="ui form mini">
-              <div class="fields">
-                <div class="field eight wide">
-                  <label style="color: white; mix-blend-mode: difference;">Hex</label>
-                  <div class="ui input">
-                    <input id="hex" type="text" value="#FFFFFF">
-                  </div>
-                </div>
-                <div class="field eight wide">
-                  <label style="color: white; mix-blend-mode: difference;">RGB</label>
-                  <div class="ui input">
-                    <input id="rgb" type="text" value="255, 255, 255">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="content" style="overflow:hidden">
-            <canvas id="colour-picker" style="border: solid 1px #eee; cursor: crosshair; margin: -2em; width:120%"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="floating overlay" id="vector-tool" style="display: none">
-        <div class="ui header tiny grey">Options for converting image to vector</div>
-        <div class="ui card">
-          <div class="content">
-            <div class="ui header tiny"><i class="paper plane outline icon"></i>Image to Vector</div>
-          </div>
-          <div class="content">
-            <div class="ui header tiny">Select method</div>
-            <div class="method">
-              <div class="ui radio checkbox">
-                <input id="vctMthImg" type="radio" name="vector-method" value="imagetracer" checked="true">
-                <label for="vctMthImg">Imagetracer</label>
-              </div>
-              <hr>
-              <div class="ui radio checkbox">
-                <input id="vctMthPo" type="radio" name="vector-method" value="potrace">
-                <label for="vctMthPo">Potrace</label>
-              </div>
-            </div>
-          </div>
-          <div class="content imagetracer controls">
-            <div class="ui header tiny">ImageTracer Options</div>
-            <div class="ui accordion">
-              <div class="title"><i class="dropdown icon"></i>
-                <label>Preset</label>
-              </div>
-              <div class="content">
-                <select class="ui dropdown fluid imagetracerConfig preset">
-                  <option>default</option>
-                  <option>posterized1</option>
-                  <option>posterized2</option>
-                  <option>posterized3</option>
-                  <option>curvy</option>
-                  <option>sharp</option>
-                  <option>detailed</option>
-                  <option>smoothed</option>
-                  <option>grayscale</option>
-                  <option>fixedpalette</option>
-                  <option>randomsampling1</option>
-                  <option>randomsampling2</option>
-                  <option>artistic1</option>
-                  <option>artistic2</option>
-                  <option>artistic3</option>
-                  <option>artistic4</option>
-                </select>
-              </div>
-              <div class="title"><i class="dropdown icon"></i>
-                <label>Colour options</label>
-              </div>
-              <div class="content">
-                <div class="ui mini form">
-                  <div class="field">
-                    <label>Number of Colours</label>
-                    <div class="ui labeled slider imagetracerConfig colours"></div>
-                  </div>
-                  <div class="field">
-                    <label>Min Color Ratio (total pixels*mincolorratio)</label>
-                    <input class="ui input imagetracerConfig mincolorratio" type="number" step="0.1" value="0">
-                  </div>
-                  <div class="field">
-                    <label>Color quantization #</label>
-                    <input class="ui input imagetracerConfig colorquantcycles" type="number" step="1" value="3">
-                  </div>
-                </div>
-              </div>
-              <div class="active title"><i class="dropdown icon"></i>
-                <label>Tracing options</label>
-              </div>
-              <div class="active content">
-                <div class="ui mini form">
-                  <div class="fields">
-                    <div class="field">
-                      <label> </label>
-                    </div>
-                    <div class="field">
-                      <label>Blur Radius</label>
-                      <input class="ui input imagetracerConfig blurradius" type="number" step="1" value="0">
-                    </div>
-                    <div class="field">
-                      <label>Blur delta threshold.</label>
-                      <input class="ui input imagetracerConfig blurdelta" type="number" step="1" value="20">
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label>Tolerance</label>
-                    <div class="two fields">
-                      <div class="field">
-                        <label>Straight lines.</label>
-                        <input class="ui input imagetracerConfig ltres" type="number" step="1" value="1">
-                      </div>
-                      <div class="field">
-                        <label>Quadratic splines.</label>
-                        <input class="ui input imagetracerConfig qtres" type="number" step="1" value="1">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label>Minimum path length</label>
-                    <input class="ui input imagetracerConfig pathomit" type="number" step="1" value="8">
-                  </div>
-                  <div class="field">
-                    <div class="ui toggle checkbox checked">
-                      <input class="imagetracerConfig rightangleenhance" type="checkbox" checked>
-                      <label>Enhance right angle corners.</label>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <div class="ui toggle checkbox">
-                      <input class="imagetracerConfig layering" type="checkbox">
-                      <label>Layer Sequentially</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="content potrace controls">
-            <div class="ui header tiny">Potrace Options</div>
-            <div class="ui mini form">
-              <div class="field">
-                <label>Turn Policy</label>
-                <select class="ui dropdown fluid potraceConfig turnpolicy">
-                  <option>Black</option>
-                  <option>White</option>
-                  <option>Left</option>
-                  <option>Right</option>
-                  <option>Majority</option>
-                  <option>Minority</option>
-                </select>
-              </div>
-              <div class="field inline">
-                <label>Turd Size</label>
-                <input class="ui input potraceConfig turdsize" type="number" value="100">
-              </div>
-              <div class="field inline">
-                <label>Corner Threshold</label>
-                <input class="ui input potraceConfig alphamax" type="number" value="1">
-              </div>
-              <div class="field inline">
-                <label>Curve Tolerance</label>
-                <input class="ui input potraceConfig opttolerance" type="number" step="0.1" value="0.2">
-              </div>
-              <div class="field inline">
-                <div class="ui checkbox">
-                  <input class="potraceConfig optcurve" type="checkbox">
-                  <label>Curve Optimisation</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="extra content">
-            <div class="ui buttons">
-              <div class="ui button" id="btnCreateVector">Create</div>
-              <div class="or"></div>
-              <div class="ui button" id="btnReplaceVector">Replace</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
-  <script src="./vendor/jquery.3.3.1.min.js"></script>
-  <script src="./vendor/jquery-ui.min.js"></script>
-  <script src="./vendor/path-data-polyfill.js"></script>
-  <script src="./vendor/Tween.js"></script>
-  <script src="./vendor/three.js"></script>
-  <script src="./vendor/semantic.min.js"></script>
-  <script src="./vendor/dat.gui.min.js"></script>
-  <script src="./vendor/fabric.js"></script>
-  <script src="./vendor/OrbitControls.js"></script>
-  <script src="./vendor/SVGLoader.js"></script>
-  <script src="./vendor/SVGRenderer.js"></script>
-  <script src="./vendor/potrace.js"></script>
-  <script src="./vendor/imagetracer_v1.2.6.js"></script>
-  <script src="./vendor/fabrichistory.js"></script>
-  <script src="./dist/app.js"></script>
-  <script>
-    // Google Analytics
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    // Uncomment when you set your own GA key.
-    ga('create', 'UA-155740430-6', 'auto');
-    ga('send', 'pageview');
-  </script>
+  </div>
+</body>
+<script src="./vendor/jquery.3.3.1.min.js"></script>
+<script src="./vendor/jquery-ui.min.js"></script>
+<script src="./vendor/path-data-polyfill.js"></script>
+<script src="./vendor/Tween.js"></script>
+<script src="./vendor/three.js"></script>
+<script src="./vendor/semantic.min.js"></script>
+<script src="./vendor/dat.gui.min.js"></script>
+<script src="./vendor/fabric.js"></script>
+<script src="./vendor/OrbitControls.js"></script>
+<script src="./vendor/SVGLoader.js"></script>
+<script src="./vendor/SVGRenderer.js"></script>
+<script src="./vendor/potrace.js"></script>
+<script src="./vendor/imagetracer_v1.2.6.js"></script>
+<script src="./vendor/fabrichistory.js"></script>
+<script src="./dist/app.js"></script>
+<script>
+  // Google Analytics
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+  // Uncomment when you set your own GA key.
+  ga('create', 'UA-155740430-6', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C3ZZ8X035V"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-C3ZZ8X035V');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://analytics.openstudios.xyz/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '12']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
 </html>
